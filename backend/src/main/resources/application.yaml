@@ -1,3 +1,7 @@
+server:
+  servlet:
+    context-path: /api/v1
+
 spring:
   application:
     name: backend
@@ -33,3 +37,11 @@ minio:
   access-key: ${MINIO_ACCESS_KEY:vault_minio_user}
   secret-key: ${MINIO_SECRET_KEY:vault_minio_password}
   bucket: ${MINIO_BUCKET:cloud-vault}
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:very-long-and-secure-secret-key-that-should-be-changed-in-production}
+  refresh-secret: ${JWT_REFRESH_SECRET:another-very-long-and-secure-secret-key-for-refresh-tokens}
+  access-expiration: ${JWT_ACCESS_EXPIRATION:900000} # 15 minutes
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days
+  cookie-name: refresh_token
