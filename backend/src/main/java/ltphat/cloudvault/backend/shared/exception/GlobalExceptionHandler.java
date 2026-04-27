@@ -2,9 +2,12 @@ package ltphat.cloudvault.backend.shared.exception;
 
 import ltphat.cloudvault.backend.iam.domain.exception.AuthException;
 import ltphat.cloudvault.backend.iam.domain.exception.TokenSecurityException;
+import ltphat.cloudvault.backend.projects.domain.exception.ProjectException;
+import ltphat.cloudvault.backend.projects.domain.exception.ProjectNotFoundException;
 import ltphat.cloudvault.backend.shared.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,6 +21,22 @@ public class GlobalExceptionHandler {
             status = HttpStatus.FORBIDDEN;
         }
         return ResponseEntity.status(status)
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(ProjectException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProjectException(ProjectException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        if (e instanceof ProjectNotFoundException) {
+            status = HttpStatus.NOT_FOUND;
+        }
+        return ResponseEntity.status(status)
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(e.getMessage()));
     }
 
