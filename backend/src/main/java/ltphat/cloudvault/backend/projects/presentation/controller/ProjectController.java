@@ -1,5 +1,6 @@
 package ltphat.cloudvault.backend.projects.presentation.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import ltphat.cloudvault.backend.iam.application.dto.UserDto;
@@ -28,6 +29,7 @@ public class ProjectController {
     private final IAuthService authService;
 
     @PostMapping
+    @Operation(summary = "Create project", description = "Creates a new project for the authenticated user")
     public ResponseEntity<ApiResponse<ProjectDto>> createProject(
             @RequestBody CreateProjectRequest request,
             @AuthenticationPrincipal UserDetails userDetails
@@ -39,6 +41,7 @@ public class ProjectController {
     }
 
     @GetMapping
+    @Operation(summary = "List projects", description = "Retrieves all projects owned by the authenticated user")
     public ResponseEntity<ApiResponse<List<ProjectDto>>> listProjects(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
@@ -48,6 +51,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get project details", description = "Retrieves metadata for a specific project")
     public ResponseEntity<ApiResponse<ProjectDto>> getProject(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails
@@ -58,6 +62,7 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update project", description = "Updates metadata (e.g., name) for an existing project")
     public ResponseEntity<ApiResponse<ProjectDto>> updateProject(
             @PathVariable UUID id,
             @RequestBody UpdateProjectRequest request,
@@ -69,6 +74,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete project", description = "Permanently deletes a project and its associated resources")
     public ResponseEntity<ApiResponse<Void>> deleteProject(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails
