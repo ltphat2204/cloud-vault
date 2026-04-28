@@ -8,7 +8,6 @@ import ltphat.cloudvault.backend.projects.domain.exception.ProjectNotFoundExcept
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.folders.application.service.IFolderService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

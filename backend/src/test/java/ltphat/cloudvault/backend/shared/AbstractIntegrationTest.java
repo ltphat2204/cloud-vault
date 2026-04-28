@@ -5,23 +5,27 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
 public abstract class AbstractIntegrationTest {
 
-    @Container
-    @SuppressWarnings("resource")
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
-            .withDatabaseName("cloud_vault_test")
-            .withUsername("test")
-            .withPassword("test");
+    static final PostgreSQLContainer<?> postgres;
+    static final MinIOContainer minio;
 
-    @Container
-    @SuppressWarnings("resource")
-    static MinIOContainer minio = new MinIOContainer("minio/minio:latest");
+    static {
+        postgres = new PostgreSQLContainer<>("postgres:16-alpine")
+                .withDatabaseName("cloud_vault_test")
+                .withUsername("test")
+                .withPassword("test")
+                .waitingFor(Wait.forListeningPort());
+        
+        minio = new MinIOContainer("minio/minio:latest")
+                .waitingFor(Wait.forHttp("/minio/health/live").forPort(9000));
+
+        postgres.start();
+        minio.start();
+    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {

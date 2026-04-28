@@ -8,8 +8,6 @@ import ltphat.cloudvault.backend.files.application.dto.MoveFileRequest;
 import ltphat.cloudvault.backend.files.application.dto.UpdateFileRequest;
 import ltphat.cloudvault.backend.files.application.dto.FileVersionDto;
 import ltphat.cloudvault.backend.files.application.service.IFileService;
-import ltphat.cloudvault.backend.iam.application.dto.UserDto;
-import ltphat.cloudvault.backend.iam.application.service.IAuthService;
 import ltphat.cloudvault.backend.shared.dto.ApiResponse;
 import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
 import org.springframework.core.io.InputStreamResource;

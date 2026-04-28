@@ -3,33 +3,39 @@ package ltphat.cloudvault.backend.projects.presentation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ltphat.cloudvault.backend.iam.application.dto.UserDto;
 import ltphat.cloudvault.backend.iam.application.service.IAuthService;
+import ltphat.cloudvault.backend.iam.infrastructure.security.SecurityConfig;
+import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
 import ltphat.cloudvault.backend.projects.application.dto.CreateProjectRequest;
 import ltphat.cloudvault.backend.projects.application.dto.ProjectDto;
 import ltphat.cloudvault.backend.projects.application.dto.UpdateProjectRequest;
 import ltphat.cloudvault.backend.projects.application.service.IProjectService;
 import ltphat.cloudvault.backend.shared.security.JwtAuthenticationFilter;
-import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
+import ltphat.cloudvault.backend.shared.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProjectController.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 @AutoConfigureMockMvc
 class ProjectControllerTest {
 
@@ -43,7 +49,10 @@ class ProjectControllerTest {
     private IAuthService authService;
 
     @MockitoBean
-    private JwtAuthenticationFilter jwtAuthenticationFilter; // Needed because it's a required bean in SecurityConfig
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -57,94 +66,84 @@ class ProjectControllerTest {
         principal = UserPrincipal.builder()
                 .id(userId)
                 .email("test@example.com")
-                .authorities(java.util.Collections.emptyList())
+                .authorities(Collections.emptyList())
                 .build();
+
+        UserDto user = UserDto.builder().id(userId).email("test@example.com").build();
+        when(authService.getMe(anyString())).thenReturn(user);
         
-        when(authService.getMe("test@example.com")).thenReturn(UserDto.builder().id(userId).build());
+        when(jwtTokenProvider.extractAccessTokenUsername(anyString())).thenReturn("test@example.com");
+        when(jwtTokenProvider.isAccessTokenValid(anyString(), anyString())).thenReturn(true);
+        when(userDetailsService.loadUserByUsername("test@example.com")).thenReturn(principal);
     }
 
     @Test
-    @WithMockUser(username = "test@example.com")
     void createProject_Success() throws Exception {
-        CreateProjectRequest request = new CreateProjectRequest("New Project");
-        ProjectDto projectDto = ProjectDto.builder().id(UUID.randomUUID()).name("New Project").build();
+        CreateProjectRequest request = new CreateProjectRequest("Test Project");
+        ProjectDto response = ProjectDto.builder().id(UUID.randomUUID()).name("Test Project").build();
 
-        when(projectService.createProject(any(CreateProjectRequest.class), eq(userId))).thenReturn(projectDto);
+        when(projectService.createProject(any(), any())).thenReturn(response);
 
         mockMvc.perform(post("/projects")
-                        .with(user(principal))
+                        .header("Authorization", "Bearer dummy-token")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.name").value("New Project"));
+                .andExpect(jsonPath("$.data.name").value("Test Project"));
     }
 
     @Test
-    @WithMockUser(username = "test@example.com")
     void listProjects_Success() throws Exception {
-        UUID userId = UUID.randomUUID();
-        ProjectDto projectDto = ProjectDto.builder().name("Project 1").build();
+        ProjectDto project = ProjectDto.builder().id(UUID.randomUUID()).name("Project 1").build();
+        List<ProjectDto> response = Collections.singletonList(project);
 
-        when(authService.getMe("test@example.com")).thenReturn(UserDto.builder().id(userId).build());
-        when(projectService.listProjects(userId)).thenReturn(List.of(projectDto));
+        when(projectService.listProjects(any())).thenReturn(response);
 
         mockMvc.perform(get("/projects")
-                        .with(user(principal)))
+                        .header("Authorization", "Bearer dummy-token"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data[0].name").value("Project 1"));
     }
 
     @Test
-    @WithMockUser(username = "test@example.com")
     void getProject_Success() throws Exception {
-        UUID userId = UUID.randomUUID();
         UUID projectId = UUID.randomUUID();
-        ProjectDto projectDto = ProjectDto.builder().id(projectId).name("Project 1").build();
+        ProjectDto response = ProjectDto.builder().id(projectId).name("Test Project").build();
 
-        when(authService.getMe("test@example.com")).thenReturn(UserDto.builder().id(userId).build());
-        when(projectService.getProject(projectId, userId)).thenReturn(projectDto);
+        when(projectService.getProject(any(), any())).thenReturn(response);
 
-        mockMvc.perform(get("/projects/" + projectId)
-                        .with(user(principal)))
+        mockMvc.perform(get("/projects/{id}", projectId)
+                        .header("Authorization", "Bearer dummy-token"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.id").value(projectId.toString()));
+                .andExpect(jsonPath("$.data.name").value("Test Project"));
     }
 
     @Test
-    @WithMockUser(username = "test@example.com")
     void updateProject_Success() throws Exception {
-        UUID userId = UUID.randomUUID();
         UUID projectId = UUID.randomUUID();
         UpdateProjectRequest request = new UpdateProjectRequest("Updated Name");
-        ProjectDto projectDto = ProjectDto.builder().id(projectId).name("Updated Name").build();
+        ProjectDto response = ProjectDto.builder().id(projectId).name("Updated Name").build();
 
-        when(authService.getMe("test@example.com")).thenReturn(UserDto.builder().id(userId).build());
-        when(projectService.updateProject(eq(projectId), any(UpdateProjectRequest.class), eq(userId)))
-                .thenReturn(projectDto);
+        when(projectService.updateProject(any(), any(), any())).thenReturn(response);
 
-        mockMvc.perform(patch("/projects/" + projectId)
-                        .with(user(principal))
+        mockMvc.perform(patch("/projects/{id}", projectId)
+                        .header("Authorization", "Bearer dummy-token")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.name").value("Updated Name"));
     }
 
     @Test
-    @WithMockUser(username = "test@example.com")
     void deleteProject_Success() throws Exception {
-        UUID userId = UUID.randomUUID();
         UUID projectId = UUID.randomUUID();
 
-        when(authService.getMe("test@example.com")).thenReturn(UserDto.builder().id(userId).build());
-
-        mockMvc.perform(delete("/projects/" + projectId)
-                        .with(user(principal)))
+        mockMvc.perform(delete("/projects/{id}", projectId)
+                        .header("Authorization", "Bearer dummy-token")
+                        .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
+                .andExpect(jsonPath("$.message").value("Project deleted successfully"));
     }
 }

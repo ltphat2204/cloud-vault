@@ -1,10 +1,9 @@
 package ltphat.cloudvault.backend;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import ltphat.cloudvault.backend.shared.AbstractIntegrationTest;
 
-@SpringBootTest
-class BackendApplicationTests {
+class BackendApplicationTests extends AbstractIntegrationTest {
 
 	@Test
 	void contextLoads() {
