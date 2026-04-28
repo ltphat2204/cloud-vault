@@ -61,6 +61,11 @@ public class File {
         return this.deletedAt != null;
     }
 
+    public void restore() {
+        this.deletedAt = null;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void updateVersion(UUID versionId, Integer versionNumber, String minioKey, Long size, String mimeType) {
         this.currentVersionId = versionId;
         this.versionNumber = versionNumber;

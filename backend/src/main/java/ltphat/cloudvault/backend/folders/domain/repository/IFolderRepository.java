@@ -12,4 +12,6 @@ public interface IFolderRepository {
     List<Folder> findByProjectIdAndParentFolderId(UUID projectId, UUID parentFolderId);
     boolean existsByNameAndParentFolderIdAndProjectId(String name, UUID parentFolderId, UUID projectId);
     List<Folder> findAllSubfolders(UUID parentFolderId);
+    List<Folder> findAllDeletedByOwnerId(UUID ownerId);
+    void hardDelete(UUID id);
 }

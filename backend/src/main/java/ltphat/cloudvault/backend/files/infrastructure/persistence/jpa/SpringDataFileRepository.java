@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface SpringDataFileRepository extends JpaRepository<JpaFile, UUID> {
     List<JpaFile> findByProjectIdAndFolderId(UUID projectId, UUID folderId);
     boolean existsByNameAndFolderIdAndProjectId(String name, UUID folderId, UUID projectId);
+    List<JpaFile> findByOwnerIdAndDeletedAtIsNotNull(UUID ownerId);
+    List<JpaFile> findByFolderId(UUID folderId);
 }

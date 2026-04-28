@@ -51,4 +51,9 @@ public class Folder {
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
+
+    public void restore() {
+        this.deletedAt = null;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

@@ -13,12 +13,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public abstract class AbstractIntegrationTest {
 
     @Container
+    @SuppressWarnings("resource")
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("cloud_vault_test")
             .withUsername("test")
             .withPassword("test");
 
     @Container
+    @SuppressWarnings("resource")
     static MinIOContainer minio = new MinIOContainer("minio/minio:latest");
 
     @DynamicPropertySource
