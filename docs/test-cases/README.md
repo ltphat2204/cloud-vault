@@ -7,6 +7,7 @@ This directory contains detailed test cases for the CloudVault system, organized
 - **[01-IAM](01-iam.md)**: Authentication, registration, token management, and security context.
 - **[02-Projects](02-projects.md)**: Project lifecycle, ownership enforcement, and soft deletion.
 - **[03-Folders](03-folders.md)**: Hierarchical organization, folder movement, circular reference validation, and recursive deletion.
+- **[04-Files](04-files.md)**: File metadata management, versioning, movement, and soft deletion.
 
 ## Test Strategy
 

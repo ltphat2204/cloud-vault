@@ -33,6 +33,9 @@ class ProjectServiceImplTest {
     @Mock
     private ProjectApplicationMapper projectApplicationMapper;
 
+    @Mock
+    private ltphat.cloudvault.backend.folders.application.service.IFolderService folderService;
+
     @InjectMocks
     private ProjectServiceImpl projectService;
 
@@ -41,16 +44,23 @@ class ProjectServiceImplTest {
         UUID ownerId = UUID.randomUUID();
         CreateProjectRequest request = new CreateProjectRequest("Test Project");
         Project project = Project.createNew("Test Project", ownerId);
+        project = Project.builder()
+                .id(UUID.randomUUID())
+                .name("Test Project")
+                .ownerId(ownerId)
+                .build();
         ProjectDto projectDto = ProjectDto.builder().name("Test Project").ownerId(ownerId).build();
 
         when(projectRepository.save(any(Project.class))).thenReturn(project);
         when(projectApplicationMapper.toDto(any(Project.class))).thenReturn(projectDto);
+        when(folderService.createFolder(any(), any())).thenReturn(null);
 
         ProjectDto result = projectService.createProject(request, ownerId);
 
         assertThat(result.getName()).isEqualTo("Test Project");
         assertThat(result.getOwnerId()).isEqualTo(ownerId);
         verify(projectRepository).save(any(Project.class));
+        verify(folderService).createFolder(argThat(req -> req.getName().equals("Root")), eq(ownerId));
     }
 
     @Test
