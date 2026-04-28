@@ -10,6 +10,7 @@ import ltphat.cloudvault.backend.projects.application.dto.ProjectDto;
 import ltphat.cloudvault.backend.projects.application.dto.UpdateProjectRequest;
 import ltphat.cloudvault.backend.projects.application.service.IProjectService;
 import ltphat.cloudvault.backend.shared.dto.ApiResponse;
+import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,22 +21,20 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/projects")
+@RequestMapping("/projects")
 @RequiredArgsConstructor
 @Tag(name = "Projects", description = "Project management APIs")
 public class ProjectController {
 
     private final IProjectService projectService;
-    private final IAuthService authService;
 
     @PostMapping
     @Operation(summary = "Create project", description = "Creates a new project for the authenticated user")
     public ResponseEntity<ApiResponse<ProjectDto>> createProject(
             @RequestBody CreateProjectRequest request,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        UUID ownerId = getCurrentUserId(userDetails);
-        ProjectDto project = projectService.createProject(request, ownerId);
+        ProjectDto project = projectService.createProject(request, principal.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(project, "Project created successfully"));
     }
@@ -43,10 +42,9 @@ public class ProjectController {
     @GetMapping
     @Operation(summary = "List projects", description = "Retrieves all projects owned by the authenticated user")
     public ResponseEntity<ApiResponse<List<ProjectDto>>> listProjects(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        UUID ownerId = getCurrentUserId(userDetails);
-        List<ProjectDto> projects = projectService.listProjects(ownerId);
+        List<ProjectDto> projects = projectService.listProjects(principal.getId());
         return ResponseEntity.ok(ApiResponse.success(projects));
     }
 
@@ -54,10 +52,9 @@ public class ProjectController {
     @Operation(summary = "Get project details", description = "Retrieves metadata for a specific project")
     public ResponseEntity<ApiResponse<ProjectDto>> getProject(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        UUID ownerId = getCurrentUserId(userDetails);
-        ProjectDto project = projectService.getProject(id, ownerId);
+        ProjectDto project = projectService.getProject(id, principal.getId());
         return ResponseEntity.ok(ApiResponse.success(project));
     }
 
@@ -66,10 +63,9 @@ public class ProjectController {
     public ResponseEntity<ApiResponse<ProjectDto>> updateProject(
             @PathVariable UUID id,
             @RequestBody UpdateProjectRequest request,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        UUID ownerId = getCurrentUserId(userDetails);
-        ProjectDto project = projectService.updateProject(id, request, ownerId);
+        ProjectDto project = projectService.updateProject(id, request, principal.getId());
         return ResponseEntity.ok(ApiResponse.success(project, "Project updated successfully"));
     }
 
@@ -77,15 +73,10 @@ public class ProjectController {
     @Operation(summary = "Delete project", description = "Permanently deletes a project and its associated resources")
     public ResponseEntity<ApiResponse<Void>> deleteProject(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        UUID ownerId = getCurrentUserId(userDetails);
-        projectService.deleteProject(id, ownerId);
+        projectService.deleteProject(id, principal.getId());
         return ResponseEntity.ok(ApiResponse.success(null, "Project deleted successfully"));
     }
 
-    private UUID getCurrentUserId(UserDetails userDetails) {
-        UserDto user = authService.getMe(userDetails.getUsername());
-        return user.getId();
-    }
 }
