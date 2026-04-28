@@ -67,4 +67,29 @@ class TrashIntegrationTest extends AbstractIntegrationTest {
         trashItems = trashService.listTrash(ownerId);
         assertThat(trashItems).isEmpty();
     }
+
+    @Test
+    void testProjectRestorationFlow() {
+        UUID ownerId = UUID.randomUUID();
+        Project project = projectRepository.save(Project.createNew("Restorable Project", ownerId));
+        UUID projectId = project.getId();
+
+        // 1. Soft delete the project
+        project.softDelete();
+        projectRepository.save(project);
+
+        // 2. Verify project in trash
+        List<TrashItemDto> trashItems = trashService.listTrash(ownerId);
+        assertThat(trashItems).anyMatch(item -> item.getId().equals(projectId) && item.getType().equals("PROJECT"));
+
+        // 3. Restore the project
+        trashService.restoreItems(List.of(projectId), ownerId);
+
+        // 4. Verify project is restored
+        Project restored = projectRepository.findById(projectId).orElseThrow();
+        assertThat(restored.isDeleted()).isFalse();
+        
+        trashItems = trashService.listTrash(ownerId);
+        assertThat(trashItems.stream().noneMatch(item -> item.getId().equals(projectId))).isTrue();
+    }
 }

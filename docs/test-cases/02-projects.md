@@ -12,20 +12,20 @@ These test cases verify the Projects module, focusing on CRUD operations, owners
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
-| 1 | Submit valid `name` in request body. | 201 Created; Project record saved; Root folder "Root" created for the project. |
+| 1 | Submit valid `name` in request body. | 201 Created; Project record saved; Root folder created with same name as the project. |
 | 2 | Submit with empty or null `name`. | 400 Bad Request; Validation error message. |
 | 3 | Submit without authentication. | 401 Unauthorized. |
 
 ---
 
 ### TC-PROJ-07: Root Folder Initialization
-**Description:** Verify that a root folder named "Root" is automatically created upon project creation.
+**Description:** Verify that a root folder named after the project is automatically created upon project creation.
 **Endpoints:** `POST /api/v1/projects`
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
 | 1 | Create a new project. | 201 Created. |
-| 2 | Verify in database/service that a folder exists with name "Root", `projectId` matching new project, and `parentFolderId` is NULL. | Root folder successfully initialized. |
+| 2 | Verify in database/service that a folder exists with the same name as the project, `projectId` matching new project, and `parentFolderId` is NULL. | Root folder successfully initialized. |
 
 ---
 

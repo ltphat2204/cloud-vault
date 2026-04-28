@@ -55,3 +55,34 @@
     - HTTP 200 OK.
     - `GET /api/v1/trash` returns empty list.
     - All items are restored to their locations (or root if parent is missing).
+
+---
+
+## TC-TRASH-08: Batch Restore
+- **Preconditions**: User has 5 items in trash.
+- **Action**: Call `POST /api/v1/trash/restore/batch` with a list of 3 IDs.
+- **Expected Result**:
+    - HTTP 200 OK.
+    - The 3 specified items are restored.
+    - The other 2 items remain in trash.
+
+---
+
+## TC-TRASH-09: Batch Permanent Delete
+- **Preconditions**: User has 5 items in trash.
+- **Action**: Call `DELETE /api/v1/trash/batch` with a list of 3 IDs.
+- **Expected Result**:
+    - HTTP 204 No Content.
+    - The 3 specified items are permanently deleted.
+    - The other 2 items remain in trash.
+
+---
+
+## TC-TRASH-10: Restore Project
+- **Preconditions**: A project (including its root folder and contents) was soft-deleted.
+- **Action**: Call `POST /api/v1/trash/restore` with the project ID.
+- **Expected Result**:
+    - HTTP 200 OK.
+    - Project `deletedAt` is null.
+    - Project appears in project list.
+    - All folders and files within the project that were deleted with it are also restored (recursive restoration).

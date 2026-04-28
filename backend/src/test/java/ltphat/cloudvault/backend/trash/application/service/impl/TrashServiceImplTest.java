@@ -6,6 +6,8 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileVersionRepository;
 import ltphat.cloudvault.backend.files.application.service.IStorageService;
 import ltphat.cloudvault.backend.folders.domain.model.Folder;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
+import ltphat.cloudvault.backend.projects.domain.model.Project;
+import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.trash.application.mapper.TrashApplicationMapper;
 import ltphat.cloudvault.backend.trash.domain.repository.ITrashRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +32,7 @@ class TrashServiceImplTest {
     @Mock private IFileRepository fileRepository;
     @Mock private IFileVersionRepository fileVersionRepository;
     @Mock private IFolderRepository folderRepository;
+    @Mock private IProjectRepository projectRepository;
     @Mock private IStorageService storageService;
     @Mock private TrashApplicationMapper trashMapper;
 
@@ -101,5 +104,21 @@ class TrashServiceImplTest {
         trashService.deleteItemsPermanently(List.of(fileId), ownerId);
 
         verify(fileRepository).hardDelete(fileId);
+    }
+
+    @Test
+    void restoreItems_ShouldRestoreProject() {
+        UUID projectId = UUID.randomUUID();
+        Project project = Project.builder()
+                .id(projectId)
+                .ownerId(ownerId)
+                .deletedAt(LocalDateTime.now())
+                .build();
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        trashService.restoreItems(List.of(projectId), ownerId);
+
+        verify(projectRepository).save(argThat(p -> !p.isDeleted()));
     }
 }

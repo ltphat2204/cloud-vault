@@ -1,13 +1,16 @@
 package ltphat.cloudvault.backend.files.application.service.impl;
 
 import ltphat.cloudvault.backend.files.application.dto.FileDto;
+import ltphat.cloudvault.backend.files.application.dto.FileVersionDto;
 import ltphat.cloudvault.backend.files.application.dto.MoveFileRequest;
 import ltphat.cloudvault.backend.files.application.dto.UpdateFileRequest;
 import ltphat.cloudvault.backend.files.application.mapper.FileApplicationMapper;
+import ltphat.cloudvault.backend.files.application.service.IStorageService;
 import ltphat.cloudvault.backend.files.domain.exception.FileException;
-import ltphat.cloudvault.backend.files.domain.exception.FileNotFoundException;
 import ltphat.cloudvault.backend.files.domain.model.File;
+import ltphat.cloudvault.backend.files.domain.model.FileVersion;
 import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
+import ltphat.cloudvault.backend.files.domain.repository.IFileVersionRepository;
 import ltphat.cloudvault.backend.folders.domain.model.Folder;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +38,12 @@ class FileServiceImplTest {
 
     @Mock
     private IFolderRepository folderRepository;
+
+    @Mock
+    private IFileVersionRepository fileVersionRepository;
+
+    @Mock
+    private IStorageService storageService;
 
     @Spy
     private FileApplicationMapper fileApplicationMapper;
@@ -115,5 +124,64 @@ class FileServiceImplTest {
 
         assertThat(file.isDeleted()).isTrue();
         verify(fileRepository).save(file);
+    }
+
+    @Test
+    void uploadFile_Success() {
+        // Arrange
+        String name = "test.txt";
+        String contentType = "text/plain";
+        long size = 123L;
+        java.io.InputStream inputStream = new java.io.ByteArrayInputStream("hello".getBytes());
+
+        when(fileRepository.findByProjectIdAndFolderId(projectId, null)).thenReturn(java.util.List.of());
+        when(fileRepository.save(any(File.class))).thenAnswer(inv -> {
+            File f = inv.getArgument(0);
+            if (f.getId() == null) {
+                org.springframework.test.util.ReflectionTestUtils.setField(f, "id", fileId);
+            }
+            return f;
+        });
+        when(fileVersionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act
+        FileDto result = fileService.uploadFile(projectId, null, name, contentType, size, inputStream, ownerId);
+
+        // Assert
+        assertThat(result.getName()).isEqualTo(name);
+        assertThat(result.getVersionNumber()).isEqualTo(1);
+        verify(storageService).upload(anyString(), eq(inputStream), eq(contentType));
+        verify(fileRepository, atLeastOnce()).save(any(File.class));
+        verify(fileVersionRepository).save(any());
+    }
+
+    @Test
+    void downloadFile_Success() {
+        // Arrange
+        java.io.InputStream inputStream = new java.io.ByteArrayInputStream("hello".getBytes());
+        file.setMinioKey("some-key");
+        when(fileRepository.findById(fileId)).thenReturn(Optional.of(file));
+        when(storageService.download("some-key")).thenReturn(inputStream);
+
+        // Act
+        java.io.InputStream result = fileService.downloadFile(fileId, null, ownerId);
+
+        // Assert
+        assertThat(result).isEqualTo(inputStream);
+    }
+
+    @Test
+    void getFileVersions_Success() {
+        // Arrange
+        FileVersion version = FileVersion.builder().id(UUID.randomUUID()).fileId(fileId).versionNumber(1).build();
+        when(fileRepository.findById(fileId)).thenReturn(Optional.of(file));
+        when(fileVersionRepository.findByFileId(fileId)).thenReturn(java.util.List.of(version));
+
+        // Act
+        java.util.List<FileVersionDto> result = fileService.getFileVersions(fileId, ownerId);
+
+        // Assert
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getVersionNumber()).isEqualTo(1);
     }
 }
