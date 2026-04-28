@@ -3,6 +3,7 @@ import {
   Scripts,
   createRootRouteWithContext,
   useRouterState,
+  useRouteContext,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -14,6 +15,7 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
 
+import { QueryClientProvider } from '@tanstack/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 
 interface MyRouterContext {
@@ -49,6 +51,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootDocument({ children }: { children: React.ReactNode }) {
   const routerState = useRouterState()
   const isDashboard = routerState.location.pathname.startsWith('/dashboard')
+  const { queryClient } = useRouteContext({ from: '__root__' })
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -57,11 +60,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
-        <AuthProvider>
-          {!isDashboard && <Header />}
-          {children}
-          {!isDashboard && <Footer />}
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            {!isDashboard && <Header />}
+            {children}
+            {!isDashboard && <Footer />}
+          </AuthProvider>
+        </QueryClientProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',

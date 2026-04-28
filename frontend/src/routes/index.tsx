@@ -13,22 +13,35 @@ function LandingPage() {
       <section className="island-shell rise-in relative overflow-hidden rounded-[2.5rem] px-6 py-16 text-center sm:px-12 sm:py-24">
         <div className="pointer-events-none absolute -left-20 -top-24 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.4),transparent_70%)]" />
         <div className="pointer-events-none absolute -bottom-24 -right-20 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.25),transparent_70%)]" />
-        
+
         <div className="relative z-10 mx-auto max-w-3xl">
           <p className="island-kicker mb-4">Secure Cloud Storage</p>
           <h1 className="display-title mb-6 text-5xl leading-[1.1] font-extrabold tracking-tight text-[var(--sea-ink)] sm:text-7xl">
-            CloudVault: Your Data, <span className="text-[var(--lagoon-deep)]">Fortified.</span>
+            CloudVault: Your Data,{' '}
+            <span className="text-[var(--lagoon-deep)]">Fortified.</span>
           </h1>
           <p className="mb-10 text-lg leading-relaxed text-[var(--sea-ink-soft)] sm:text-xl">
-            Experience the next generation of file storage. Encrypted, distributed, and blazingly fast. 
-            Keep your digital life safe in the vault.
+            Experience the next generation of file storage. Encrypted,
+            distributed, and blazingly fast. Keep your digital life safe in the
+            vault.
           </p>
-          
+
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button asChild size="lg" className="h-12 rounded-full px-8 text-base font-bold shadow-lg transition-all hover:scale-105 active:scale-95">
-              <Link transition-all duration-300 ease-in-out to="/register">Get Started Free</Link>
+            <Button
+              asChild
+              size="lg"
+              className="h-12 rounded-full px-8 text-base font-bold shadow-lg transition-all hover:scale-105 active:scale-95"
+            >
+              <Link transition-all duration-300 ease-in-out to="/register">
+                Get Started Free
+              </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="h-12 rounded-full border-2 px-8 text-base font-bold transition-all hover:bg-[var(--lagoon)]/10 hover:scale-105 active:scale-95">
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-12 rounded-full border-2 px-8 text-base font-bold transition-all hover:bg-[var(--lagoon)]/10 hover:scale-105 active:scale-95"
+            >
               <Link to="/login">Sign In</Link>
             </Button>
           </div>
@@ -78,7 +91,10 @@ function LandingPage() {
       </section>
 
       {/* Footer Quote */}
-      <section className="rise-in mt-20 text-center" style={{ animationDelay: '600ms' }}>
+      <section
+        className="rise-in mt-20 text-center"
+        style={{ animationDelay: '600ms' }}
+      >
         <p className="text-sm font-medium tracking-widest text-[var(--sea-ink-soft)] uppercase">
           Trusted by over 10,000+ privacy enthusiasts
         </p>

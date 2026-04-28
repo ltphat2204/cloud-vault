@@ -24,10 +24,12 @@ function RegisterPage() {
     setError(null)
 
     try {
-      await api.post('/auth/register', { email, name: fullName, password })
+      await api.post('auth/register', { email, name: fullName, password })
       navigate({ to: '/login' })
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.')
+      setError(
+        err.response?.data?.message || 'Registration failed. Please try again.',
+      )
     } finally {
       setIsLoading(false)
     }
@@ -40,8 +42,12 @@ function RegisterPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--lagoon)]/10 text-[var(--lagoon-deep)]">
             <Shield size={28} />
           </div>
-          <h1 className="display-title text-3xl font-bold text-[var(--sea-ink)]">Join CloudVault</h1>
-          <p className="mt-2 text-[var(--sea-ink-soft)]">Create your account to start securing your files</p>
+          <h1 className="display-title text-3xl font-bold text-[var(--sea-ink)]">
+            Join CloudVault
+          </h1>
+          <p className="mt-2 text-[var(--sea-ink-soft)]">
+            Create your account to start securing your files
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -89,14 +95,23 @@ function RegisterPage() {
             </div>
           )}
 
-          <Button type="submit" className="w-full h-11 rounded-xl font-bold shadow-md" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full h-11 rounded-xl font-bold shadow-md"
+            disabled={isLoading}
+          >
             {isLoading ? 'Creating account...' : 'Create Account'}
           </Button>
         </form>
 
         <div className="mt-8 text-center text-sm">
-          <span className="text-[var(--sea-ink-soft)]">Already have an account? </span>
-          <Link to="/login" className="font-bold text-[var(--lagoon-deep)] hover:underline">
+          <span className="text-[var(--sea-ink-soft)]">
+            Already have an account?{' '}
+          </span>
+          <Link
+            to="/login"
+            className="font-bold text-[var(--lagoon-deep)] hover:underline"
+          >
             Sign in instead
           </Link>
         </div>

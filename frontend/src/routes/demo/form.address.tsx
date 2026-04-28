@@ -24,11 +24,12 @@ function AddressForm() {
       onBlur: ({ value }) => {
         const errors = {
           fields: {},
-        } as {
-          fields: Record<string, string>
         }
-        if (value.fullName.trim().length === 0) {
-          errors.fields.fullName = 'Full name is required'
+        if (!value.fullName) {
+          errors.fields = {
+            ...errors.fields,
+            fullName: 'Full name is required',
+          }
         }
         return errors
       },

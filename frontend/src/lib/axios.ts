@@ -1,16 +1,15 @@
 import axios from 'axios'
 import { getDeviceId } from './device'
 
-const isServer = typeof window === 'undefined'
 const api = axios.create({
-  baseURL: isServer ? (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1') : '/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8080/api/v1/',
   withCredentials: true, // For cookies (Refresh Token)
 })
 
 api.interceptors.request.use(async (config) => {
   const deviceId = await getDeviceId()
   config.headers['X-Device-Id'] = deviceId.trim()
-  
+
   const token = localStorage.getItem('access_token')
   if (token && token !== 'undefined' && token !== 'null') {
     config.headers.Authorization = `Bearer ${token.trim()}`
@@ -22,10 +21,14 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
-    if (error.response?.status === 401 && !originalRequest._retry && typeof window !== 'undefined') {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      typeof window !== 'undefined'
+    ) {
       originalRequest._retry = true
       try {
-        const response = await api.post('/auth/refresh')
+        const response = await api.post('auth/refresh')
         const { accessToken } = response.data.data
         if (accessToken && accessToken !== 'undefined') {
           const trimmedToken = accessToken.trim()
@@ -41,7 +44,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error)
-  }
+  },
 )
 
 export default api
