@@ -185,6 +185,13 @@
 							<goal>compile</goal>
 						</goals>
 						<configuration>
+							<showWarnings>true</showWarnings>
+							<showDeprecation>true</showDeprecation>
+							<compilerArgs>
+								<arg>-Xlint:all</arg>
+								<arg>-Xlint:-processing</arg>
+								<arg>-Xlint:-classfile</arg>
+							</compilerArgs>
 							<annotationProcessorPaths>
 								<path>
 									<groupId>org.projectlombok</groupId>
@@ -211,6 +218,13 @@
 							<goal>testCompile</goal>
 						</goals>
 						<configuration>
+							<showWarnings>true</showWarnings>
+							<showDeprecation>true</showDeprecation>
+							<compilerArgs>
+								<arg>-Xlint:all</arg>
+								<arg>-Xlint:-processing</arg>
+								<arg>-Xlint:-classfile</arg>
+							</compilerArgs>
 							<annotationProcessorPaths>
 								<path>
 									<groupId>org.projectlombok</groupId>
