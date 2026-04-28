@@ -11,6 +11,7 @@ import java.util.UUID;
 @Repository
 public interface SpringDataFolderRepository extends JpaRepository<JpaFolder, UUID> {
     List<JpaFolder> findByProjectIdAndParentFolderId(UUID projectId, UUID parentFolderId);
+    List<JpaFolder> findByProjectId(UUID projectId);
     
     boolean existsByNameAndParentFolderIdAndProjectId(String name, UUID parentFolderId, UUID projectId);
 

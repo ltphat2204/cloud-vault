@@ -15,4 +15,6 @@ public interface IFolderService {
     FolderDto updateFolder(UUID id, UpdateFolderRequest request, UUID ownerId);
     FolderDto moveFolder(UUID id, MoveFolderRequest request, UUID ownerId);
     void deleteFolder(UUID id, UUID ownerId);
+    List<FolderDto> getFolderPath(UUID id, UUID ownerId);
+    List<FolderDto> listAllFolders(UUID projectId, UUID ownerId);
 }
