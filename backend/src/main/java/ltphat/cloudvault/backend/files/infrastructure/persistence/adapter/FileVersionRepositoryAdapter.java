@@ -45,4 +45,9 @@ public class FileVersionRepositoryAdapter implements IFileVersionRepository {
         return springDataFileVersionRepository.findByFileIdAndVersionNumber(fileId, versionNumber)
                 .map(filePersistenceMapper::toDomain);
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        springDataFileVersionRepository.deleteById(id);
+    }
 }

@@ -11,4 +11,7 @@ public interface IFileRepository {
     Optional<File> findById(UUID id);
     List<File> findByProjectIdAndFolderId(UUID projectId, UUID folderId);
     boolean existsByNameAndFolderIdAndProjectId(String name, UUID folderId, UUID projectId);
+    List<File> findAllDeletedByOwnerId(UUID ownerId);
+    void hardDelete(UUID id);
+    List<File> findByFolderId(UUID folderId);
 }

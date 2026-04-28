@@ -44,4 +44,23 @@ public class FileRepositoryAdapter implements IFileRepository {
     public boolean existsByNameAndFolderIdAndProjectId(String name, UUID folderId, UUID projectId) {
         return springDataFileRepository.existsByNameAndFolderIdAndProjectId(name, folderId, projectId);
     }
+
+    @Override
+    public List<File> findAllDeletedByOwnerId(UUID ownerId) {
+        return springDataFileRepository.findByOwnerIdAndDeletedAtIsNotNull(ownerId).stream()
+                .map(filePersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void hardDelete(UUID id) {
+        springDataFileRepository.deleteById(id);
+    }
+
+    @Override
+    public List<File> findByFolderId(UUID folderId) {
+        return springDataFileRepository.findByFolderId(folderId).stream()
+                .map(filePersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }

@@ -51,4 +51,16 @@ public class FolderRepositoryAdapter implements IFolderRepository {
                 .map(folderPersistenceMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Folder> findAllDeletedByOwnerId(UUID ownerId) {
+        return springDataFolderRepository.findByOwnerIdAndDeletedAtIsNotNull(ownerId).stream()
+                .map(folderPersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void hardDelete(UUID id) {
+        springDataFolderRepository.deleteById(id);
+    }
 }

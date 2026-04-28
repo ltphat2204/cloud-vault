@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class FolderServiceImpl implements IFolderService {
 
     private final IFolderRepository folderRepository;
+    private final ltphat.cloudvault.backend.files.domain.repository.IFileRepository fileRepository;
     private final IProjectRepository projectRepository;
     private final FolderApplicationMapper folderApplicationMapper;
 
@@ -150,14 +151,20 @@ public class FolderServiceImpl implements IFolderService {
             throw new AccessDeniedException("Access denied");
         }
 
-        // Recursive soft delete
-        List<Folder> subfolders = folderRepository.findAllSubfolders(id);
-        for (Folder sub : subfolders) {
-            sub.softDelete();
-            folderRepository.save(sub);
-        }
+        // Recursive soft delete for subfolders
+        List<Folder> descendants = folderRepository.findAllSubfolders(id);
+        descendants.add(folder); // Include the folder itself
 
-        folder.softDelete();
-        folderRepository.save(folder);
+        for (Folder f : descendants) {
+            // Soft delete files in this folder
+            List<ltphat.cloudvault.backend.files.domain.model.File> files = fileRepository.findByFolderId(f.getId());
+            for (ltphat.cloudvault.backend.files.domain.model.File file : files) {
+                file.softDelete();
+                fileRepository.save(file);
+            }
+            
+            f.softDelete();
+            folderRepository.save(f);
+        }
     }
 }

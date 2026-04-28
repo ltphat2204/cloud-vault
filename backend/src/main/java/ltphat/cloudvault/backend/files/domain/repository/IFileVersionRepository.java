@@ -11,4 +11,5 @@ public interface IFileVersionRepository {
     Optional<FileVersion> findById(UUID id);
     List<FileVersion> findByFileId(UUID fileId);
     Optional<FileVersion> findByFileIdAndVersionNumber(UUID fileId, Integer versionNumber);
+    void deleteById(UUID id);
 }
