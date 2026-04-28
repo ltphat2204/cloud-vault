@@ -35,3 +35,5 @@ Every API response follows this schema:
 | --- | --- | --- |
 | **IAM** | Identity and Access Management (Auth) | [iam.md](./iam.md) |
 | **Projects** | Project Management | [projects.md](./projects.md) |
+| **Folders** | Folder Hierarchy Management | [folders.md](./folders.md) |
+| **Files** | File and Version Management | [files.md](./files.md) |

@@ -1,0 +1,158 @@
+package ltphat.cloudvault.backend.files.presentation.controller;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import ltphat.cloudvault.backend.files.application.dto.FileDto;
+import ltphat.cloudvault.backend.files.application.dto.MoveFileRequest;
+import ltphat.cloudvault.backend.files.application.dto.UpdateFileRequest;
+import ltphat.cloudvault.backend.files.application.dto.FileVersionDto;
+import ltphat.cloudvault.backend.files.application.service.IFileService;
+import ltphat.cloudvault.backend.iam.application.dto.UserDto;
+import ltphat.cloudvault.backend.iam.application.service.IAuthService;
+import ltphat.cloudvault.backend.shared.dto.ApiResponse;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/v1/files")
+@RequiredArgsConstructor
+@Tag(name = "Files", description = "File management APIs")
+public class FileController {
+
+    private final IFileService fileService;
+    private final IAuthService authService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<FileDto>> getFile(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID ownerId = getCurrentUserId(userDetails);
+        FileDto file = fileService.getFile(id, ownerId);
+        return ResponseEntity.ok(ApiResponse.success(file));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<FileDto>>> listFiles(
+            @RequestParam UUID projectId,
+            @RequestParam(required = false) UUID folderId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID ownerId = getCurrentUserId(userDetails);
+        List<FileDto> files = fileService.listFiles(projectId, folderId, ownerId);
+        return ResponseEntity.ok(ApiResponse.success(files));
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<FileDto>> uploadFile(
+            @RequestParam UUID projectId,
+            @RequestParam(required = false) UUID folderId,
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) throws IOException {
+        UUID ownerId = getCurrentUserId(userDetails);
+        FileDto savedFile = fileService.uploadFile(
+                projectId,
+                folderId,
+                file.getOriginalFilename(),
+                file.getContentType(),
+                file.getSize(),
+                file.getInputStream(),
+                ownerId
+        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(savedFile, "File uploaded successfully"));
+    }
+
+    @GetMapping("/{id}/download")
+    public ResponseEntity<Resource> downloadFile(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID ownerId = getCurrentUserId(userDetails);
+        FileDto fileDto = fileService.getFile(id, ownerId);
+        java.io.InputStream inputStream = fileService.downloadFile(id, null, ownerId);
+        
+        Resource resource = new InputStreamResource(inputStream);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(fileDto.getMimeType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDto.getName() + "\"")
+                .body(resource);
+    }
+
+    @GetMapping("/{id}/versions")
+    public ResponseEntity<ApiResponse<List<FileVersionDto>>> getVersions(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID ownerId = getCurrentUserId(userDetails);
+        List<FileVersionDto> versions = fileService.getFileVersions(id, ownerId);
+        return ResponseEntity.ok(ApiResponse.success(versions));
+    }
+
+    @GetMapping("/{id}/versions/{versionNumber}/download")
+    public ResponseEntity<Resource> downloadVersion(
+            @PathVariable UUID id,
+            @PathVariable Integer versionNumber,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID ownerId = getCurrentUserId(userDetails);
+        FileDto fileDto = fileService.getFile(id, ownerId);
+        java.io.InputStream inputStream = fileService.downloadFile(id, versionNumber, ownerId);
+        
+        Resource resource = new InputStreamResource(inputStream);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(fileDto.getMimeType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDto.getName() + "\"")
+                .body(resource);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<FileDto>> updateFileMetadata(
+            @PathVariable UUID id,
+            @RequestBody UpdateFileRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID ownerId = getCurrentUserId(userDetails);
+        FileDto file = fileService.updateFileMetadata(id, request, ownerId);
+        return ResponseEntity.ok(ApiResponse.success(file, "File metadata updated successfully"));
+    }
+
+    @PutMapping("/{id}/move")
+    public ResponseEntity<ApiResponse<FileDto>> moveFile(
+            @PathVariable UUID id,
+            @RequestBody MoveFileRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID ownerId = getCurrentUserId(userDetails);
+        FileDto file = fileService.moveFile(id, request, ownerId);
+        return ResponseEntity.ok(ApiResponse.success(file, "File moved successfully"));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteFile(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID ownerId = getCurrentUserId(userDetails);
+        fileService.deleteFile(id, ownerId);
+        return ResponseEntity.ok(ApiResponse.success(null, "File deleted successfully"));
+    }
+
+    private UUID getCurrentUserId(UserDetails userDetails) {
+        UserDto user = authService.getMe(userDetails.getUsername());
+        return user.getId();
+    }
+}
