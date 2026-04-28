@@ -8,6 +8,7 @@ This directory contains detailed test cases for the CloudVault system, organized
 - **[02-Projects](02-projects.md)**: Project lifecycle, ownership enforcement, and soft deletion.
 - **[03-Folders](03-folders.md)**: Hierarchical organization, folder movement, circular reference validation, and recursive deletion.
 - **[04-Files](04-files.md)**: File metadata management, versioning, movement, and soft deletion.
+- **[05-Trash](05-trash.md)**: Centralized management of deleted items, batch restoration, and permanent removal.
 
 ## Test Strategy
 

@@ -68,3 +68,27 @@ These test cases verify the Folders module, focusing on hierarchical CRUD operat
 | 1 | Call delete for a folder with subfolders. | 200 OK; Folder and all descendants marked with `deleted_at`. |
 | 2 | Attempt to get a subfolder of the deleted folder. | 404 Not Found. |
 | 3 | Verify records still exist in DB with `deleted_at` timestamp. | Data persistence maintained for recovery. |
+
+---
+
+### TC-FOLD-06: Fetch Breadcrumbs
+**Description:** Verify that the system can recursively fetch the folder hierarchy for navigation.
+**Endpoints:** `GET /api/v1/folders/{id}/breadcrumbs`
+**Headers:** `Authorization: Bearer <access_token>`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | Call endpoint for a folder nested 3 levels deep. | 200 OK; Returns list of 3 parent folders in correct order (Root -> Sub1 -> Sub2). |
+| 2 | Call endpoint for a root folder. | 200 OK; Returns single breadcrumb. |
+
+---
+
+### TC-FOLD-07: Project-wide Folder Listing
+**Description:** Verify retrieval of all folders within a project regardless of hierarchy.
+**Endpoints:** `GET /api/v1/folders/all?projectId={id}`
+**Headers:** `Authorization: Bearer <access_token>`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | Call endpoint for a project with multiple nested folders. | 200 OK; Returns flat list of all folders in the project. |
+| 2 | Verify that soft-deleted folders are excluded. | Deleted folders not in the list. |

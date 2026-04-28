@@ -60,7 +60,7 @@ class ProjectServiceImplTest {
         assertThat(result.getName()).isEqualTo("Test Project");
         assertThat(result.getOwnerId()).isEqualTo(ownerId);
         verify(projectRepository).save(any(Project.class));
-        verify(folderService).createFolder(argThat(req -> req.getName().equals("Root")), eq(ownerId));
+        verify(folderService).createFolder(argThat(req -> req.getName().equals("Test Project")), eq(ownerId));
     }
 
     @Test

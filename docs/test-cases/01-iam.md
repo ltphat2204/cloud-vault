@@ -78,3 +78,15 @@ These test cases verify the Identity and Access Management (IAM) module, focusin
 | :--- | :--- | :--- |
 | 1 | Call `GET /auth/me` (without `/api/v1`). | 404 Not Found. |
 | 2 | Call `GET /api/v1/auth/me`. | Correct endpoint resolution. |
+
+---
+
+### TC-IAM-07: Token Verification
+**Description:** Verify that the system can validate a JWT token without returning full user profile.
+**Endpoints:** `GET /api/v1/auth/verify`
+**Headers:** `Authorization: Bearer <access_token>`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | Call endpoint with a valid AT. | 200 OK; Returns boolean `valid: true`. |
+| 2 | Call endpoint with an invalid or expired AT. | 401 Unauthorized or 200 OK with `valid: false` (depending on implementation). |

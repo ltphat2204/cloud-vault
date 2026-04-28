@@ -71,11 +71,37 @@ These test cases verify the Files module, focusing on metadata CRUD, version man
 
 ---
 
-### TC-FILE-06: File Versioning (Conceptual)
-**Description:** Verify that new uploads create new versions and metadata reflects the latest state.
-*(Note: Full upload logic to be implemented)*
+### TC-FILE-06: File Versioning
+**Description:** Verify that uploading an existing file creates a new version and metadata reflects the latest state.
+**Endpoints:** `POST /api/v1/files/upload`, `GET /api/v1/files/{id}/versions`
+**Headers:** `Authorization: Bearer <access_token>`
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
-| 1 | Upload a file with the same name to the same location. | Metadata updated with incremented `version_number`. |
-| 2 | Retrieve file versions list. | Returns history of all uploaded versions. |
+| 1 | Upload a file with the same name to the same location. | 201 Created; Metadata updated with incremented `version_number`. |
+| 2 | Retrieve file versions list via `GET /api/v1/files/{id}/versions`. | 200 OK; Returns history of all uploaded versions. |
+| 3 | Download a specific old version. | 200 OK; Returns binary content of the specific version. |
+
+---
+
+### TC-FILE-07: File Upload
+**Description:** Verify binary file upload to a specific folder.
+**Endpoints:** `POST /api/v1/files/upload`
+**Headers:** `Authorization: Bearer <access_token>`, `Content-Type: multipart/form-data`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | Submit `file` (binary), `projectId`, and `folderId`. | 201 Created; File metadata saved; Content stored in MinIO. |
+| 2 | Submit without `file` part. | 400 Bad Request. |
+
+---
+
+### TC-FILE-08: File Download
+**Description:** Verify binary file retrieval.
+**Endpoints:** `GET /api/v1/files/{id}/download`
+**Headers:** `Authorization: Bearer <access_token>`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | Call download for a valid file ID. | 200 OK; Content-Type matches file MIME; Binary stream received. |
+| 2 | Call download for a soft-deleted file ID. | 404 Not Found. |

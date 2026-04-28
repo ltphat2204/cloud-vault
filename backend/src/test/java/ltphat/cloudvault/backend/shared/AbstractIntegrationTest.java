@@ -30,8 +30,8 @@ public abstract class AbstractIntegrationTest {
         registry.add("spring.datasource.password", postgres::getPassword);
 
         registry.add("minio.endpoint", minio::getS3URL);
-        registry.add("minio.access.key", minio::getUserName);
-        registry.add("minio.secret.key", minio::getPassword);
+        registry.add("minio.access-key", minio::getUserName);
+        registry.add("minio.secret-key", minio::getPassword);
         registry.add("minio.bucket", () -> "test-bucket");
     }
 }
