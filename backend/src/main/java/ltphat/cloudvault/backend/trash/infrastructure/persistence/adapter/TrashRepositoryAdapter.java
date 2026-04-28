@@ -5,6 +5,8 @@ import ltphat.cloudvault.backend.files.domain.model.File;
 import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.folders.domain.model.Folder;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
+import ltphat.cloudvault.backend.projects.domain.model.Project;
+import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.trash.domain.model.TrashItem;
 import ltphat.cloudvault.backend.trash.domain.repository.ITrashRepository;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ public class TrashRepositoryAdapter implements ITrashRepository {
 
     private final IFileRepository fileRepository;
     private final IFolderRepository folderRepository;
+    private final IProjectRepository projectRepository;
 
     @Override
     public List<TrashItem> findAllDeletedByOwnerId(UUID ownerId) {
@@ -44,9 +47,21 @@ public class TrashRepositoryAdapter implements ITrashRepository {
                         .id(folder.getId())
                         .name(folder.getName())
                         .type("FOLDER")
-                        .size(0L) // Folders don't have a direct size in this model
+                        .size(0L)
                         .deletedAt(folder.getDeletedAt())
                         .projectId(folder.getProjectId())
+                        .build())
+                .collect(Collectors.toList()));
+
+        List<Project> deletedProjects = projectRepository.findAllDeletedByOwnerId(ownerId);
+        trashItems.addAll(deletedProjects.stream()
+                .map(project -> TrashItem.builder()
+                        .id(project.getId())
+                        .name(project.getName())
+                        .type("PROJECT")
+                        .size(0L)
+                        .deletedAt(project.getDeletedAt())
+                        .projectId(project.getId())
                         .build())
                 .collect(Collectors.toList()));
 

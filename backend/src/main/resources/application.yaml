@@ -12,6 +12,11 @@ spring:
     username: ${DB_USERNAME:vault_user}
     password: ${DB_PASSWORD:vault_password}
     driver-class-name: org.postgresql.Driver
+  
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
   jpa:
     hibernate:

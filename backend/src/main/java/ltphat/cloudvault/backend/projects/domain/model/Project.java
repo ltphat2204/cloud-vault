@@ -39,6 +39,11 @@ public class Project {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void restore() {
+        this.deletedAt = null;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public boolean isDeleted() {
         return this.deletedAt != null;
     }

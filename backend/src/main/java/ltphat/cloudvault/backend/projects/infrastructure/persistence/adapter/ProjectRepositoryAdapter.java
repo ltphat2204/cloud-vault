@@ -41,6 +41,13 @@ public class ProjectRepositoryAdapter implements IProjectRepository {
     }
 
     @Override
+    public List<Project> findAllDeletedByOwnerId(UUID ownerId) {
+        return springDataProjectRepository.findByOwnerIdAndDeletedAtIsNotNull(ownerId).stream()
+                .map(projectPersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteById(UUID id) {
         springDataProjectRepository.deleteById(id);
     }

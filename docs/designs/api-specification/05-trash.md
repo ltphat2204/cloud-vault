@@ -5,7 +5,7 @@ The Trash API provides endpoints for managing soft-deleted files and folders. Us
 ## Endpoints
 
 ### 1. List Trash Items
-Returns a list of all soft-deleted files and folders for the authenticated user.
+Returns a list of all soft-deleted projects, files and folders for the authenticated user.
 
 - **URL**: `GET /api/v1/trash`
 - **Auth required**: Yes
@@ -22,6 +22,15 @@ Returns a list of all soft-deleted files and folders for the authenticated user.
         "deletedAt": "2024-04-28T10:00:00",
         "projectId": "uuid",
         "originalPath": "/Folder/Subfolder"
+      },
+      {
+        "id": "project-uuid",
+        "name": "Project Name",
+        "type": "PROJECT",
+        "size": 0,
+        "deletedAt": "2024-04-28T10:00:00",
+        "projectId": "project-uuid",
+        "originalPath": null
       }
     ]
   }
@@ -94,7 +103,7 @@ Restores all items currently in the user's trash.
 | --- | --- | --- |
 | `id` | UUID | Unique identifier |
 | `name` | String | Item name |
-| `type` | String | Type: `FILE` or `FOLDER` |
+| `type` | String | Type: `FILE`, `FOLDER`, or `PROJECT` |
 | `size` | Long | Size in bytes (null for folders) |
 | `deletedAt` | LocalDateTime | Timestamp of deletion |
 | `projectId` | UUID | Associated project ID |

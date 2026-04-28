@@ -9,4 +9,5 @@ import java.util.UUID;
 @Repository
 public interface SpringDataProjectRepository extends JpaRepository<JpaProject, UUID> {
     List<JpaProject> findByOwnerIdAndDeletedAtIsNull(UUID ownerId);
+    List<JpaProject> findByOwnerIdAndDeletedAtIsNotNull(UUID ownerId);
 }
