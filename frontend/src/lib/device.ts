@@ -8,7 +8,7 @@ export async function getDeviceId(): Promise<string> {
   const fpPromise = FingerprintJS.load()
   const fp = await fpPromise
   const result = await fp.get()
-  
+
   deviceId = result.visitorId
   return deviceId
 }

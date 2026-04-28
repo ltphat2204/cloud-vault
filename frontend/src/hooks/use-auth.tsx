@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react'
 import type { ReactNode } from 'react'
 import api from '@/lib/axios'
 
@@ -26,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const token = localStorage.getItem('access_token')
       if (token) {
-        await api.post('/auth/logout')
+        await api.post('auth/logout')
       }
     } catch (error) {
       // Silently fail logout API call
@@ -43,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refetchUser = useCallback(async () => {
     const token = localStorage.getItem('access_token')?.trim()
-    
+
     // Check if token exists and isn't a stringified 'undefined' or 'null'
     if (!token || token === 'undefined' || token === 'null') {
       setUser(null)
@@ -53,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true)
     try {
-      const response = await api.get('/auth/me')
+      const response = await api.get('auth/me')
       setUser(response.data.data)
     } catch (error: any) {
       await logout()
@@ -72,7 +78,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, refetchUser }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, logout, refetchUser }}
+    >
       {children}
     </AuthContext.Provider>
   )
