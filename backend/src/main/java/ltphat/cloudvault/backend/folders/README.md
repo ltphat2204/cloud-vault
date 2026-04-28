@@ -9,6 +9,8 @@ The Folders module provides hierarchical organization units within projects. It 
 - **Soft Deletion**: Folders and their subfolders are soft-deleted via the `deleted_at` timestamp.
 - **Name Uniqueness**: Ensures folder names are unique within the same parent location.
 - **Project Context**: Each folder is strictly associated with a project.
+- **Breadcrumb Paths**: Recursively fetch folder hierarchy for smooth UI navigation and deep-linking support.
+- **Project-wide Listing**: Support for listing all folders within a project regardless of hierarchy.
 
 ## Module Structure
 

@@ -89,7 +89,56 @@ Lists folders within a project or a specific parent folder.
 
 ---
 
-### 4. Update Folder
+### 4. Get Folder Path
+Retrieves the hierarchical path (breadcrumbs) for a specific folder.
+
+- **URL**: `GET /api/v1/folders/{id}/path`
+- **Auth required**: Yes
+- **Path Variables**:
+  - `id` (UUID): Unique ID of the folder.
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "root-folder-uuid",
+        "name": "Project Name",
+        "parentFolderId": null
+      },
+      {
+        "id": "subfolder-uuid",
+        "name": "Subfolder",
+        "parentFolderId": "root-folder-uuid"
+      }
+    ]
+  }
+  ```
+
+---
+
+### 5. List All Folders
+Lists all folders within a project regardless of hierarchy.
+
+- **URL**: `GET /api/v1/folders/all`
+- **Auth required**: Yes
+- **Query Parameters**:
+  - `projectId` (required): UUID of the project.
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "data": [
+      { "id": "uuid1", "name": "Root", "parentFolderId": null },
+      { "id": "uuid2", "name": "Docs", "parentFolderId": "uuid1" },
+      { "id": "uuid3", "name": "Images", "parentFolderId": "uuid1" }
+    ]
+  }
+  ```
+
+---
+
+### 6. Update Folder
 Renames an existing folder.
 
 - **URL**: `PATCH /api/v1/folders/{id}`
@@ -117,7 +166,7 @@ Renames an existing folder.
 
 ---
 
-### 5. Move Folder
+### 7. Move Folder
 Moves a folder to a new parent location within the same project.
 
 - **URL**: `PATCH /api/v1/folders/{id}/move`
@@ -145,7 +194,7 @@ Moves a folder to a new parent location within the same project.
 
 ---
 
-### 6. Delete Folder
+### 8. Delete Folder
 Soft deletes a folder and all its contents (subfolders and files). The deleted items can be managed via the Trash API.
 
 - **URL**: `DELETE /api/v1/folders/{id}`

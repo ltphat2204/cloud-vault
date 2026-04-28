@@ -92,5 +92,24 @@ public class FolderController {
         folderService.deleteFolder(id, principal.getId());
         return ResponseEntity.ok(ApiResponse.success(null, "Folder deleted successfully"));
     }
+    @GetMapping("/{id}/path")
+    @Operation(summary = "Get folder path", description = "Retrieves the full path of a folder from root")
+    public ResponseEntity<ApiResponse<List<FolderDto>>> getFolderPath(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        List<FolderDto> path = folderService.getFolderPath(id, principal.getId());
+        return ResponseEntity.ok(ApiResponse.success(path));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "List all folders", description = "Lists all folders within a project regardless of hierarchy")
+    public ResponseEntity<ApiResponse<List<FolderDto>>> listAllFolders(
+            @RequestParam UUID projectId,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        List<FolderDto> folders = folderService.listAllFolders(projectId, principal.getId());
+        return ResponseEntity.ok(ApiResponse.success(folders));
+    }
 
 }

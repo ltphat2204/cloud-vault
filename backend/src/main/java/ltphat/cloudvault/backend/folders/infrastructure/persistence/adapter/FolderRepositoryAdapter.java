@@ -41,6 +41,13 @@ public class FolderRepositoryAdapter implements IFolderRepository {
     }
 
     @Override
+    public List<Folder> findByProjectId(UUID projectId) {
+        return springDataFolderRepository.findByProjectId(projectId).stream()
+                .map(folderPersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean existsByNameAndParentFolderIdAndProjectId(String name, UUID parentFolderId, UUID projectId) {
         return springDataFolderRepository.existsByNameAndParentFolderIdAndProjectId(name, parentFolderId, projectId);
     }

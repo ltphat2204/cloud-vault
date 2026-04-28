@@ -40,7 +40,8 @@ public class FolderServiceImpl implements IFolderService {
             throw new AccessDeniedException("You do not have access to this project");
         }
 
-        if (folderRepository.existsByNameAndParentFolderIdAndProjectId(request.getName(), request.getParentFolderId(), request.getProjectId())) {
+        if (folderRepository.existsByNameAndParentFolderIdAndProjectId(request.getName(), request.getParentFolderId(),
+                request.getProjectId())) {
             throw new FolderException("Folder with name '" + request.getName() + "' already exists in this location");
         }
 
@@ -93,7 +94,8 @@ public class FolderServiceImpl implements IFolderService {
             throw new AccessDeniedException("Access denied");
         }
 
-        if (folderRepository.existsByNameAndParentFolderIdAndProjectId(request.getName(), folder.getParentFolderId(), folder.getProjectId())) {
+        if (folderRepository.existsByNameAndParentFolderIdAndProjectId(request.getName(), folder.getParentFolderId(),
+                folder.getProjectId())) {
             throw new FolderException("Folder with name '" + request.getName() + "' already exists in this location");
         }
 
@@ -122,14 +124,14 @@ public class FolderServiceImpl implements IFolderService {
             List<Folder> descendants = folderRepository.findAllSubfolders(id);
             boolean isDescendant = descendants.stream()
                     .anyMatch(d -> d.getId().equals(request.getTargetParentFolderId()));
-            
+
             if (isDescendant) {
                 throw new FolderException("Cannot move folder into its own subfolder");
             }
 
             Folder targetParent = folderRepository.findById(request.getTargetParentFolderId())
                     .orElseThrow(() -> new FolderNotFoundException(request.getTargetParentFolderId()));
-            
+
             if (!targetParent.getProjectId().equals(folder.getProjectId())) {
                 throw new FolderException("Cannot move folder to a different project (not supported yet)");
             }
@@ -162,9 +164,37 @@ public class FolderServiceImpl implements IFolderService {
                 file.softDelete();
                 fileRepository.save(file);
             }
-            
+
             f.softDelete();
             folderRepository.save(f);
         }
+    }
+
+    @Override
+    public List<FolderDto> getFolderPath(UUID id, UUID ownerId) {
+        java.util.LinkedList<FolderDto> path = new java.util.LinkedList<>();
+        UUID currentId = id;
+
+        while (currentId != null) {
+            Folder folder = folderRepository.findById(currentId)
+                    .orElseThrow(() -> new FolderNotFoundException(id));
+
+            if (!folder.getOwnerId().equals(ownerId)) {
+                throw new AccessDeniedException("Access denied");
+            }
+
+            path.addFirst(folderApplicationMapper.toDto(folder));
+            currentId = folder.getParentFolderId();
+        }
+
+        return path;
+    }
+
+    @Override
+    public List<FolderDto> listAllFolders(UUID projectId, UUID ownerId) {
+        return folderRepository.findByProjectId(projectId).stream()
+                .filter(f -> !f.isDeleted())
+                .map(folderApplicationMapper::toDto)
+                .collect(Collectors.toList());
     }
 }
