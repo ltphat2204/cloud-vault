@@ -8,6 +8,8 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileVersionRepository;
 import ltphat.cloudvault.backend.files.application.service.IStorageService;
 import ltphat.cloudvault.backend.folders.domain.model.Folder;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
+import ltphat.cloudvault.backend.projects.domain.model.Project;
+import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.trash.application.dto.TrashItemDto;
 import ltphat.cloudvault.backend.trash.application.mapper.TrashApplicationMapper;
 import ltphat.cloudvault.backend.trash.application.service.ITrashService;
@@ -29,6 +31,7 @@ public class TrashServiceImpl implements ITrashService {
     private final IFileRepository fileRepository;
     private final IFileVersionRepository fileVersionRepository;
     private final IFolderRepository folderRepository;
+    private final IProjectRepository projectRepository;
     private final IStorageService storageService;
     private final TrashApplicationMapper trashMapper;
 
@@ -52,6 +55,13 @@ public class TrashServiceImpl implements ITrashService {
             folderRepository.findById(id).ifPresent(folder -> {
                 if (!folder.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
                 restoreFolderRecursive(folder);
+            });
+
+            // Try as project
+            projectRepository.findById(id).ifPresent(project -> {
+                if (!project.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
+                project.restore();
+                projectRepository.save(project);
             });
         }
     }
@@ -116,7 +126,27 @@ public class TrashServiceImpl implements ITrashService {
                 if (!folder.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
                 hardDeleteFolderRecursive(folder);
             });
+
+            // Try as project
+            projectRepository.findById(id).ifPresent(project -> {
+                if (!project.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
+                hardDeleteProjectRecursive(project);
+            });
         }
+    }
+
+    private void hardDeleteProjectRecursive(Project project) {
+        // Delete all folders (which recursively deletes files)
+        List<Folder> folders = folderRepository.findByProjectId(project.getId());
+        for (Folder folder : folders) {
+            // Delete all folders that have no parent (the root folders)
+            if (folder.getParentFolderId() == null) {
+                hardDeleteFolderRecursive(folder);
+            }
+        }
+        
+        // Delete project
+        projectRepository.deleteById(project.getId());
     }
 
     private void hardDeleteFile(File file) {

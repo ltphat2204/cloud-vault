@@ -13,4 +13,6 @@ public interface IProjectService {
     List<ProjectDto> listProjects(UUID ownerId);
     ProjectDto updateProject(UUID id, UpdateProjectRequest request, UUID ownerId);
     void deleteProject(UUID id, UUID ownerId);
+    void restoreProject(UUID id, UUID ownerId);
+    void hardDeleteProject(UUID id, UUID ownerId);
 }

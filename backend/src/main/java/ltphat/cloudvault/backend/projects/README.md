@@ -8,7 +8,8 @@ The Projects module manages user-created projects within CloudVault. It provides
 - **Retrieve Projects**: Fetch details of a specific project by its unique ID.
 - **List Projects**: Retrieve all projects owned by a specific user.
 - **Update Projects**: Modify existing project information (e.g., name, description).
-- **Delete Projects**: Permanently remove projects from the system.
+- **Soft Deletion**: Projects are moved to trash before permanent removal.
+- **Automatic Root Initialization**: New projects automatically create a root folder named after the project to store all contents.
 
 ## Module Structure
 

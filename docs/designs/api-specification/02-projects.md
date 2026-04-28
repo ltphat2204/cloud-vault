@@ -111,8 +111,8 @@ Modifies an existing project's metadata.
 
 ---
 
-### 5. Delete Project
-Permanently removes a project and its associated metadata. Note: This operation may fail if the project still contains active resources.
+### 5. Soft Delete Project
+Moves a project and its associated metadata to the trash. The project can be restored or permanently deleted via the Trash API.
 
 - **URL**: `DELETE /api/v1/projects/{id}`
 - **Auth required**: Yes
@@ -122,7 +122,7 @@ Permanently removes a project and its associated metadata. Note: This operation 
   ```json
   {
     "success": true,
-    "message": "Project deleted successfully"
+    "message": "Project moved to trash successfully"
   }
   ```
 
