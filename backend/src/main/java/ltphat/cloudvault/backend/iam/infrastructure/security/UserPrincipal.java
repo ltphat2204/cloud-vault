@@ -12,7 +12,9 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
+@SuppressWarnings("serial")
 public class UserPrincipal implements UserDetails {
+    private static final long serialVersionUID = 1L;
     private final UUID id;
     private final String email;
     private final String password;

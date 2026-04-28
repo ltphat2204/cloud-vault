@@ -1,6 +1,8 @@
 package ltphat.cloudvault.backend.folders.application.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import ltphat.cloudvault.backend.files.domain.model.File;
+import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.folders.application.dto.CreateFolderRequest;
 import ltphat.cloudvault.backend.folders.application.dto.FolderDto;
 import ltphat.cloudvault.backend.folders.application.dto.MoveFolderRequest;
@@ -17,6 +19,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,7 +29,7 @@ import java.util.stream.Collectors;
 public class FolderServiceImpl implements IFolderService {
 
     private final IFolderRepository folderRepository;
-    private final ltphat.cloudvault.backend.files.domain.repository.IFileRepository fileRepository;
+    private final IFileRepository fileRepository;
     private final IProjectRepository projectRepository;
     private final FolderApplicationMapper folderApplicationMapper;
 
@@ -159,8 +162,8 @@ public class FolderServiceImpl implements IFolderService {
 
         for (Folder f : descendants) {
             // Soft delete files in this folder
-            List<ltphat.cloudvault.backend.files.domain.model.File> files = fileRepository.findByFolderId(f.getId());
-            for (ltphat.cloudvault.backend.files.domain.model.File file : files) {
+            List<File> files = fileRepository.findByFolderId(f.getId());
+            for (File file : files) {
                 file.softDelete();
                 fileRepository.save(file);
             }
@@ -172,7 +175,7 @@ public class FolderServiceImpl implements IFolderService {
 
     @Override
     public List<FolderDto> getFolderPath(UUID id, UUID ownerId) {
-        java.util.LinkedList<FolderDto> path = new java.util.LinkedList<>();
+        LinkedList<FolderDto> path = new LinkedList<>();
         UUID currentId = id;
 
         while (currentId != null) {
