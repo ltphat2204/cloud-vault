@@ -3,8 +3,6 @@ package ltphat.cloudvault.backend.folders.presentation.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import ltphat.cloudvault.backend.iam.application.dto.UserDto;
-import ltphat.cloudvault.backend.iam.application.service.IAuthService;
 import ltphat.cloudvault.backend.folders.application.dto.CreateFolderRequest;
 import ltphat.cloudvault.backend.folders.application.dto.FolderDto;
 import ltphat.cloudvault.backend.folders.application.dto.MoveFolderRequest;
@@ -15,7 +13,6 @@ import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
