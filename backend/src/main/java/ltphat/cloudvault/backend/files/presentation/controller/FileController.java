@@ -1,5 +1,6 @@
 package ltphat.cloudvault.backend.files.presentation.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import ltphat.cloudvault.backend.files.application.dto.FileDto;
@@ -35,6 +36,7 @@ public class FileController {
     private final IAuthService authService;
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get file details", description = "Retrieves metadata and current version info for a specific file")
     public ResponseEntity<ApiResponse<FileDto>> getFile(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails
@@ -45,6 +47,7 @@ public class FileController {
     }
 
     @GetMapping
+    @Operation(summary = "List files", description = "Lists files within a project or folder")
     public ResponseEntity<ApiResponse<List<FileDto>>> listFiles(
             @RequestParam UUID projectId,
             @RequestParam(required = false) UUID folderId,
@@ -56,6 +59,7 @@ public class FileController {
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload file", description = "Uploads a new file or a new version of an existing file")
     public ResponseEntity<ApiResponse<FileDto>> uploadFile(
             @RequestParam UUID projectId,
             @RequestParam(required = false) UUID folderId,
@@ -77,6 +81,7 @@ public class FileController {
     }
 
     @GetMapping("/{id}/download")
+    @Operation(summary = "Download current version", description = "Downloads the latest version of the specified file")
     public ResponseEntity<Resource> downloadFile(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails
@@ -93,6 +98,7 @@ public class FileController {
     }
 
     @GetMapping("/{id}/versions")
+    @Operation(summary = "Get version history", description = "Retrieves all versions of a specific file")
     public ResponseEntity<ApiResponse<List<FileVersionDto>>> getVersions(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails
@@ -103,6 +109,7 @@ public class FileController {
     }
 
     @GetMapping("/{id}/versions/{versionNumber}/download")
+    @Operation(summary = "Download specific version", description = "Downloads a specific version of the file")
     public ResponseEntity<Resource> downloadVersion(
             @PathVariable UUID id,
             @PathVariable Integer versionNumber,
@@ -120,6 +127,7 @@ public class FileController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update file metadata", description = "Updates metadata (e.g., name) for an existing file")
     public ResponseEntity<ApiResponse<FileDto>> updateFileMetadata(
             @PathVariable UUID id,
             @RequestBody UpdateFileRequest request,
@@ -131,6 +139,7 @@ public class FileController {
     }
 
     @PutMapping("/{id}/move")
+    @Operation(summary = "Move file", description = "Moves a file to a new folder location")
     public ResponseEntity<ApiResponse<FileDto>> moveFile(
             @PathVariable UUID id,
             @RequestBody MoveFileRequest request,
@@ -142,6 +151,7 @@ public class FileController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete file", description = "Soft deletes a file")
     public ResponseEntity<ApiResponse<Void>> deleteFile(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails

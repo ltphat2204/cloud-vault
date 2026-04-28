@@ -1,5 +1,6 @@
 package ltphat.cloudvault.backend.folders.presentation.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import ltphat.cloudvault.backend.iam.application.dto.UserDto;
@@ -29,6 +30,7 @@ public class FolderController {
     private final IAuthService authService;
 
     @PostMapping
+    @Operation(summary = "Create folder", description = "Creates a new folder within a project or parent folder")
     public ResponseEntity<ApiResponse<FolderDto>> createFolder(
             @RequestBody CreateFolderRequest request,
             @AuthenticationPrincipal UserDetails userDetails
@@ -40,6 +42,7 @@ public class FolderController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get folder details", description = "Retrieves metadata for a specific folder")
     public ResponseEntity<ApiResponse<FolderDto>> getFolder(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails
@@ -50,6 +53,7 @@ public class FolderController {
     }
 
     @GetMapping
+    @Operation(summary = "List folders", description = "Lists folders within a project or specific parent folder")
     public ResponseEntity<ApiResponse<List<FolderDto>>> listFolders(
             @RequestParam UUID projectId,
             @RequestParam(required = false) UUID parentFolderId,
@@ -61,6 +65,7 @@ public class FolderController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update folder", description = "Renames an existing folder")
     public ResponseEntity<ApiResponse<FolderDto>> updateFolder(
             @PathVariable UUID id,
             @RequestBody UpdateFolderRequest request,
@@ -72,6 +77,7 @@ public class FolderController {
     }
 
     @PatchMapping("/{id}/move")
+    @Operation(summary = "Move folder", description = "Moves a folder to a new parent location within the same project")
     public ResponseEntity<ApiResponse<FolderDto>> moveFolder(
             @PathVariable UUID id,
             @RequestBody MoveFolderRequest request,
@@ -83,6 +89,7 @@ public class FolderController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete folder", description = "Soft deletes a folder and its contents")
     public ResponseEntity<ApiResponse<Void>> deleteFolder(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails
