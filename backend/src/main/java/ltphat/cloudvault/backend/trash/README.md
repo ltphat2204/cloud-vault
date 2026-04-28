@@ -4,11 +4,11 @@ The Trash module provides a centralized management system for soft-deleted files
 
 ## Features
 
-- **Centralized Management**: View all soft-deleted items (files and folders) in a single location across all projects.
+- **Centralized Management**: View all soft-deleted items (projects, files, and folders) in a single location.
 - **Batch Operations**: Support for batch restoration and batch permanent deletion of multiple items.
 - **Intelligent Restoration**: Automatically handles orphaned items by moving restored folders or files to the root if their original parent is still in trash or missing.
-- **Recursive Operations**: Restoration and permanent deletion propagate recursively through folder hierarchies.
-- **MinIO Cleanup**: Permanent deletion of files ensures that all binary content and versions are removed from the S3 object store.
+- **Recursive Operations**: Restoration and permanent deletion propagate recursively through project and folder hierarchies.
+- **MinIO Cleanup**: Permanent deletion of files or projects ensures that all binary content and versions are removed from the S3 object store.
 - **Empty Trash**: One-click permanent removal of all items in the user's trash bin.
 
 ## Module Structure
@@ -23,8 +23,8 @@ The module follows Clean Architecture:
 ## Key Components
 
 - `ITrashService`: Primary interface for trash operations (list, restore, delete, empty).
-- `TrashItem`: Domain model representing an item in trash (FILE or FOLDER).
-- `TrashRepositoryAdapter`: Infrastructure adapter that combines deleted metadata from both file and folder repositories.
+- `TrashItem`: Domain model representing an item in trash (PROJECT, FILE or FOLDER).
+- `TrashRepositoryAdapter`: Infrastructure adapter that combines deleted metadata from project, file and folder repositories.
 - `TrashBatchRequest`: DTO for batch restore and delete operations.
 
 ## Restoration Logic

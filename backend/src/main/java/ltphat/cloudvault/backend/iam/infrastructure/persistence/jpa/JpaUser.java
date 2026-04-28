@@ -2,7 +2,6 @@ package ltphat.cloudvault.backend.iam.infrastructure.persistence.jpa;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,8 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class JpaUser {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, unique = true)

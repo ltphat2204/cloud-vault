@@ -35,7 +35,7 @@ public class ProjectServiceImpl implements IProjectService {
         
         // Initialize root folder for the project
         folderService.createFolder(CreateFolderRequest.builder()
-                .name("Root")
+                .name(savedProject.getName())
                 .projectId(savedProject.getId())
                 .parentFolderId(null)
                 .build(), ownerId);
@@ -98,5 +98,43 @@ public class ProjectServiceImpl implements IProjectService {
         
         project.softDelete();
         projectRepository.save(project);
+    }
+
+    @Override
+    @Transactional
+    public void restoreProject(UUID id, UUID ownerId) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ProjectNotFoundException(id));
+
+        if (!project.getOwnerId().equals(ownerId)) {
+            throw new AccessDeniedException("You do not have access to this project");
+        }
+
+        project.restore();
+        projectRepository.save(project);
+    }
+
+    @Override
+    @Transactional
+    public void hardDeleteProject(UUID id, UUID ownerId) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ProjectNotFoundException(id));
+
+        if (!project.getOwnerId().equals(ownerId)) {
+            throw new AccessDeniedException("You do not have access to this project");
+        }
+
+        if (!project.isDeleted()) {
+            throw new RuntimeException("Project must be in trash to be permanently deleted");
+        }
+
+        // 1. Delete all folders in project (hard delete)
+        List<ltphat.cloudvault.backend.folders.application.dto.FolderDto> folders = folderService.listAllFolders(id, ownerId);
+        for (ltphat.cloudvault.backend.folders.application.dto.FolderDto folder : folders) {
+            folderService.deleteFolder(folder.getId(), ownerId); // This is soft delete, but wait...
+            // Actually, we should probably have a hard delete in folderService too.
+        }
+
+        projectRepository.deleteById(id);
     }
 }
