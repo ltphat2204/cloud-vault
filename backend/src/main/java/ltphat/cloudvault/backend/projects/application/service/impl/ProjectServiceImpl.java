@@ -6,6 +6,8 @@ import ltphat.cloudvault.backend.projects.application.dto.ProjectDto;
 import ltphat.cloudvault.backend.projects.application.dto.UpdateProjectRequest;
 import ltphat.cloudvault.backend.projects.application.mapper.ProjectApplicationMapper;
 import ltphat.cloudvault.backend.projects.application.service.IProjectService;
+import ltphat.cloudvault.backend.folders.application.dto.CreateFolderRequest;
+import ltphat.cloudvault.backend.folders.application.service.IFolderService;
 import ltphat.cloudvault.backend.projects.domain.exception.ProjectNotFoundException;
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
@@ -23,6 +25,7 @@ public class ProjectServiceImpl implements IProjectService {
 
     private final IProjectRepository projectRepository;
     private final ProjectApplicationMapper projectApplicationMapper;
+    private final IFolderService folderService;
 
     @Override
     @Transactional
@@ -30,7 +33,12 @@ public class ProjectServiceImpl implements IProjectService {
         Project project = Project.createNew(request.getName(), ownerId);
         Project savedProject = projectRepository.save(project);
         
-        // TODO: Initialize root folder for the project when Folders module is implemented
+        // Initialize root folder for the project
+        folderService.createFolder(CreateFolderRequest.builder()
+                .name("Root")
+                .projectId(savedProject.getId())
+                .parentFolderId(null)
+                .build(), ownerId);
         
         return projectApplicationMapper.toDto(savedProject);
     }
