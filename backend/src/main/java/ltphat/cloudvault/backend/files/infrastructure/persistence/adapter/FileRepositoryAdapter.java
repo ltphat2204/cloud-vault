@@ -63,4 +63,18 @@ public class FileRepositoryAdapter implements IFileRepository {
                 .map(filePersistenceMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<File> findByProjectIdInAndNameContainingIgnoreCaseAndDeletedAtIsNull(List<UUID> projectIds, String query) {
+        return springDataFileRepository.findByProjectIdInAndNameContainingIgnoreCaseAndDeletedAtIsNull(projectIds, query).stream()
+                .map(filePersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<File> findByFolderIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(UUID folderId, String query) {
+        return springDataFileRepository.findByFolderIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(folderId, query).stream()
+                .map(filePersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }

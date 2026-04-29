@@ -70,4 +70,18 @@ public class FolderRepositoryAdapter implements IFolderRepository {
     public void hardDelete(UUID id) {
         springDataFolderRepository.deleteById(id);
     }
+
+    @Override
+    public List<Folder> findByProjectIdInAndNameContainingIgnoreCaseAndDeletedAtIsNull(List<UUID> projectIds, String query) {
+        return springDataFolderRepository.findByProjectIdInAndNameContainingIgnoreCaseAndDeletedAtIsNull(projectIds, query).stream()
+                .map(folderPersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Folder> findByParentFolderIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(UUID parentFolderId, String query) {
+        return springDataFolderRepository.findByParentFolderIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(parentFolderId, query).stream()
+                .map(folderPersistenceMapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }

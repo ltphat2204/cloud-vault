@@ -18,4 +18,7 @@ public interface SpringDataShareRepository extends JpaRepository<JpaShare, UUID>
 
     @org.springframework.data.jpa.repository.Query("SELECT DISTINCT s.sharedWithUserId FROM JpaShare s WHERE s.projectId = :projectId AND s.sharedWithUserId IS NOT NULL")
     List<UUID> findSharedUserIdsByProjectId(@org.springframework.data.repository.query.Param("projectId") UUID projectId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT s.projectId FROM JpaShare s WHERE s.sharedWithUserId = :userId")
+    List<UUID> findSharedProjectIdsByUserId(@org.springframework.data.repository.query.Param("userId") UUID userId);
 }

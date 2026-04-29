@@ -15,4 +15,6 @@ public interface IFolderRepository {
     List<Folder> findAllSubfolders(UUID parentFolderId);
     List<Folder> findAllDeletedByOwnerId(UUID ownerId);
     void hardDelete(UUID id);
+    List<Folder> findByProjectIdInAndNameContainingIgnoreCaseAndDeletedAtIsNull(List<UUID> projectIds, String query);
+    List<Folder> findByParentFolderIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(UUID parentFolderId, String query);
 }

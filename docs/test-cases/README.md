@@ -9,6 +9,10 @@ This directory contains detailed test cases for the CloudVault system, organized
 - **[03-Folders](03-folders.md)**: Hierarchical organization, folder movement, circular reference validation, and recursive deletion.
 - **[04-Files](04-files.md)**: File metadata management, versioning, movement, and soft deletion.
 - **[05-Trash](05-trash.md)**: Centralized management of deleted items, batch restoration, and permanent removal.
+- **[06-Shares](06-shares.md)**: Internal resource sharing, permission management, and public link access.
+- **[07-Notifications](07-notifications.md)**: Event-driven alerts, real-time WebSocket delivery, and read state management.
+- **[08-Audit](08-audit.md)**: Activity logging, system events tracking, and compliance monitoring.
+- **[09-Search](09-search.md)**: Global and scoped resource discovery across projects.
 
 ## Test Strategy
 

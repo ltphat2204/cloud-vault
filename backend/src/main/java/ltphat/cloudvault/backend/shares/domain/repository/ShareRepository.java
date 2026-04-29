@@ -17,4 +17,5 @@ public interface ShareRepository {
     boolean existsByResourceAndUser(ResourceType type, UUID resourceId, UUID userId);
     boolean hasProjectAccess(UUID projectId, UUID userId);
     List<UUID> findSharedUserIdsByProjectId(UUID projectId);
+    List<UUID> findSharedProjectIdsByUserId(UUID userId);
 }

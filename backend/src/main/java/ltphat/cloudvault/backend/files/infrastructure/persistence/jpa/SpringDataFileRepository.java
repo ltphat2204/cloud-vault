@@ -12,4 +12,6 @@ public interface SpringDataFileRepository extends JpaRepository<JpaFile, UUID> {
     boolean existsByNameAndFolderIdAndProjectId(String name, UUID folderId, UUID projectId);
     List<JpaFile> findByOwnerIdAndDeletedAtIsNotNull(UUID ownerId);
     List<JpaFile> findByFolderId(UUID folderId);
+    List<JpaFile> findByProjectIdInAndNameContainingIgnoreCaseAndDeletedAtIsNull(List<UUID> projectIds, String query);
+    List<JpaFile> findByFolderIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(UUID folderId, String query);
 }

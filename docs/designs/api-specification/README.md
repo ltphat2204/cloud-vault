@@ -33,7 +33,12 @@ Every API response follows this schema:
 
 | Module | Description | File |
 | --- | --- | --- |
-| **IAM** | Identity and Access Management (Auth) | [iam.md](./iam.md) |
-| **Projects** | Project Management | [projects.md](./projects.md) |
-| **Folders** | Folder Hierarchy Management | [folders.md](./folders.md) |
-| **Files** | File and Version Management | [files.md](./files.md) |
+| **IAM** | Identity and Access Management (Auth) | [01-iam.md](./01-iam.md) |
+| **Projects** | Project Management | [02-projects.md](./02-projects.md) |
+| **Folders** | Folder Hierarchy Management | [03-folders.md](./03-folders.md) |
+| **Files** | File and Version Management | [04-files.md](./04-files.md) |
+| **Trash** | Deleted Items Management | [05-trash.md](./05-trash.md) |
+| **Shares** | Resource Sharing & Permissions | [06-shares.md](./06-shares.md) |
+| **Notifications** | Real-time & Persistent Alerts | [07-notifications.md](./07-notifications.md) |
+| **Audit** | Activity & System Logging | [08-audit.md](./08-audit.md) |
+| **Search** | Global & Scoped Resource Discovery | [09-search.md](./09-search.md) |
