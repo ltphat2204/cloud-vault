@@ -10,6 +10,7 @@ import ltphat.cloudvault.backend.shared.dto.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class NotificationController {
     public ResponseEntity<ApiResponse<Page<NotificationDTO>>> listNotifications(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(defaultValue = "false") boolean unreadOnly,
-            @PageableDefault(size = 20) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
         Page<NotificationDTO> result = notificationService.getUserNotifications(userPrincipal.getId(), unreadOnly, pageable);
         return ResponseEntity.ok(ApiResponse.success(result, "Notifications retrieved successfully"));

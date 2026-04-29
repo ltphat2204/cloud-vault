@@ -26,10 +26,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Page<NotificationDTO> getUserNotifications(UUID userId, boolean unreadOnly, Pageable pageable) {
-        Page<Notification> notifications = unreadOnly 
+        Page<Notification> notifications = unreadOnly
                 ? notificationRepository.findAllByUserIdAndReadFalse(userId, pageable)
                 : notificationRepository.findAllByUserId(userId, pageable);
-        
+
         return notifications.map(this::toDTO);
     }
 
@@ -39,7 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = notificationRepository.findById(notificationId)
                 .filter(n -> n.getUserId().equals(userId))
                 .orElseThrow(() -> new NotificationNotFoundException(notificationId));
-        
+
         if (!notification.isRead()) {
             notification = notification.markAsRead();
             notificationRepository.save(notification);
@@ -63,15 +63,14 @@ public class NotificationServiceImpl implements NotificationService {
                 .metadata(metadata)
                 .createdAt(LocalDateTime.now())
                 .build();
-        
+
         notificationRepository.save(notification);
-        
+
         // Broadcast via WebSocket
         messagingTemplate.convertAndSendToUser(
                 userId.toString(),
                 "/queue/notifications",
-                toDTO(notification)
-        );
+                toDTO(notification));
     }
 
     private NotificationDTO toDTO(Notification notification) {
