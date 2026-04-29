@@ -1,6 +1,6 @@
 import type { ProjectDto } from '@/types'
 import { Card } from '@/components/ui/card'
-import { MoreVertical, Folder, Calendar, Trash2, Edit2 } from 'lucide-react'
+import { MoreVertical, Folder, Calendar, Trash2, Edit2, Share2 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,9 +15,10 @@ interface ProjectCardProps {
   project: ProjectDto
   onRename: (id: string, name: string) => void
   onDelete: (id: string) => void
+  onShare: (project: ProjectDto) => void
 }
 
-export function ProjectCard({ project, onRename, onDelete }: ProjectCardProps) {
+export function ProjectCard({ project, onRename, onDelete, onShare }: ProjectCardProps) {
   return (
     <Card className="island-shell group relative overflow-hidden rounded-[2rem] border-0 transition-all hover:scale-[1.02] hover:shadow-xl">
       <Link
@@ -51,6 +52,13 @@ export function ProjectCard({ project, onRename, onDelete }: ProjectCardProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40 rounded-xl">
+            <DropdownMenuItem
+              onClick={() => onShare(project)}
+              className="cursor-pointer gap-2"
+            >
+              <Share2 size={14} />
+              Share
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onRename(project.id, project.name)}
               className="cursor-pointer gap-2"

@@ -1,4 +1,4 @@
-import { MoreVertical, Download, Edit2, Move, Trash2 } from 'lucide-react'
+import { MoreVertical, Download, Edit2, Move, Trash2, Share2 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ interface ItemActionsProps {
   onRename: () => void
   onMove: () => void
   onDelete: () => void
+  onShare: () => void
 }
 
 export function ItemActions({
@@ -22,6 +23,7 @@ export function ItemActions({
   onRename,
   onMove,
   onDelete,
+  onShare,
 }: ItemActionsProps) {
   return (
     <DropdownMenu>
@@ -35,6 +37,10 @@ export function ItemActions({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44 rounded-xl">
+        <DropdownMenuItem onClick={onShare} className="cursor-pointer gap-2">
+          <Share2 size={14} />
+          Share
+        </DropdownMenuItem>
         {type === 'file' && (
           <DropdownMenuItem
             onClick={onDownload}

@@ -8,7 +8,19 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig(() => {
   return {
     resolve: { tsconfigPaths: true },
+    define: {
+      global: 'window',
+      'process.env': {},
+    },
     server: {
+      port: 3000,
+      proxy: {
+        '/api/v1': {
+          target: 'http://127.0.0.1:8080',
+          changeOrigin: true,
+          ws: true,
+        },
+      },
     },
     plugins: [
       devtools(),
