@@ -10,6 +10,7 @@ import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.trash.application.mapper.TrashApplicationMapper;
 import ltphat.cloudvault.backend.trash.domain.repository.ITrashRepository;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,7 @@ class TrashServiceImplTest {
     @Mock private IProjectRepository projectRepository;
     @Mock private IStorageService storageService;
     @Mock private TrashApplicationMapper trashMapper;
+    @Mock private IActivityLogService auditService;
 
     @InjectMocks
     private TrashServiceImpl trashService;
@@ -60,6 +62,7 @@ class TrashServiceImplTest {
         UUID fileId = UUID.randomUUID();
         File file = File.builder()
                 .id(fileId)
+                .name("test-file")
                 .ownerId(ownerId)
                 .deletedAt(LocalDateTime.now())
                 .build();
@@ -76,6 +79,7 @@ class TrashServiceImplTest {
         UUID folderId = UUID.randomUUID();
         Folder folder = Folder.builder()
                 .id(folderId)
+                .name("test-folder")
                 .ownerId(ownerId)
                 .projectId(projectId)
                 .deletedAt(LocalDateTime.now())
@@ -95,6 +99,7 @@ class TrashServiceImplTest {
         UUID fileId = UUID.randomUUID();
         File file = File.builder()
                 .id(fileId)
+                .name("test-file")
                 .ownerId(ownerId)
                 .build();
 
@@ -111,6 +116,7 @@ class TrashServiceImplTest {
         UUID projectId = UUID.randomUUID();
         Project project = Project.builder()
                 .id(projectId)
+                .name("test-project")
                 .ownerId(ownerId)
                 .deletedAt(LocalDateTime.now())
                 .build();

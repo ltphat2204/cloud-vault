@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ltphat.cloudvault.backend.notifications.application.service.NotificationService;
 import ltphat.cloudvault.backend.notifications.domain.model.NotificationType;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,6 +44,7 @@ class ShareServiceTest {
     @Mock private IFileRepository fileRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private NotificationService notificationService;
+    @Mock private IActivityLogService auditService;
 
     @InjectMocks private ShareServiceImpl shareService;
 

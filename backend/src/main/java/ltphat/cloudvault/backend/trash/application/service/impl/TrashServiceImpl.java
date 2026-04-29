@@ -15,11 +15,15 @@ import ltphat.cloudvault.backend.trash.application.mapper.TrashApplicationMapper
 import ltphat.cloudvault.backend.trash.application.service.ITrashService;
 import ltphat.cloudvault.backend.trash.domain.model.TrashItem;
 import ltphat.cloudvault.backend.trash.domain.repository.ITrashRepository;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
+import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,6 +38,7 @@ public class TrashServiceImpl implements ITrashService {
     private final IProjectRepository projectRepository;
     private final IStorageService storageService;
     private final TrashApplicationMapper trashMapper;
+    private final IActivityLogService auditService;
 
     @Override
     public List<TrashItemDto> listTrash(UUID ownerId) {
@@ -49,12 +54,16 @@ public class TrashServiceImpl implements ITrashService {
             fileRepository.findById(id).ifPresent(file -> {
                 if (!file.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
                 restoreFile(file);
+                auditService.logActivity(ownerId, ActivityAction.FILE_RESTORED, ResourceType.FILE, id, 
+                        Map.of("name", file.getName()));
             });
 
             // Try as folder
             folderRepository.findById(id).ifPresent(folder -> {
                 if (!folder.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
                 restoreFolderRecursive(folder);
+                auditService.logActivity(ownerId, ActivityAction.FOLDER_RESTORED, ResourceType.FOLDER, id, 
+                        Map.of("name", folder.getName()));
             });
 
             // Try as project
@@ -62,6 +71,8 @@ public class TrashServiceImpl implements ITrashService {
                 if (!project.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
                 project.restore();
                 projectRepository.save(project);
+                auditService.logActivity(ownerId, ActivityAction.PROJECT_RESTORED, ResourceType.PROJECT, id, 
+                        Map.of("name", project.getName()));
             });
         }
     }
@@ -120,17 +131,23 @@ public class TrashServiceImpl implements ITrashService {
             fileRepository.findById(id).ifPresent(file -> {
                 if (!file.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
                 hardDeleteFile(file);
+                auditService.logActivity(ownerId, ActivityAction.FILE_PERMANENTLY_DELETED, ResourceType.FILE, id, 
+                        Map.of("name", file.getName()));
             });
 
             folderRepository.findById(id).ifPresent(folder -> {
                 if (!folder.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
                 hardDeleteFolderRecursive(folder);
+                auditService.logActivity(ownerId, ActivityAction.FOLDER_PERMANENTLY_DELETED, ResourceType.FOLDER, id, 
+                        Map.of("name", folder.getName()));
             });
 
             // Try as project
             projectRepository.findById(id).ifPresent(project -> {
                 if (!project.getOwnerId().equals(ownerId)) throw new AccessDeniedException("Access denied");
                 hardDeleteProjectRecursive(project);
+                auditService.logActivity(ownerId, ActivityAction.PROJECT_PERMANENTLY_DELETED, ResourceType.PROJECT, id, 
+                        Map.of("name", project.getName()));
             });
         }
     }
@@ -181,6 +198,7 @@ public class TrashServiceImpl implements ITrashService {
         List<TrashItem> items = trashRepository.findAllDeletedByOwnerId(ownerId);
         List<UUID> ids = items.stream().map(TrashItem::getId).collect(Collectors.toList());
         deleteItemsPermanently(ids, ownerId);
+        auditService.logActivity(ownerId, ActivityAction.TRASH_EMPTIED, null, null, Map.of("count", ids.size()));
     }
 
     @Override
@@ -189,5 +207,6 @@ public class TrashServiceImpl implements ITrashService {
         List<TrashItem> items = trashRepository.findAllDeletedByOwnerId(ownerId);
         List<UUID> ids = items.stream().map(TrashItem::getId).collect(Collectors.toList());
         restoreItems(ids, ownerId);
+        auditService.logActivity(ownerId, ActivityAction.TRASH_RECOVERED, null, null, Map.of("count", ids.size()));
     }
 }

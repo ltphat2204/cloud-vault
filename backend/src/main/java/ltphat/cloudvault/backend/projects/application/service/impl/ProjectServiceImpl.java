@@ -11,11 +11,15 @@ import ltphat.cloudvault.backend.folders.application.service.IFolderService;
 import ltphat.cloudvault.backend.projects.domain.exception.ProjectNotFoundException;
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
+import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -26,6 +30,7 @@ public class ProjectServiceImpl implements IProjectService {
     private final IProjectRepository projectRepository;
     private final ProjectApplicationMapper projectApplicationMapper;
     private final IFolderService folderService;
+    private final IActivityLogService auditService;
 
     @Override
     @Transactional
@@ -39,6 +44,9 @@ public class ProjectServiceImpl implements IProjectService {
                 .projectId(savedProject.getId())
                 .parentFolderId(null)
                 .build(), ownerId);
+        
+        auditService.logActivity(ownerId, ActivityAction.PROJECT_CREATED, ResourceType.PROJECT, savedProject.getId(), 
+                Map.of("name", savedProject.getName()));
         
         return projectApplicationMapper.toDto(savedProject);
     }
@@ -80,8 +88,12 @@ public class ProjectServiceImpl implements IProjectService {
             throw new ProjectNotFoundException(id);
         }
         
+        String oldName = project.getName();
         project.update(request.getName());
         Project updatedProject = projectRepository.save(project);
+        
+        auditService.logActivity(ownerId, ActivityAction.PROJECT_RENAMED, ResourceType.PROJECT, id, 
+                Map.of("oldName", oldName, "newName", request.getName()));
         
         return projectApplicationMapper.toDto(updatedProject);
     }
@@ -98,6 +110,9 @@ public class ProjectServiceImpl implements IProjectService {
         
         project.softDelete();
         projectRepository.save(project);
+        
+        auditService.logActivity(ownerId, ActivityAction.PROJECT_DELETED, ResourceType.PROJECT, id, 
+                Map.of("name", project.getName()));
     }
 
     @Override

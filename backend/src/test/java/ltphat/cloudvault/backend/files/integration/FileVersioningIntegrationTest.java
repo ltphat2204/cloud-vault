@@ -1,11 +1,14 @@
 package ltphat.cloudvault.backend.files.integration;
 
+import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
+import ltphat.cloudvault.backend.audit.domain.repository.IActivityLogRepository;
 import ltphat.cloudvault.backend.files.application.dto.FileDto;
 import ltphat.cloudvault.backend.files.application.dto.FileVersionDto;
 import ltphat.cloudvault.backend.files.application.service.IFileService;
 import ltphat.cloudvault.backend.shared.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
@@ -20,6 +23,9 @@ class FileVersioningIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private IFileService fileService;
+    
+    @Autowired
+    private IActivityLogRepository auditRepository;
 
     @Test
     void testFileVersioningFlow() throws Exception {
@@ -59,5 +65,10 @@ class FileVersioningIntegrationTest extends AbstractIntegrationTest {
         InputStream currentStream = fileService.downloadFile(file2.getId(), null, ownerId);
         String downloadedCurrent = new String(currentStream.readAllBytes());
         assertThat(downloadedCurrent).isEqualTo(content2);
+        
+        // 6. Verify Audit Logs
+        var logs = auditRepository.findByUserId(ownerId, null, null, Pageable.unpaged()).getContent();
+        assertThat(logs).anyMatch(l -> l.getAction().equals(ActivityAction.FILE_UPLOADED));
+        assertThat(logs).anyMatch(l -> l.getAction().equals(ActivityAction.FILE_DOWNLOADED));
     }
 }
