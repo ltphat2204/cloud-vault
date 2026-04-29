@@ -12,6 +12,7 @@ import { MoveItemModal } from './MoveItemModal'
 import { ShareDialog } from '../shares/ShareDialog'
 import { foldersApi } from '@/api/folders'
 import { filesApi } from '@/api/files'
+import { ResourceHistoryModal } from './ResourceHistoryModal'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -94,6 +95,11 @@ export function FileExplorer({ projectId, project }: FileExplorerProps) {
     id: string
     name: string
   } | null>(null)
+  const [historyItem, setHistoryItem] = useState<{
+    type: ResourceType
+    id: string
+    name: string
+  } | null>(null)
 
   const handleDownload = (file: FileDto) => {
     filesApi.download(file.id, file.name)
@@ -158,6 +164,12 @@ export function FileExplorer({ projectId, project }: FileExplorerProps) {
           }
           onShareFile={(f) =>
             setSharingItem({ type: 'FILE', id: f.id, name: f.name })
+          }
+          onViewHistoryFolder={(f) =>
+            setHistoryItem({ type: 'FOLDER', id: f.id, name: f.name })
+          }
+          onViewHistoryFile={(f) =>
+            setHistoryItem({ type: 'FILE', id: f.id, name: f.name })
           }
         />
       )}
@@ -255,6 +267,16 @@ export function FileExplorer({ projectId, project }: FileExplorerProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {historyItem && (
+        <ResourceHistoryModal
+          isOpen={!!historyItem}
+          onClose={() => setHistoryItem(null)}
+          resourceId={historyItem.id}
+          resourceName={historyItem.name}
+          resourceType={historyItem.type}
+        />
+      )}
     </div>
   )
 }

@@ -64,7 +64,7 @@ public class FileServiceImpl implements IFileService {
 
         if (existingFileOpt.isPresent()) {
             file = existingFileOpt.get();
-            if (!file.getOwnerId().equals(ownerId)) {
+            if (!file.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(projectId, ownerId)) {
                 throw new AccessDeniedException("You do not have access to this file");
             }
             nextVersion = file.getVersionNumber() + 1;
@@ -121,7 +121,7 @@ public class FileServiceImpl implements IFileService {
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new FileNotFoundException(fileId));
 
-        if (!file.getOwnerId().equals(ownerId)) {
+        if (!file.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(file.getProjectId(), ownerId)) {
             throw new AccessDeniedException("You do not have access to this file");
         }
 
@@ -145,7 +145,7 @@ public class FileServiceImpl implements IFileService {
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new FileNotFoundException(fileId));
 
-        if (!file.getOwnerId().equals(ownerId)) {
+        if (!file.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(file.getProjectId(), ownerId)) {
             throw new AccessDeniedException("You do not have access to this file");
         }
 
@@ -159,7 +159,7 @@ public class FileServiceImpl implements IFileService {
         File file = fileRepository.findById(id)
                 .orElseThrow(() -> new FileNotFoundException(id));
 
-        if (!file.getOwnerId().equals(ownerId)) {
+        if (!file.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(file.getProjectId(), ownerId)) {
             throw new AccessDeniedException("You do not have access to this file");
         }
 
@@ -172,10 +172,11 @@ public class FileServiceImpl implements IFileService {
 
     @Override
     public List<FileDto> listFiles(UUID projectId, UUID folderId, UUID ownerId) {
-        // In a real scenario, we'd verify project/folder access here
+        boolean hasSharedAccess = shareService.hasProjectAccess(projectId, ownerId);
+        
         return fileRepository.findByProjectIdAndFolderId(projectId, folderId).stream()
                 .filter(f -> !f.isDeleted())
-                .filter(f -> f.getOwnerId().equals(ownerId)) // Basic security
+                .filter(f -> f.getOwnerId().equals(ownerId) || hasSharedAccess)
                 .map(fileApplicationMapper::toDto)
                 .collect(Collectors.toList());
     }

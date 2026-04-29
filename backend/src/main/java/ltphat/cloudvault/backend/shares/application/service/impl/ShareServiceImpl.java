@@ -61,6 +61,7 @@ public class ShareServiceImpl implements ShareService {
         Share share = Share.createInternal(
                 request.getResourceType(),
                 request.getResourceId(),
+                getResourceProjectId(request.getResourceType(), request.getResourceId()),
                 recipient.getId(),
                 request.getPermission()
         );
@@ -97,6 +98,7 @@ public class ShareServiceImpl implements ShareService {
         Share share = Share.createPublic(
                 request.getResourceType(),
                 request.getResourceId(),
+                getResourceProjectId(request.getResourceType(), request.getResourceId()),
                 passwordHash,
                 request.getExpiresAt()
         );
@@ -177,8 +179,12 @@ public class ShareServiceImpl implements ShareService {
                 .map(share -> {
                     String resourceName = getResourceName(share.getResourceType(), share.getResourceId());
                     String sharerEmail = getResourceOwnerEmail(share.getResourceType(), share.getResourceId());
+                    UUID projectId = getResourceProjectId(share.getResourceType(), share.getResourceId());
+                    UUID folderId = getResourceFolderId(share.getResourceType(), share.getResourceId());
                     ShareResponse response = mapToResponse(share, null, resourceName);
                     response.setSharedBy(sharerEmail);
+                    response.setProjectId(projectId);
+                    response.setFolderId(folderId);
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -255,16 +261,29 @@ public class ShareServiceImpl implements ShareService {
         return userRepository.findById(ownerId).map(User::getEmail).orElse("Unknown");
     }
 
+    private UUID getResourceProjectId(ResourceType type, UUID resourceId) {
+        return switch (type) {
+            case PROJECT -> resourceId;
+            case FOLDER -> folderRepository.findById(resourceId).map(Folder::getProjectId).orElse(null);
+            case FILE -> fileRepository.findById(resourceId).map(File::getProjectId).orElse(null);
+        };
+    }
+
+    private UUID getResourceFolderId(ResourceType type, UUID resourceId) {
+        return switch (type) {
+            case PROJECT -> null;
+            case FOLDER -> resourceId;
+            case FILE -> fileRepository.findById(resourceId).map(File::getFolderId).orElse(null);
+        };
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<UUID> getProjectMemberIds(UUID projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ShareException("Project not found"));
         
-        List<UUID> memberIds = shareRepository.findByResource(ResourceType.PROJECT, projectId).stream()
-                .map(Share::getSharedWithUserId)
-                .filter(java.util.Objects::nonNull)
-                .collect(Collectors.toList());
+        List<UUID> memberIds = new java.util.ArrayList<>(shareRepository.findSharedUserIdsByProjectId(projectId));
         
         memberIds.add(project.getOwnerId());
         return memberIds;
@@ -286,6 +305,8 @@ public class ShareServiceImpl implements ShareService {
                 .id(share.getId())
                 .resourceType(share.getResourceType())
                 .resourceId(share.getResourceId())
+                .projectId(getResourceProjectId(share.getResourceType(), share.getResourceId()))
+                .folderId(getResourceFolderId(share.getResourceType(), share.getResourceId()))
                 .resourceName(resourceName)
                 .sharedWithUser(userDto)
                 .permission(share.getPermission())
@@ -294,5 +315,9 @@ public class ShareServiceImpl implements ShareService {
                 .expiresAt(share.getExpiresAt())
                 .createdAt(share.getCreatedAt())
                 .build();
+    }
+    @Override
+    public boolean hasProjectAccess(UUID projectId, UUID userId) {
+        return shareRepository.hasProjectAccess(projectId, userId);
     }
 }

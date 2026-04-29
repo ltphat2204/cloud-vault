@@ -142,7 +142,7 @@ class ShareServiceTest {
     void updateShare_Success() {
         UpdateShareRequest request = new UpdateShareRequest(Permission.EDIT);
         UUID shareId = UUID.randomUUID();
-        Share share = Share.createInternal(ResourceType.PROJECT, projectId, recipientId, Permission.VIEW);
+        Share share = Share.createInternal(ResourceType.PROJECT, projectId, projectId, recipientId, Permission.VIEW);
 
         when(shareRepository.findById(shareId)).thenReturn(Optional.of(share));
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
@@ -157,7 +157,7 @@ class ShareServiceTest {
     @Test
     void revokeShare_Success() {
         UUID shareId = UUID.randomUUID();
-        Share share = Share.createInternal(ResourceType.PROJECT, projectId, recipientId, Permission.VIEW);
+        Share share = Share.createInternal(ResourceType.PROJECT, projectId, projectId, recipientId, Permission.VIEW);
 
         when(shareRepository.findById(shareId)).thenReturn(Optional.of(share));
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));

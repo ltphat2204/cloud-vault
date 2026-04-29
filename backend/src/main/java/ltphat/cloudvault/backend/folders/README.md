@@ -11,6 +11,7 @@ The Folders module provides hierarchical organization units within projects. It 
 - **Project Context**: Each folder is strictly associated with a project.
 - **Breadcrumb Paths**: Recursively fetch folder hierarchy for smooth UI navigation and deep-linking support.
 - **Project-wide Listing**: Support for listing all folders within a project regardless of hierarchy.
+- **Shared Access Support**: Integrates with the Sharing module to grant project-level access to nested folders for collaborators.
 
 ## Module Structure
 

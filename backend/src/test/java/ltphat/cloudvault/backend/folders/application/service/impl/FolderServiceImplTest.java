@@ -194,4 +194,36 @@ class FolderServiceImplTest {
         assertThat(result).hasSize(2);
         assertThat(result.stream().map(FolderDto::getName).toList()).containsExactlyInAnyOrder("F1", "F2");
     }
+
+    @Test
+    void listFolders_SharedAccess_Success() {
+        // Arrange
+        UUID otherUserId = UUID.randomUUID();
+        Folder f1 = Folder.builder().id(UUID.randomUUID()).name("Shared F1").ownerId(ownerId).projectId(projectId).build();
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(shareService.hasProjectAccess(projectId, otherUserId)).thenReturn(true);
+        when(folderRepository.findByProjectIdAndParentFolderId(projectId, null)).thenReturn(java.util.List.of(f1));
+
+        // Act
+        java.util.List<FolderDto> result = folderService.listFolders(projectId, null, otherUserId);
+
+        // Assert
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("Shared F1");
+        verify(shareService).hasProjectAccess(projectId, otherUserId);
+    }
+
+    @Test
+    void listFolders_AccessDenied() {
+        // Arrange
+        UUID otherUserId = UUID.randomUUID();
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(shareService.hasProjectAccess(projectId, otherUserId)).thenReturn(false);
+
+        // Act & Assert
+        assertThatThrownBy(() -> folderService.listFolders(projectId, null, otherUserId))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+    }
 }

@@ -98,9 +98,23 @@ class FileServiceImplTest {
     void getFile_AccessDenied() {
         when(fileRepository.findById(fileId)).thenReturn(Optional.of(file));
         UUID otherUserId = UUID.randomUUID();
+        when(shareService.hasProjectAccess(projectId, otherUserId)).thenReturn(false);
 
         assertThatThrownBy(() -> fileService.getFile(fileId, otherUserId))
                 .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void getFile_SharedAccess_Success() {
+        when(fileRepository.findById(fileId)).thenReturn(Optional.of(file));
+        UUID otherUserId = UUID.randomUUID();
+        when(shareService.hasProjectAccess(projectId, otherUserId)).thenReturn(true);
+
+        FileDto result = fileService.getFile(fileId, otherUserId);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("test.txt");
+        verify(shareService).hasProjectAccess(projectId, otherUserId);
     }
 
     @Test
@@ -198,5 +212,21 @@ class FileServiceImplTest {
         // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getVersionNumber()).isEqualTo(1);
+    }
+
+    @Test
+    void listFiles_SharedAccess_Success() {
+        // Arrange
+        UUID otherUserId = UUID.randomUUID();
+        when(shareService.hasProjectAccess(projectId, otherUserId)).thenReturn(true);
+        when(fileRepository.findByProjectIdAndFolderId(projectId, null)).thenReturn(java.util.List.of(file));
+
+        // Act
+        java.util.List<FileDto> result = fileService.listFiles(projectId, null, otherUserId);
+
+        // Assert
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("test.txt");
+        verify(shareService).hasProjectAccess(projectId, otherUserId);
     }
 }

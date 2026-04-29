@@ -32,6 +32,8 @@ interface FileTableProps {
   onDeleteFile: (file: FileDto) => void
   onShareFolder: (folder: FolderDto) => void
   onShareFile: (file: FileDto) => void
+  onViewHistoryFolder: (folder: FolderDto) => void
+  onViewHistoryFile: (file: FileDto) => void
 }
 
 export function FileTable({
@@ -46,6 +48,8 @@ export function FileTable({
   onDeleteFile,
   onShareFolder,
   onShareFile,
+  onViewHistoryFolder,
+  onViewHistoryFile,
 }: FileTableProps) {
   const { path, navigateTo } = useNavigationStore()
 
@@ -133,6 +137,7 @@ export function FileTable({
                   onMove={() => onMoveFolder(folder)}
                   onDelete={() => onDeleteFolder(folder)}
                   onShare={() => onShareFolder(folder)}
+                  onViewHistory={() => onViewHistoryFolder(folder)}
                 />
               </TableCell>
             </TableRow>
@@ -170,6 +175,7 @@ export function FileTable({
                     onMove={() => onMoveFile(file)}
                     onDelete={() => onDeleteFile(file)}
                     onShare={() => onShareFile(file)}
+                    onViewHistory={() => onViewHistoryFile(file)}
                   />
                 </TableCell>
               </TableRow>

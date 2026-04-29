@@ -94,3 +94,19 @@ These test cases verify the Shares module, covering internal resource sharing, s
 | 2 | Verify that resources the user owns are NOT included. | List only contains resources shared by others. |
 | 3 | Verify that revoked shares are NOT included. | Revoked shares are absent. |
 | 4 | Call endpoint as a user with no shared resources. | 200 OK; Returns an empty list `[]`. |
+| 5 | Verify each shared resource contains `projectId` and `folderId`. | Response includes parent project/folder context for navigation. |
+
+---
+
+### TC-SHARE-08: Access Shared Resource via Project Context
+**Description:** Verify that a user who has access to a specific folder/file can access the project metadata and list resources within that project context.
+**Endpoints:** `GET /api/v1/projects/{id}`, `GET /api/v1/folders?projectId={id}`
+**Headers:** `Authorization: Bearer <access_token>`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | Share a **FOLDER** with User B from Project A. | 201 Created. |
+| 2 | User B requests Project A details (`GET /projects/{projectAId}`). | 200 OK; User B can see project name/metadata (implied view access). |
+| 3 | User B lists folders in Project A (`GET /folders?projectId={projectAId}`). | 200 OK; User B can list folders they have access to. |
+| 4 | User B lists files in shared Folder. | 200 OK; User B can see files within the shared folder. |
+| 5 | User B attempts to access a sibling folder in Project A that was NOT shared. | 403 Forbidden or 404 Not Found (depending on listing implementation). |

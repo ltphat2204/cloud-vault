@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ltphat.cloudvault.backend.shares.application.service.ShareService;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,9 @@ class ProjectServiceImplTest {
 
     @Mock
     private IActivityLogService auditService;
+    
+    @Mock
+    private ShareService shareService;
 
     @InjectMocks
     private ProjectServiceImpl projectService;
@@ -103,9 +107,29 @@ class ProjectServiceImplTest {
         Project project = Project.builder().id(projectId).name("Test Project").ownerId(otherOwnerId).build();
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(shareService.hasProjectAccess(projectId, ownerId)).thenReturn(false);
 
         assertThatThrownBy(() -> projectService.getProject(projectId, ownerId))
                 .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void getProject_SharedAccess_Success() {
+        UUID projectId = UUID.randomUUID();
+        UUID ownerId = UUID.randomUUID();
+        UUID otherOwnerId = UUID.randomUUID();
+        Project project = Project.builder().id(projectId).name("Shared Project").ownerId(otherOwnerId).build();
+        ProjectDto projectDto = ProjectDto.builder().id(projectId).name("Shared Project").ownerId(otherOwnerId).build();
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(shareService.hasProjectAccess(projectId, ownerId)).thenReturn(true);
+        when(projectApplicationMapper.toDto(project)).thenReturn(projectDto);
+
+        ProjectDto result = projectService.getProject(projectId, ownerId);
+
+        assertThat(result.getId()).isEqualTo(projectId);
+        assertThat(result.getName()).isEqualTo("Shared Project");
+        verify(shareService).hasProjectAccess(projectId, ownerId);
     }
 
     @Test

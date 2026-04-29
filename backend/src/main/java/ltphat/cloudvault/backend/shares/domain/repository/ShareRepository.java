@@ -15,4 +15,6 @@ public interface ShareRepository {
     List<Share> findBySharedWithUserId(UUID userId);
     void delete(UUID id);
     boolean existsByResourceAndUser(ResourceType type, UUID resourceId, UUID userId);
+    boolean hasProjectAccess(UUID projectId, UUID userId);
+    List<UUID> findSharedUserIdsByProjectId(UUID projectId);
 }

@@ -68,6 +68,8 @@ export interface SharedResourceDto {
   resourceId: string
   resourceName: string
   sharedBy: string
+  projectId?: string
+  folderId?: string
   permission: Permission
   createdAt: string
 }
@@ -89,5 +91,21 @@ export interface PageResponse<T> {
   totalPages: number
   size: number
   number: number
+}
+
+export type AuditAction = 
+  | 'PROJECT_CREATED' | 'PROJECT_UPDATED' | 'PROJECT_DELETED'
+  | 'FOLDER_CREATED' | 'FOLDER_RENAMED' | 'FOLDER_MOVED' | 'FOLDER_DELETED'
+  | 'FILE_UPLOADED' | 'FILE_RENAMED' | 'FILE_MOVED' | 'FILE_DELETED' | 'FILE_DOWNLOADED'
+  | 'SHARE_CREATED' | 'SHARE_UPDATED' | 'SHARE_DELETED'
+
+export interface ActivityDto {
+  id: string
+  userId: string
+  action: AuditAction
+  resourceType: ResourceType
+  resourceId: string
+  details: Record<string, any>
+  createdAt: string
 }
 

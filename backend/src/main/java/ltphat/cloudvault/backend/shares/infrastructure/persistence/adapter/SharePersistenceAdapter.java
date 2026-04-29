@@ -61,4 +61,14 @@ public class SharePersistenceAdapter implements ShareRepository {
     public boolean existsByResourceAndUser(ResourceType type, UUID resourceId, UUID userId) {
         return repository.existsByResourceTypeAndResourceIdAndSharedWithUserId(type, resourceId, userId);
     }
+
+    @Override
+    public boolean hasProjectAccess(UUID projectId, UUID userId) {
+        return repository.existsByProjectIdAndSharedWithUserId(projectId, userId);
+    }
+
+    @Override
+    public List<UUID> findSharedUserIdsByProjectId(UUID projectId) {
+        return repository.findSharedUserIdsByProjectId(projectId);
+    }
 }

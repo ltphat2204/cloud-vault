@@ -18,6 +18,8 @@ public class ShareResponse {
     private UUID id;
     private ResourceType resourceType;
     private UUID resourceId;
+    private UUID projectId;
+    private UUID folderId;
     private String resourceName; // Added for convenience in "Shared with me"
     private SharedUserDto sharedWithUser;
     private String sharedBy; // Email of the sharer

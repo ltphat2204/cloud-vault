@@ -12,6 +12,7 @@ import java.util.UUID;
 @Table(name = "shares", indexes = {
         @Index(name = "idx_shares_shared_with", columnList = "shared_with_user_id"),
         @Index(name = "idx_shares_resource", columnList = "resource_type, resource_id"),
+        @Index(name = "idx_shares_project_access", columnList = "project_id, shared_with_user_id"),
         @Index(name = "idx_shares_token", columnList = "access_token")
 })
 @Getter
@@ -30,6 +31,9 @@ public class JpaShare {
 
     @Column(name = "resource_id", nullable = false)
     private UUID resourceId;
+
+    @Column(name = "project_id", nullable = true)
+    private UUID projectId;
 
     @Column(name = "shared_with_user_id")
     private UUID sharedWithUserId;

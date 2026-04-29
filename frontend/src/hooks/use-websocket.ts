@@ -62,6 +62,27 @@ export function useWebSocket() {
           duration: 5000,
         })
       })
+
+      client.subscribe('/user/queue/sync', (message) => {
+        const syncEvent = JSON.parse(message.body)
+        // console.log('Received sync event:', syncEvent)
+
+        // Invalidate relevant queries based on the sync event type or resource
+        // For simplicity and robustness, we invalidate all file system related queries
+        queryClient.invalidateQueries({ queryKey: ['files'] })
+        queryClient.invalidateQueries({ queryKey: ['folders'] })
+        queryClient.invalidateQueries({ queryKey: ['projects'] })
+        queryClient.invalidateQueries({ queryKey: ['trash'] })
+        queryClient.invalidateQueries({ queryKey: ['activities'] })
+
+        // Show a subtle notification for some sync events if desired
+        if (syncEvent.type === 'FILE_UPLOADED' || syncEvent.type === 'FILE_DELETED') {
+          toast.success(syncEvent.message || 'File system updated', {
+            description: 'The latest changes have been synced.',
+            duration: 3000,
+          })
+        }
+      })
     }
 
     client.onStompError = (frame) => {
