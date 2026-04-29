@@ -218,3 +218,30 @@ Soft deletes a file.
 | `versionNumber` | Integer | Current active version |
 | `createdAt` | LocalDateTime | Creation timestamp |
 | `updatedAt` | LocalDateTime | Last update timestamp |
+| `versionNumber` | Integer | Current active version |
+
+## Real-Time Updates (WebSockets)
+
+The Files module emits WebSocket events to keep connected clients synchronized. These events are transient and are **not** persisted in the database history. They are sent to the dedicated synchronization queue: `/user/queue/sync`.
+
+### Event Types (RealTimeUpdateType)
+
+- `FILE_CREATED`: Emitted when a new file is uploaded.
+- `FILE_UPDATED`: Emitted when a file is renamed or a new version is uploaded.
+- `FILE_DELETED`: Emitted when a file is soft-deleted.
+- `FILE_MOVED`: Emitted when a file is moved to a different folder.
+
+### Sync Event Payload (SyncEventDTO)
+
+```json
+{
+  "type": "FILE_CREATED",
+  "timestamp": "2024-04-28T10:00:00",
+  "metadata": {
+    "projectId": "project-uuid",
+    "folderId": "folder-uuid",
+    "resourceId": "file-uuid",
+    "resourceName": "report.pdf"
+  }
+}
+```

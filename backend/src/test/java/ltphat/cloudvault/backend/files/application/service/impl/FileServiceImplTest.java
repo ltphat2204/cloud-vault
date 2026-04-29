@@ -14,6 +14,8 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileVersionRepository;
 import ltphat.cloudvault.backend.folders.domain.model.Folder;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
+import ltphat.cloudvault.backend.shares.application.service.ShareService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,6 +53,12 @@ class FileServiceImplTest {
 
     @Mock
     private IActivityLogService auditService;
+    
+    @Mock
+    private ShareService shareService;
+
+    @Mock
+    private RealTimeUpdateService realTimeUpdateService;
 
     @InjectMocks
     private FileServiceImpl fileService;
@@ -72,6 +80,8 @@ class FileServiceImplTest {
                 .projectId(projectId)
                 .versionNumber(1)
                 .build();
+        
+        lenient().when(shareService.getProjectMemberIds(any())).thenReturn(java.util.List.of());
     }
 
     @Test

@@ -19,6 +19,9 @@ import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
 import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
+import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
+import ltphat.cloudvault.backend.notifications.domain.model.RealTimeUpdateType;
+import ltphat.cloudvault.backend.shares.application.service.ShareService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,8 @@ public class FileServiceImpl implements IFileService {
     private final FileApplicationMapper fileApplicationMapper;
     private final IStorageService storageService;
     private final IActivityLogService auditService;
+    private final ShareService shareService;
+    private final RealTimeUpdateService realTimeUpdateService;
 
     @Override
     @Transactional
@@ -103,6 +108,10 @@ public class FileServiceImpl implements IFileService {
 
         auditService.logActivity(ownerId, ActivityAction.FILE_UPLOADED, ResourceType.FILE, savedFile.getId(), 
                 Map.of("name", name, "size", size, "version", nextVersion));
+
+        broadcastUpdate(projectId, RealTimeUpdateType.FILE_CREATED, ownerId, 
+                Map.of("projectId", projectId, "folderId", folderId != null ? folderId : "root", 
+                        "resourceId", savedFile.getId(), "resourceName", name));
 
         return fileApplicationMapper.toDto(savedFile);
     }
@@ -192,6 +201,10 @@ public class FileServiceImpl implements IFileService {
         auditService.logActivity(ownerId, ActivityAction.FILE_RENAMED, ResourceType.FILE, id, 
                 Map.of("oldName", oldName, "newName", request.getName()));
 
+        broadcastUpdate(file.getProjectId(), RealTimeUpdateType.FILE_UPDATED, ownerId, 
+                Map.of("projectId", file.getProjectId(), "folderId", file.getFolderId() != null ? file.getFolderId() : "root", 
+                        "resourceId", id, "resourceName", request.getName()));
+
         return fileApplicationMapper.toDto(savedFile);
     }
 
@@ -224,6 +237,10 @@ public class FileServiceImpl implements IFileService {
         auditService.logActivity(ownerId, ActivityAction.FILE_MOVED, ResourceType.FILE, id, 
                 Map.of("targetFolderId", request.getTargetFolderId() != null ? request.getTargetFolderId().toString() : "root"));
 
+        broadcastUpdate(file.getProjectId(), RealTimeUpdateType.FILE_MOVED, ownerId, 
+                Map.of("projectId", file.getProjectId(), "folderId", request.getTargetFolderId() != null ? request.getTargetFolderId() : "root", 
+                        "resourceId", id, "resourceName", file.getName()));
+
         return fileApplicationMapper.toDto(savedFile);
     }
 
@@ -242,5 +259,16 @@ public class FileServiceImpl implements IFileService {
 
         auditService.logActivity(ownerId, ActivityAction.FILE_DELETED, ResourceType.FILE, id, 
                 Map.of("name", file.getName()));
+
+        broadcastUpdate(file.getProjectId(), RealTimeUpdateType.FILE_DELETED, ownerId, 
+                Map.of("projectId", file.getProjectId(), "folderId", file.getFolderId() != null ? file.getFolderId() : "root", 
+                        "resourceId", id, "resourceName", file.getName()));
+    }
+
+    private void broadcastUpdate(UUID projectId, RealTimeUpdateType type, UUID actorId, Map<String, Object> metadata) {
+        List<UUID> memberIds = shareService.getProjectMemberIds(projectId);
+        memberIds.stream()
+                .filter(userId -> !userId.equals(actorId))
+                .forEach(userId -> realTimeUpdateService.sendSyncEvent(userId, type, metadata));
     }
 }
