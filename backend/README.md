@@ -11,6 +11,7 @@ The system is decomposed into highly cohesive modules, each following a strict l
 - [**`folders`**](src/main/java/ltphat/cloudvault/backend/folders/README.md): Hierarchical directory structure within projects. Supports recursive operations and soft deletion.
 - [**`files`**](src/main/java/ltphat/cloudvault/backend/files/README.md): Files management with versioning support and MinIO-backed storage.
 - [**`shares`**](src/main/java/ltphat/cloudvault/backend/shares/README.md): Resource sharing module. Enables internal user-to-user sharing and secure public link sharing.
+- [**`notifications`**](src/main/java/ltphat/cloudvault/backend/notifications/README.md): System-wide notification delivery and management.
 - [**`trash`**](src/main/java/ltphat/cloudvault/backend/trash/README.md): Centralized management for soft-deleted resources across all modules.
 - [**`shared`**](src/main/java/ltphat/cloudvault/backend/shared/README.md): Cross-cutting concerns, including global security configuration, common DTOs, and exception handlers.
 

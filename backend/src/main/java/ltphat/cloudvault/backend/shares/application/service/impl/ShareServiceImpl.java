@@ -19,8 +19,11 @@ import ltphat.cloudvault.backend.shares.domain.repository.ShareRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ltphat.cloudvault.backend.notifications.application.service.NotificationService;
+import ltphat.cloudvault.backend.notifications.domain.model.NotificationType;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,7 @@ public class ShareServiceImpl implements ShareService {
     private final IFolderRepository folderRepository;
     private final IFileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -59,6 +63,17 @@ public class ShareServiceImpl implements ShareService {
         );
 
         Share saved = shareRepository.save(share);
+
+        String resourceName = getResourceName(request.getResourceType(), request.getResourceId());
+        String sharerEmail = userRepository.findById(requesterId).map(User::getEmail).orElse("Someone");
+
+        notificationService.createNotification(
+                recipient.getId(),
+                NotificationType.SHARE_RECEIVED,
+                String.format("%s shared '%s' with you", sharerEmail, resourceName),
+                Map.of("resourceId", request.getResourceId(), "senderEmail", sharerEmail)
+        );
+
         return mapToResponse(saved, recipient, null);
     }
 
@@ -92,6 +107,16 @@ public class ShareServiceImpl implements ShareService {
 
         share.updatePermission(request.getPermission());
         shareRepository.save(share);
+
+        if (share.getSharedWithUserId() != null) {
+            String resourceName = getResourceName(share.getResourceType(), share.getResourceId());
+            notificationService.createNotification(
+                    share.getSharedWithUserId(),
+                    NotificationType.SHARE_UPDATED,
+                    String.format("Your permission for '%s' has been updated to %s", resourceName, request.getPermission()),
+                    Map.of("resourceId", share.getResourceId(), "permission", request.getPermission())
+            );
+        }
     }
 
     @Override
@@ -101,6 +126,16 @@ public class ShareServiceImpl implements ShareService {
                 .orElseThrow(() -> new ShareNotFoundException("Share record not found"));
 
         validateResourceOwnership(share.getResourceType(), share.getResourceId(), requesterId);
+
+        if (share.getSharedWithUserId() != null) {
+            String resourceName = getResourceName(share.getResourceType(), share.getResourceId());
+            notificationService.createNotification(
+                    share.getSharedWithUserId(),
+                    NotificationType.SHARE_REVOKED,
+                    String.format("Your access to '%s' has been revoked", resourceName),
+                    Map.of("resourceId", share.getResourceId())
+            );
+        }
 
         shareRepository.delete(shareId);
     }
