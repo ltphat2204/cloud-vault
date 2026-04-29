@@ -159,6 +159,7 @@ public class ShareServiceImpl implements ShareService {
     @Transactional(readOnly = true)
     public List<ShareResponse> getResourcesSharedWithMe(UUID userId) {
         return shareRepository.findBySharedWithUserId(userId).stream()
+                .filter(this::isResourceActive)
                 .map(share -> {
                     String resourceName = getResourceName(share.getResourceType(), share.getResourceId());
                     String sharerEmail = getResourceOwnerEmail(share.getResourceType(), share.getResourceId());
@@ -167,6 +168,20 @@ public class ShareServiceImpl implements ShareService {
                     return response;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private boolean isResourceActive(Share share) {
+        return switch (share.getResourceType()) {
+            case PROJECT -> projectRepository.findById(share.getResourceId())
+                    .map(p -> !p.isDeleted())
+                    .orElse(false);
+            case FOLDER -> folderRepository.findById(share.getResourceId())
+                    .map(f -> !f.isDeleted())
+                    .orElse(false);
+            case FILE -> fileRepository.findById(share.getResourceId())
+                    .map(f -> !f.isDeleted())
+                    .orElse(false);
+        };
     }
 
     @Override
