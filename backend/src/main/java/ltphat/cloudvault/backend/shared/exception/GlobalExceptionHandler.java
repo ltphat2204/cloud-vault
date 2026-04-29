@@ -4,6 +4,12 @@ import ltphat.cloudvault.backend.iam.domain.exception.AuthException;
 import ltphat.cloudvault.backend.iam.domain.exception.TokenSecurityException;
 import ltphat.cloudvault.backend.projects.domain.exception.ProjectException;
 import ltphat.cloudvault.backend.projects.domain.exception.ProjectNotFoundException;
+import ltphat.cloudvault.backend.shares.domain.exception.ShareException;
+import ltphat.cloudvault.backend.shares.domain.exception.ShareNotFoundException;
+import ltphat.cloudvault.backend.files.domain.exception.FileException;
+import ltphat.cloudvault.backend.files.domain.exception.FileNotFoundException;
+import ltphat.cloudvault.backend.folders.domain.exception.FolderException;
+import ltphat.cloudvault.backend.folders.domain.exception.FolderNotFoundException;
 import ltphat.cloudvault.backend.shared.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +36,36 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleProjectException(ProjectException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         if (e instanceof ProjectNotFoundException) {
+            status = HttpStatus.NOT_FOUND;
+        }
+        return ResponseEntity.status(status)
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(ShareException.class)
+    public ResponseEntity<ApiResponse<Void>> handleShareException(ShareException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        if (e instanceof ShareNotFoundException) {
+            status = HttpStatus.NOT_FOUND;
+        }
+        return ResponseEntity.status(status)
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(FileException.class)
+    public ResponseEntity<ApiResponse<Void>> handleFileException(FileException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        if (e instanceof FileNotFoundException) {
+            status = HttpStatus.NOT_FOUND;
+        }
+        return ResponseEntity.status(status)
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(FolderException.class)
+    public ResponseEntity<ApiResponse<Void>> handleFolderException(FolderException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        if (e instanceof FolderNotFoundException) {
             status = HttpStatus.NOT_FOUND;
         }
         return ResponseEntity.status(status)
