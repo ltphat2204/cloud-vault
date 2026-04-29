@@ -105,3 +105,16 @@ These test cases verify the Files module, focusing on metadata CRUD, version man
 | :--- | :--- | :--- |
 | 1 | Call download for a valid file ID. | 200 OK; Content-Type matches file MIME; Binary stream received. |
 | 2 | Call download for a soft-deleted file ID. | 404 Not Found. |
+
+---
+
+### TC-FILE-09: Real-time Update Verification
+**Description:** Verify that file operations trigger WebSocket synchronization events for all users with access to the project.
+**WebSocket:** `/user/queue/sync`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | User A uploads a file to a shared project. | User B (who has access) receives a `FILE_CREATED` event via WebSocket. |
+| 2 | User A renames the file. | User B receives a `FILE_UPDATED` event. |
+| 3 | User A moves the file. | User B receives a `FILE_MOVED` event. |
+| 4 | User A deletes the file. | User B receives a `FILE_DELETED` event. |

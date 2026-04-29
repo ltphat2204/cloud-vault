@@ -26,11 +26,18 @@ class FileVersioningIntegrationTest extends AbstractIntegrationTest {
     
     @Autowired
     private IActivityLogRepository auditRepository;
+    
+    @Autowired
+    private ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository projectRepository;
 
     @Test
     void testFileVersioningFlow() throws Exception {
         UUID ownerId = UUID.randomUUID();
-        UUID projectId = UUID.randomUUID();
+        
+        ltphat.cloudvault.backend.projects.domain.model.Project project = projectRepository.save(
+                ltphat.cloudvault.backend.projects.domain.model.Project.createNew("Test Project", ownerId));
+        UUID projectId = project.getId();
+        
         String fileName = "test.txt";
         
         // 1. Upload Version 1

@@ -14,4 +14,5 @@ public interface ShareService {
     List<ShareResponse> getSharesForResource(ResourceType type, UUID resourceId, UUID requesterId);
     List<ShareResponse> getResourcesSharedWithMe(UUID userId);
     ShareResponse getPublicShare(UUID token, String password);
+    List<UUID> getProjectMemberIds(UUID projectId);
 }

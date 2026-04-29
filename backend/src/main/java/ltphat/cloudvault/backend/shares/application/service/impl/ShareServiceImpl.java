@@ -255,6 +255,21 @@ public class ShareServiceImpl implements ShareService {
         return userRepository.findById(ownerId).map(User::getEmail).orElse("Unknown");
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<UUID> getProjectMemberIds(UUID projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ShareException("Project not found"));
+        
+        List<UUID> memberIds = shareRepository.findByResource(ResourceType.PROJECT, projectId).stream()
+                .map(Share::getSharedWithUserId)
+                .filter(java.util.Objects::nonNull)
+                .collect(Collectors.toList());
+        
+        memberIds.add(project.getOwnerId());
+        return memberIds;
+    }
+
     private ShareResponse mapToResponse(Share share, User recipient, String resourceName) {
         ShareResponse.SharedUserDto userDto = recipient != null
                 ? ShareResponse.SharedUserDto.builder()

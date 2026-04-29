@@ -18,6 +18,9 @@ import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
 import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
+import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
+import ltphat.cloudvault.backend.notifications.domain.model.RealTimeUpdateType;
+import ltphat.cloudvault.backend.shares.application.service.ShareService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +40,8 @@ public class FolderServiceImpl implements IFolderService {
     private final IProjectRepository projectRepository;
     private final FolderApplicationMapper folderApplicationMapper;
     private final IActivityLogService auditService;
+    private final ShareService shareService;
+    private final RealTimeUpdateService realTimeUpdateService;
 
     @Override
     @Transactional
@@ -66,6 +71,10 @@ public class FolderServiceImpl implements IFolderService {
 
         auditService.logActivity(ownerId, ActivityAction.FOLDER_CREATED, ResourceType.FOLDER, savedFolder.getId(), 
                 Map.of("name", savedFolder.getName()));
+
+        broadcastUpdate(request.getProjectId(), RealTimeUpdateType.FOLDER_CREATED, ownerId, 
+                Map.of("projectId", request.getProjectId(), "parentFolderId", request.getParentFolderId() != null ? request.getParentFolderId() : "root", 
+                        "resourceId", savedFolder.getId(), "resourceName", savedFolder.getName()));
 
         return folderApplicationMapper.toDto(savedFolder);
     }
@@ -117,6 +126,10 @@ public class FolderServiceImpl implements IFolderService {
         auditService.logActivity(ownerId, ActivityAction.FOLDER_RENAMED, ResourceType.FOLDER, id, 
                 Map.of("oldName", oldName, "newName", request.getName()));
 
+        broadcastUpdate(folder.getProjectId(), RealTimeUpdateType.FOLDER_UPDATED, ownerId, 
+                Map.of("projectId", folder.getProjectId(), "parentFolderId", folder.getParentFolderId() != null ? folder.getParentFolderId() : "root", 
+                        "resourceId", id, "resourceName", request.getName()));
+
         return folderApplicationMapper.toDto(updatedFolder);
     }
 
@@ -158,6 +171,10 @@ public class FolderServiceImpl implements IFolderService {
         auditService.logActivity(ownerId, ActivityAction.FOLDER_MOVED, ResourceType.FOLDER, id, 
                 Map.of("targetParentFolderId", request.getTargetParentFolderId() != null ? request.getTargetParentFolderId().toString() : "root"));
 
+        broadcastUpdate(folder.getProjectId(), RealTimeUpdateType.FOLDER_MOVED, ownerId, 
+                Map.of("projectId", folder.getProjectId(), "parentFolderId", request.getTargetParentFolderId() != null ? request.getTargetParentFolderId() : "root", 
+                        "resourceId", id, "resourceName", folder.getName()));
+
         return folderApplicationMapper.toDto(movedFolder);
     }
 
@@ -189,6 +206,17 @@ public class FolderServiceImpl implements IFolderService {
         
         auditService.logActivity(ownerId, ActivityAction.FOLDER_DELETED, ResourceType.FOLDER, id, 
                 Map.of("name", folder.getName()));
+
+        broadcastUpdate(folder.getProjectId(), RealTimeUpdateType.FOLDER_DELETED, ownerId, 
+                Map.of("projectId", folder.getProjectId(), "parentFolderId", folder.getParentFolderId() != null ? folder.getParentFolderId() : "root", 
+                        "resourceId", id, "resourceName", folder.getName()));
+    }
+
+    private void broadcastUpdate(UUID projectId, RealTimeUpdateType type, UUID actorId, Map<String, Object> metadata) {
+        List<UUID> memberIds = shareService.getProjectMemberIds(projectId);
+        memberIds.stream()
+                .filter(userId -> !userId.equals(actorId))
+                .forEach(userId -> realTimeUpdateService.sendSyncEvent(userId, type, metadata));
     }
 
     @Override

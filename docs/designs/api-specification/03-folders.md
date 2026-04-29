@@ -220,3 +220,29 @@ Soft deletes a folder and all its contents (subfolders and files). The deleted i
 | `parentFolderId` | UUID | Parent folder ID (null for root) |
 | `createdAt` | LocalDateTime | Creation timestamp |
 | `updatedAt` | LocalDateTime | Last update timestamp |
+
+## Real-Time Updates (WebSockets)
+
+The Folders module emits WebSocket events to keep connected clients synchronized. These events are transient and are **not** persisted in the database history. They are sent to the dedicated synchronization queue: `/user/queue/sync`.
+
+### Event Types (RealTimeUpdateType)
+
+- `FOLDER_CREATED`: Emitted when a new folder is created.
+- `FOLDER_UPDATED`: Emitted when a folder is renamed.
+- `FOLDER_DELETED`: Emitted when a folder is soft-deleted.
+- `FOLDER_MOVED`: Emitted when a folder is moved to a different location.
+
+### Sync Event Payload (SyncEventDTO)
+
+```json
+{
+  "type": "FOLDER_CREATED",
+  "timestamp": "2024-04-28T10:00:00",
+  "metadata": {
+    "projectId": "project-uuid",
+    "parentFolderId": "parent-folder-uuid",
+    "resourceId": "folder-uuid",
+    "resourceName": "Documents"
+  }
+}
+```

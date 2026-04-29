@@ -92,3 +92,16 @@ These test cases verify the Folders module, focusing on hierarchical CRUD operat
 | :--- | :--- | :--- |
 | 1 | Call endpoint for a project with multiple nested folders. | 200 OK; Returns flat list of all folders in the project. |
 | 2 | Verify that soft-deleted folders are excluded. | Deleted folders not in the list. |
+
+---
+
+### TC-FOLD-08: Real-time Update Verification
+**Description:** Verify that folder operations trigger WebSocket synchronization events for all users with access to the project.
+**WebSocket:** `/user/queue/sync`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | User A creates a folder in a shared project. | User B (who has access) receives a `FOLDER_CREATED` event via WebSocket. |
+| 2 | User A renames the folder. | User B receives a `FOLDER_UPDATED` event. |
+| 3 | User A moves the folder. | User B receives a `FOLDER_MOVED` event. |
+| 4 | User A deletes the folder. | User B receives a `FOLDER_DELETED` event. |

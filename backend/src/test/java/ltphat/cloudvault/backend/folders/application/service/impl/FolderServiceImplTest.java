@@ -11,6 +11,8 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
+import ltphat.cloudvault.backend.shares.application.service.ShareService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +46,12 @@ class FolderServiceImplTest {
 
     @Mock
     private IActivityLogService auditService;
+    
+    @Mock
+    private ShareService shareService;
+
+    @Mock
+    private RealTimeUpdateService realTimeUpdateService;
 
     @InjectMocks
     private FolderServiceImpl folderService;
@@ -60,6 +68,8 @@ class FolderServiceImplTest {
                 .id(projectId)
                 .ownerId(ownerId)
                 .build();
+        
+        lenient().when(shareService.getProjectMemberIds(any())).thenReturn(java.util.List.of());
     }
 
     @Test
@@ -73,7 +83,16 @@ class FolderServiceImplTest {
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(folderRepository.existsByNameAndParentFolderIdAndProjectId(anyString(), any(), any())).thenReturn(false);
-        when(folderRepository.save(any(Folder.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(folderRepository.save(any(Folder.class))).thenAnswer(invocation -> {
+            Folder f = invocation.getArgument(0);
+            return Folder.builder()
+                    .id(UUID.randomUUID())
+                    .name(f.getName())
+                    .parentFolderId(f.getParentFolderId())
+                    .projectId(f.getProjectId())
+                    .ownerId(f.getOwnerId())
+                    .build();
+        });
 
         // Act
         FolderDto result = folderService.createFolder(request, ownerId);
