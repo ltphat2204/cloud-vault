@@ -55,3 +55,28 @@ notificationService.createNotification(
 
 ### 3. Add New Event Types
 To support new events, add entries to the `NotificationType` enum in the domain layer.
+
+## Real-time Notifications (WebSocket)
+
+The module uses STOMP over WebSocket to provide real-time updates.
+
+- **WebSocket Endpoint**: `/ws-notifications`
+- **Subscription Path**: `/user/queue/notifications`
+
+### Client Implementation Example (JavaScript)
+
+```javascript
+const socket = new SockJS('/ws-notifications');
+const stompClient = Stomp.over(socket);
+
+stompClient.connect({}, (frame) => {
+    console.log('Connected: ' + frame);
+    
+    // Subscribe to user-specific notification queue
+    stompClient.subscribe('/user/queue/notifications', (notification) => {
+        const data = JSON.parse(notification.body);
+        console.log('Received notification:', data.message);
+        // Show toast or update UI
+    });
+});
+```
