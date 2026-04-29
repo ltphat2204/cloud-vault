@@ -12,6 +12,8 @@ import ltphat.cloudvault.backend.shares.domain.model.Permission;
 import ltphat.cloudvault.backend.shares.domain.model.ResourceType;
 import ltphat.cloudvault.backend.notifications.domain.model.NotificationType;
 import ltphat.cloudvault.backend.notifications.domain.repository.NotificationRepository;
+import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
+import ltphat.cloudvault.backend.audit.domain.repository.IActivityLogRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ class ShareIntegrationTest extends AbstractIntegrationTest {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private NotificationRepository notificationRepository;
+    @Autowired private IActivityLogRepository auditRepository;
 
     private User owner;
     private User recipient;
@@ -94,6 +97,10 @@ class ShareIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].resourceName").value("Test Project"))
                 .andExpect(jsonPath("$.data[0].sharedBy").value("owner@example.com"));
+
+        // 4. Verify Audit Log
+        var logs = auditRepository.findByUserId(owner.getId(), ActivityAction.RESOURCE_SHARED, null, Pageable.unpaged());
+        assertThat(logs.getContent()).hasSize(1);
     }
 
     @Test
@@ -126,6 +133,10 @@ class ShareIntegrationTest extends AbstractIntegrationTest {
         mockMvc.perform(get("/shares/public/" + token)
                         .param("password", "wrong"))
                 .andExpect(status().isBadRequest()); // ShareException mapped to 400
+
+        // 4. Verify Audit Log
+        var logs = auditRepository.findByUserId(owner.getId(), ActivityAction.PUBLIC_LINK_CREATED, null, Pageable.unpaged());
+        assertThat(logs.getContent()).hasSize(1);
     }
 
     @Test

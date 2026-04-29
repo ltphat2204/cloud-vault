@@ -10,6 +10,7 @@ import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +41,9 @@ class FolderServiceImplTest {
 
     @Spy
     private FolderApplicationMapper folderApplicationMapper;
+
+    @Mock
+    private IActivityLogService auditService;
 
     @InjectMocks
     private FolderServiceImpl folderService;
@@ -120,8 +124,8 @@ class FolderServiceImplTest {
     void deleteFolder_SoftDeletesRecursive() {
         // Arrange
         UUID folderId = UUID.randomUUID();
-        Folder folder = Folder.builder().id(folderId).ownerId(ownerId).projectId(projectId).build();
-        Folder subfolder = Folder.builder().id(UUID.randomUUID()).ownerId(ownerId).projectId(projectId).build();
+        Folder folder = Folder.builder().id(folderId).name("test").ownerId(ownerId).projectId(projectId).build();
+        Folder subfolder = Folder.builder().id(UUID.randomUUID()).name("sub").ownerId(ownerId).projectId(projectId).build();
 
         when(folderRepository.findById(folderId)).thenReturn(Optional.of(folder));
         when(folderRepository.findAllSubfolders(folderId)).thenReturn(new java.util.ArrayList<>(java.util.List.of(subfolder)));

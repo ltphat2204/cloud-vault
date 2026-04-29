@@ -8,6 +8,7 @@ import ltphat.cloudvault.backend.projects.domain.exception.ProjectNotFoundExcept
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.folders.application.service.IFolderService;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,6 +37,9 @@ class ProjectServiceImplTest {
 
     @Mock
     private IFolderService folderService;
+
+    @Mock
+    private IActivityLogService auditService;
 
     @InjectMocks
     private ProjectServiceImpl projectService;

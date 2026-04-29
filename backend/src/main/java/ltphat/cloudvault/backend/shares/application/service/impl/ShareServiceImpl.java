@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ltphat.cloudvault.backend.notifications.application.service.NotificationService;
 import ltphat.cloudvault.backend.notifications.domain.model.NotificationType;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,7 @@ public class ShareServiceImpl implements ShareService {
     private final IFileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationService notificationService;
+    private final IActivityLogService auditService;
 
     @Override
     @Transactional
@@ -74,6 +77,11 @@ public class ShareServiceImpl implements ShareService {
                 Map.of("resourceId", request.getResourceId(), "senderEmail", sharerEmail)
         );
 
+        auditService.logActivity(requesterId, ActivityAction.RESOURCE_SHARED, 
+                ltphat.cloudvault.backend.audit.domain.model.ResourceType.valueOf(request.getResourceType().name()), 
+                request.getResourceId(), 
+                Map.of("sharedWith", request.getUserEmail(), "permission", request.getPermission()));
+
         return mapToResponse(saved, recipient, null);
     }
 
@@ -94,6 +102,12 @@ public class ShareServiceImpl implements ShareService {
         );
 
         Share saved = shareRepository.save(share);
+
+        auditService.logActivity(requesterId, ActivityAction.PUBLIC_LINK_CREATED, 
+                ltphat.cloudvault.backend.audit.domain.model.ResourceType.valueOf(request.getResourceType().name()), 
+                request.getResourceId(), 
+                Map.of("expiresAt", request.getExpiresAt() != null ? request.getExpiresAt().toString() : "never"));
+
         return mapToResponse(saved, null, null);
     }
 

@@ -13,6 +13,7 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.files.domain.repository.IFileVersionRepository;
 import ltphat.cloudvault.backend.folders.domain.model.Folder;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,6 +49,9 @@ class FileServiceImplTest {
     @Spy
     private FileApplicationMapper fileApplicationMapper;
 
+    @Mock
+    private IActivityLogService auditService;
+
     @InjectMocks
     private FileServiceImpl fileService;
 
@@ -66,6 +70,7 @@ class FileServiceImplTest {
                 .name("test.txt")
                 .ownerId(ownerId)
                 .projectId(projectId)
+                .versionNumber(1)
                 .build();
     }
 

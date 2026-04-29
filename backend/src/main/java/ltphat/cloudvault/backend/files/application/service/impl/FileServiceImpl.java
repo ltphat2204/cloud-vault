@@ -16,11 +16,15 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.files.domain.repository.IFileVersionRepository;
 import ltphat.cloudvault.backend.folders.domain.model.Folder;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
+import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,6 +38,7 @@ public class FileServiceImpl implements IFileService {
     private final IFolderRepository folderRepository;
     private final FileApplicationMapper fileApplicationMapper;
     private final IStorageService storageService;
+    private final IActivityLogService auditService;
 
     @Override
     @Transactional
@@ -96,6 +101,9 @@ public class FileServiceImpl implements IFileService {
         savedFile.setCurrentVersionId(savedVersion.getId());
         fileRepository.save(savedFile);
 
+        auditService.logActivity(ownerId, ActivityAction.FILE_UPLOADED, ResourceType.FILE, savedFile.getId(), 
+                Map.of("name", name, "size", size, "version", nextVersion));
+
         return fileApplicationMapper.toDto(savedFile);
     }
 
@@ -116,6 +124,9 @@ public class FileServiceImpl implements IFileService {
         } else {
             key = file.getMinioKey();
         }
+
+        auditService.logActivity(ownerId, ActivityAction.FILE_DOWNLOADED, ResourceType.FILE, fileId, 
+                Map.of("name", file.getName(), "version", versionNumber != null ? versionNumber : file.getVersionNumber()));
 
         return storageService.download(key);
     }
@@ -174,8 +185,12 @@ public class FileServiceImpl implements IFileService {
             throw new FileException("File with name '" + request.getName() + "' already exists in this location");
         }
 
+        String oldName = file.getName();
         file.updateMetadata(request.getName());
         File savedFile = fileRepository.save(file);
+
+        auditService.logActivity(ownerId, ActivityAction.FILE_RENAMED, ResourceType.FILE, id, 
+                Map.of("oldName", oldName, "newName", request.getName()));
 
         return fileApplicationMapper.toDto(savedFile);
     }
@@ -206,6 +221,9 @@ public class FileServiceImpl implements IFileService {
         file.move(request.getTargetFolderId());
         File savedFile = fileRepository.save(file);
 
+        auditService.logActivity(ownerId, ActivityAction.FILE_MOVED, ResourceType.FILE, id, 
+                Map.of("targetFolderId", request.getTargetFolderId() != null ? request.getTargetFolderId().toString() : "root"));
+
         return fileApplicationMapper.toDto(savedFile);
     }
 
@@ -221,5 +239,8 @@ public class FileServiceImpl implements IFileService {
 
         file.softDelete();
         fileRepository.save(file);
+
+        auditService.logActivity(ownerId, ActivityAction.FILE_DELETED, ResourceType.FILE, id, 
+                Map.of("name", file.getName()));
     }
 }

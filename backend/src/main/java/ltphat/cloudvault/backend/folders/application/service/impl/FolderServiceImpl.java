@@ -15,12 +15,16 @@ import ltphat.cloudvault.backend.folders.domain.model.Folder;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
+import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
+import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,7 @@ public class FolderServiceImpl implements IFolderService {
     private final IFileRepository fileRepository;
     private final IProjectRepository projectRepository;
     private final FolderApplicationMapper folderApplicationMapper;
+    private final IActivityLogService auditService;
 
     @Override
     @Transactional
@@ -58,6 +63,9 @@ public class FolderServiceImpl implements IFolderService {
 
         Folder folder = Folder.create(request.getName(), request.getParentFolderId(), request.getProjectId(), ownerId);
         Folder savedFolder = folderRepository.save(folder);
+
+        auditService.logActivity(ownerId, ActivityAction.FOLDER_CREATED, ResourceType.FOLDER, savedFolder.getId(), 
+                Map.of("name", savedFolder.getName()));
 
         return folderApplicationMapper.toDto(savedFolder);
     }
@@ -102,8 +110,12 @@ public class FolderServiceImpl implements IFolderService {
             throw new FolderException("Folder with name '" + request.getName() + "' already exists in this location");
         }
 
+        String oldName = folder.getName();
         folder.update(request.getName());
         Folder updatedFolder = folderRepository.save(folder);
+
+        auditService.logActivity(ownerId, ActivityAction.FOLDER_RENAMED, ResourceType.FOLDER, id, 
+                Map.of("oldName", oldName, "newName", request.getName()));
 
         return folderApplicationMapper.toDto(updatedFolder);
     }
@@ -143,6 +155,9 @@ public class FolderServiceImpl implements IFolderService {
         folder.move(request.getTargetParentFolderId());
         Folder movedFolder = folderRepository.save(folder);
 
+        auditService.logActivity(ownerId, ActivityAction.FOLDER_MOVED, ResourceType.FOLDER, id, 
+                Map.of("targetParentFolderId", request.getTargetParentFolderId() != null ? request.getTargetParentFolderId().toString() : "root"));
+
         return folderApplicationMapper.toDto(movedFolder);
     }
 
@@ -171,6 +186,9 @@ public class FolderServiceImpl implements IFolderService {
             f.softDelete();
             folderRepository.save(f);
         }
+        
+        auditService.logActivity(ownerId, ActivityAction.FOLDER_DELETED, ResourceType.FOLDER, id, 
+                Map.of("name", folder.getName()));
     }
 
     @Override
