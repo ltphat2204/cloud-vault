@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +34,9 @@ class NotificationServiceTest {
 
     @Mock
     private NotificationRepository notificationRepository;
+    
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks
     private NotificationServiceImpl notificationService;
@@ -109,6 +113,12 @@ class NotificationServiceTest {
     @Test
     void createNotification_Success() {
         notificationService.createNotification(userId, NotificationType.SHARE_RECEIVED, "Message", Map.of());
+        
         verify(notificationRepository).save(any(Notification.class));
+        verify(messagingTemplate).convertAndSendToUser(
+                eq(userId.toString()),
+                eq("/queue/notifications"),
+                any(NotificationDTO.class)
+        );
     }
 }
