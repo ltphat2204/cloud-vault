@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useAuth } from '@/hooks/use-auth'
+import { useWebSocket } from '@/hooks/use-websocket'
 import {
   Cloud,
   Trash2,
@@ -8,6 +9,7 @@ import {
   LogOut,
   User,
   ChevronRight,
+  Users,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -20,6 +22,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { NotificationBell } from '@/components/notifications/NotificationBell'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -27,9 +30,13 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth()
+  
+  // Initialize global WebSocket connection for real-time notifications
+  useWebSocket()
 
   const navItems = [
     { icon: Cloud, label: 'Projects', href: '/dashboard/projects' },
+    { icon: Users, label: 'Shared with me', href: '/dashboard/shared-with-me' },
     { icon: Trash2, label: 'Trash', href: '/dashboard/trash' },
   ]
 
@@ -41,7 +48,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex h-screen overflow-hidden bg-[var(--bg-base)]">
       {/* Sidebar */}
       <aside className="island-shell m-4 mr-0 flex w-72 flex-col rounded-[2rem] border-r-0">
-        <div className="p-8">
+        <div className="p-8 flex items-center justify-between">
           <Link
             to="/dashboard"
             className="flex items-center gap-3 no-underline"
@@ -53,7 +60,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               CloudVault
             </span>
           </Link>
+          <NotificationBell />
         </div>
+
 
         <nav className="flex-1 space-y-2 px-4">
           <p className="px-4 text-[10px] font-bold tracking-[0.2em] text-[var(--sea-ink-soft)] uppercase">

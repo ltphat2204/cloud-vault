@@ -2,11 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useProjects } from '@/hooks/queries/use-projects'
 import { ProjectCard } from '@/components/projects/ProjectCard'
 import { ProjectModal } from '@/components/projects/ProjectModal'
+import { ShareDialog } from '@/components/shares/ShareDialog'
 import { Button } from '@/components/ui/button'
 import { Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
+import type { ProjectDto } from '@/types'
 
 import {
   AlertDialog,
@@ -42,6 +44,7 @@ function ProjectsPage() {
     id: string
     name: string
   } | null>(null)
+  const [sharingProject, setSharingProject] = useState<ProjectDto | null>(null)
 
   const filteredProjects = projects.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()),
@@ -130,6 +133,7 @@ function ProjectsPage() {
               project={project}
               onRename={(id, name) => setEditingProject({ id, name })}
               onDelete={() => setDeletingProject({ id: project.id, name: project.name })}
+              onShare={(p) => setSharingProject(p)}
             />
           ))}
         </div>
@@ -150,6 +154,16 @@ function ProjectsPage() {
         title="Rename Project"
         initialName={editingProject?.name}
       />
+
+      {sharingProject && (
+        <ShareDialog
+          isOpen={!!sharingProject}
+          onClose={() => setSharingProject(null)}
+          resourceId={sharingProject.id}
+          resourceType="PROJECT"
+          resourceName={sharingProject.name}
+        />
+      )}
 
       <AlertDialog
         open={!!deletingProject}

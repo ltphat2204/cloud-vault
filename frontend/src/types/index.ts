@@ -43,3 +43,51 @@ export interface TrashItemDto {
   projectId: string
   originalPath: string
 }
+
+export type ResourceType = 'PROJECT' | 'FOLDER' | 'FILE'
+export type Permission = 'VIEW' | 'EDIT'
+
+export interface ShareDto {
+  id: string
+  resourceType: ResourceType
+  resourceId: string
+  sharedWithUser?: {
+    id: string
+    email: string
+  }
+  permission: Permission
+  accessToken?: string
+  publicUrl?: string
+  expiresAt?: string
+  createdAt: string
+}
+
+export interface SharedResourceDto {
+  id: string
+  resourceType: ResourceType
+  resourceId: string
+  resourceName: string
+  sharedBy: string
+  permission: Permission
+  createdAt: string
+}
+
+export type NotificationType = 'SHARE_RECEIVED' | 'SHARE_UPDATED' | 'SHARE_REVOKED' | 'PROJECT_INVITATION' | 'SYSTEM_ALERT'
+
+export interface NotificationDto {
+  id: string
+  type: NotificationType
+  message: string
+  read: boolean
+  metadata: Record<string, string>
+  createdAt: string
+}
+
+export interface PageResponse<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  size: number
+  number: number
+}
+

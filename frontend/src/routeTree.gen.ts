@@ -17,6 +17,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DashboardTrashRouteImport } from './routes/dashboard/trash'
+import { Route as DashboardSharedWithMeRouteImport } from './routes/dashboard/shared-with-me'
+import { Route as DashboardNotificationsRouteImport } from './routes/dashboard/notifications'
 import { Route as DashboardProjectsIndexRouteImport } from './routes/dashboard/projects/index'
 import { Route as DemoFormSimpleRouteImport } from './routes/demo/form.simple'
 import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
@@ -62,6 +64,16 @@ const DashboardTrashRoute = DashboardTrashRouteImport.update({
   path: '/trash',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSharedWithMeRoute = DashboardSharedWithMeRouteImport.update({
+  id: '/shared-with-me',
+  path: '/shared-with-me',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardProjectsIndexRoute = DashboardProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
@@ -90,6 +102,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/shared-with-me': typeof DashboardSharedWithMeRoute
   '/dashboard/trash': typeof DashboardTrashRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -103,6 +117,8 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/shared-with-me': typeof DashboardSharedWithMeRoute
   '/dashboard/trash': typeof DashboardTrashRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -118,6 +134,8 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/shared-with-me': typeof DashboardSharedWithMeRoute
   '/dashboard/trash': typeof DashboardTrashRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -134,6 +152,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard/notifications'
+    | '/dashboard/shared-with-me'
     | '/dashboard/trash'
     | '/demo/tanstack-query'
     | '/dashboard/'
@@ -147,6 +167,8 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/register'
+    | '/dashboard/notifications'
+    | '/dashboard/shared-with-me'
     | '/dashboard/trash'
     | '/demo/tanstack-query'
     | '/dashboard'
@@ -161,6 +183,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard/notifications'
+    | '/dashboard/shared-with-me'
     | '/dashboard/trash'
     | '/demo/tanstack-query'
     | '/dashboard/'
@@ -239,6 +263,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardTrashRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/shared-with-me': {
+      id: '/dashboard/shared-with-me'
+      path: '/shared-with-me'
+      fullPath: '/dashboard/shared-with-me'
+      preLoaderRoute: typeof DashboardSharedWithMeRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/notifications': {
+      id: '/dashboard/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/notifications'
+      preLoaderRoute: typeof DashboardNotificationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/projects/': {
       id: '/dashboard/projects/'
       path: '/projects'
@@ -271,6 +309,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardNotificationsRoute: typeof DashboardNotificationsRoute
+  DashboardSharedWithMeRoute: typeof DashboardSharedWithMeRoute
   DashboardTrashRoute: typeof DashboardTrashRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardProjectsProjectIdRoute: typeof DashboardProjectsProjectIdRoute
@@ -278,6 +318,8 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardNotificationsRoute: DashboardNotificationsRoute,
+  DashboardSharedWithMeRoute: DashboardSharedWithMeRoute,
   DashboardTrashRoute: DashboardTrashRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardProjectsProjectIdRoute: DashboardProjectsProjectIdRoute,

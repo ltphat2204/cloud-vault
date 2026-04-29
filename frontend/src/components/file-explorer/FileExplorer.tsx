@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { FileDto, ProjectDto } from '@/types'
+import type { FileDto, ProjectDto, ResourceType } from '@/types'
 import {
   useFolderContents,
   useFileSystemActions,
@@ -9,6 +9,7 @@ import { Breadcrumbs } from './Breadcrumbs'
 import { FileTable } from './FileTable'
 import { ProjectModal } from '../projects/ProjectModal'
 import { MoveItemModal } from './MoveItemModal'
+import { ShareDialog } from '../shares/ShareDialog'
 import { foldersApi } from '@/api/folders'
 import { filesApi } from '@/api/files'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -88,6 +89,11 @@ export function FileExplorer({ projectId, project }: FileExplorerProps) {
     id: string
     name: string
   } | null>(null)
+  const [sharingItem, setSharingItem] = useState<{
+    type: ResourceType
+    id: string
+    name: string
+  } | null>(null)
 
   const handleDownload = (file: FileDto) => {
     filesApi.download(file.id, file.name)
@@ -147,6 +153,12 @@ export function FileExplorer({ projectId, project }: FileExplorerProps) {
           onDeleteFile={(f) =>
             setDeletingItem({ type: 'file', id: f.id, name: f.name })
           }
+          onShareFolder={(f) =>
+            setSharingItem({ type: 'FOLDER', id: f.id, name: f.name })
+          }
+          onShareFile={(f) =>
+            setSharingItem({ type: 'FILE', id: f.id, name: f.name })
+          }
         />
       )}
 
@@ -198,6 +210,16 @@ export function FileExplorer({ projectId, project }: FileExplorerProps) {
           setMovingItem(null)
         }}
       />
+
+      {sharingItem && (
+        <ShareDialog
+          isOpen={!!sharingItem}
+          onClose={() => setSharingItem(null)}
+          resourceId={sharingItem.id}
+          resourceType={sharingItem.type}
+          resourceName={sharingItem.name}
+        />
+      )}
 
       <AlertDialog
         open={!!deletingItem}
