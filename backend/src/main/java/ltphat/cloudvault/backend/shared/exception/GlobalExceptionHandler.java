@@ -10,6 +10,8 @@ import ltphat.cloudvault.backend.files.domain.exception.FileException;
 import ltphat.cloudvault.backend.files.domain.exception.FileNotFoundException;
 import ltphat.cloudvault.backend.folders.domain.exception.FolderException;
 import ltphat.cloudvault.backend.folders.domain.exception.FolderNotFoundException;
+import ltphat.cloudvault.backend.notifications.domain.exception.NotificationException;
+import ltphat.cloudvault.backend.notifications.domain.exception.NotificationNotFoundException;
 import ltphat.cloudvault.backend.shared.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +68,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleFolderException(FolderException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         if (e instanceof FolderNotFoundException) {
+            status = HttpStatus.NOT_FOUND;
+        }
+        return ResponseEntity.status(status)
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(NotificationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotificationException(NotificationException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        if (e instanceof NotificationNotFoundException) {
             status = HttpStatus.NOT_FOUND;
         }
         return ResponseEntity.status(status)
