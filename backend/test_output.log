@@ -1,0 +1,409 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< ltphat.cloudvault:backend >----------------------
+[INFO] Building  0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ backend ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ backend ---
+[INFO] skip non existing resourceDirectory /Users/ltphat/Learn/Personal-Project/cloud-vault/backend/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ backend ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.5:test (default-test) @ backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ltphat.cloudvault.backend.search.integration.SearchIntegrationTest
+06:27:11.041 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [ltphat.cloudvault.backend.search.integration.SearchIntegrationTest]: SearchIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+06:27:11.484 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration ltphat.cloudvault.backend.BackendApplication for test class ltphat.cloudvault.backend.search.integration.SearchIntegrationTest
+06:27:11.879 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+06:27:11.881 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+06:27:11.987 [main] INFO org.testcontainers.DockerClientFactory -- Testcontainers version: 1.21.4
+06:27:12.373 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+06:27:13.295 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+06:27:13.298 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+06:27:13.359 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 28.5.1
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7837 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/ltphat/Library/Containers/com.docker.docker/Data/docker-cli.sock
+06:27:14.594 [main] INFO tc.testcontainers/ryuk:0.12.0 -- Creating container for image: testcontainers/ryuk:0.12.0
+06:27:14.766 [main] INFO org.testcontainers.utility.RegistryAuthLocator -- Credential helper/store (docker-credential-desktop) does not have credentials for https://index.docker.io/v1/
+06:27:15.041 [main] INFO tc.testcontainers/ryuk:0.12.0 -- Container testcontainers/ryuk:0.12.0 is starting: d6d3681df28516ffdca928faacfd75337679895d319d55b1cc793d7d29eb2317
+06:27:20.020 [main] INFO tc.testcontainers/ryuk:0.12.0 -- Container testcontainers/ryuk:0.12.0 started in PT5.426451S
+06:27:20.120 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+06:27:20.120 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+06:27:20.121 [main] INFO org.testcontainers.DockerClientFactory -- ✔︎ Docker server version should be at least 1.6.0
+06:27:20.121 [main] INFO tc.postgres:16-alpine -- Creating container for image: postgres:16-alpine
+06:27:21.075 [main] INFO tc.postgres:16-alpine -- Container postgres:16-alpine is starting: 4d1c6f8bd2852d6c9a42e3b4c8d13bf1ce54b281d112777d3c887c958f974cd4
+06:27:30.136 [main] INFO tc.postgres:16-alpine -- Container postgres:16-alpine started in PT10.015006S
+06:27:30.142 [main] INFO tc.postgres:16-alpine -- Container is started (JDBC URL: jdbc:postgresql://localhost:54752/cloud_vault_test?loggerLevel=OFF)
+06:27:30.143 [main] INFO tc.minio/minio:latest -- Creating container for image: minio/minio:latest
+06:27:30.943 [main] INFO tc.minio/minio:latest -- Container minio/minio:latest is starting: 1a6b0478b6855e15cd7f5aad94ca69693ddc4b05c1710b42b040604de7d0e50b
+06:27:34.709 [main] INFO org.testcontainers.containers.wait.strategy.HttpWaitStrategy -- /vigorous_dewdney: Waiting for 60 seconds for URL: http://localhost:54773/minio/health/live (where port 54773 maps to container port 9000)
+06:27:35.790 [main] INFO tc.minio/minio:latest -- Container minio/minio:latest started in PT5.64645S
+06:27:35.837 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.14)
+
+2026-04-30T06:27:36.113+07:00  INFO 82842 --- [backend] [           main] l.c.b.s.i.SearchIntegrationTest          : Starting SearchIntegrationTest using Java 21.0.8 with PID 82842 (started by ltphat in /Users/ltphat/Learn/Personal-Project/cloud-vault/backend)
+2026-04-30T06:27:36.114+07:00  INFO 82842 --- [backend] [           main] l.c.b.s.i.SearchIntegrationTest          : No active profile set, falling back to 1 default profile: "default"
+2026-04-30T06:27:37.679+07:00  INFO 82842 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-30T06:27:37.680+07:00  INFO 82842 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-30T06:27:37.870+07:00  INFO 82842 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 181 ms. Found 8 JPA repository interfaces.
+2026-04-30T06:27:37.888+07:00  INFO 82842 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-30T06:27:37.891+07:00  INFO 82842 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-04-30T06:27:37.926+07:00  INFO 82842 --- [backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface ltphat.cloudvault.backend.audit.infrastructure.persistence.jpa.SpringDataActivityLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-30T06:27:37.926+07:00  INFO 82842 --- [backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface ltphat.cloudvault.backend.files.infrastructure.persistence.jpa.SpringDataFileRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-30T06:27:37.926+07:00  INFO 82842 --- [backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface ltphat.cloudvault.backend.files.infrastructure.persistence.jpa.SpringDataFileVersionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-30T06:27:37.927+07:00  INFO 82842 --- [backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface ltphat.cloudvault.backend.folders.infrastructure.persistence.jpa.SpringDataFolderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-30T06:27:37.927+07:00  INFO 82842 --- [backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface ltphat.cloudvault.backend.iam.infrastructure.persistence.jpa.SpringDataUserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-30T06:27:37.927+07:00  INFO 82842 --- [backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface ltphat.cloudvault.backend.notifications.infrastructure.persistence.jpa.SpringDataNotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-30T06:27:37.927+07:00  INFO 82842 --- [backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface ltphat.cloudvault.backend.projects.infrastructure.persistence.jpa.SpringDataProjectRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-30T06:27:37.927+07:00  INFO 82842 --- [backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface ltphat.cloudvault.backend.shares.infrastructure.persistence.jpa.SpringDataShareRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-30T06:27:37.927+07:00  INFO 82842 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 27 ms. Found 0 Redis repository interfaces.
+2026-04-30T06:27:39.186+07:00  INFO 82842 --- [backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
+2026-04-30T06:27:39.196+07:00  INFO 82842 --- [backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-30T06:27:39.196+07:00  INFO 82842 --- [backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.54]
+2026-04-30T06:27:39.252+07:00  INFO 82842 --- [backend] [           main] o.a.c.c.C.[.[localhost].[/api/v1]        : Initializing Spring embedded WebApplicationContext
+2026-04-30T06:27:39.255+07:00  INFO 82842 --- [backend] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3127 ms
+2026-04-30T06:27:39.410+07:00  INFO 82842 --- [backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-30T06:27:39.461+07:00  INFO 82842 --- [backend] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-04-30T06:27:39.494+07:00  INFO 82842 --- [backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-30T06:27:39.797+07:00  INFO 82842 --- [backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-30T06:27:39.822+07:00  INFO 82842 --- [backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-30T06:27:40.416+07:00  INFO 82842 --- [backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2ebd6a0d
+2026-04-30T06:27:40.418+07:00  INFO 82842 --- [backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-30T06:27:40.476+07:00  WARN 82842 --- [backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-30T06:27:40.565+07:00  INFO 82842 --- [backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.13
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-30T06:27:41.436+07:00  INFO 82842 --- [backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: create table activity_logs (id uuid not null, action varchar(100) not null check (action in ('PROJECT_CREATED','PROJECT_RENAMED','PROJECT_DELETED','PROJECT_RESTORED','PROJECT_PERMANENTLY_DELETED','FOLDER_CREATED','FOLDER_RENAMED','FOLDER_MOVED','FOLDER_DELETED','FOLDER_RESTORED','FOLDER_PERMANENTLY_DELETED','FILE_UPLOADED','FILE_DOWNLOADED','FILE_RENAMED','FILE_MOVED','FILE_DELETED','FILE_RESTORED','FILE_PERMANENTLY_DELETED','FILE_VERSION_RESTORED','RESOURCE_SHARED','SHARING_REVOKED','PUBLIC_LINK_CREATED','SHARING_UPDATED','TRASH_EMPTIED','TRASH_RECOVERED')), created_at timestamp(6) not null, details jsonb, resource_id uuid, resource_type varchar(20) check (resource_type in ('PROJECT','FOLDER','FILE')), user_id uuid not null, primary key (id))
+Hibernate: create table file_versions (id uuid not null, created_at timestamp(6) not null, file_id uuid not null, minio_key varchar(255) not null, size bigint not null, version_number integer not null, primary key (id))
+Hibernate: create table files (id uuid not null, created_at timestamp(6) not null, current_version_id uuid, deleted_at timestamp(6), folder_id uuid, mime_type varchar(255), minio_key varchar(255) not null, name varchar(255) not null, owner_id uuid not null, project_id uuid not null, size bigint not null, updated_at timestamp(6) not null, version_number integer not null, primary key (id))
+Hibernate: create table folders (id uuid not null, created_at timestamp(6) not null, deleted_at timestamp(6), name varchar(255) not null, owner_id uuid not null, parent_folder_id uuid, project_id uuid not null, updated_at timestamp(6) not null, primary key (id))
+Hibernate: create table notifications (id uuid not null, created_at timestamp(6) not null, message TEXT not null, metadata jsonb, is_read boolean not null, type varchar(50) not null check (type in ('SHARE_RECEIVED','SHARE_UPDATED','SHARE_REVOKED','PROJECT_INVITATION','SYSTEM_ALERT')), user_id uuid not null, primary key (id))
+Hibernate: create table projects (id uuid not null, created_at timestamp(6) not null, deleted_at timestamp(6), name varchar(255) not null, owner_id uuid not null, updated_at timestamp(6) not null, primary key (id))
+Hibernate: create table shares (id uuid not null, access_token uuid, created_at timestamp(6) not null, expires_at timestamp(6), password_hash varchar(255), permission varchar(10) not null check (permission in ('VIEW','EDIT')), project_id uuid, resource_id uuid not null, resource_type varchar(20) not null check (resource_type in ('PROJECT','FOLDER','FILE')), shared_with_user_id uuid, updated_at timestamp(6) not null, primary key (id))
+Hibernate: create table users (id uuid not null, created_at timestamp(6) not null, email varchar(255) not null, name varchar(255) not null, password_hash varchar(255) not null, updated_at timestamp(6) not null, primary key (id))
+Hibernate: create index idx_activity_user_created on activity_logs (user_id, created_at desc)
+Hibernate: create index idx_activity_resource on activity_logs (resource_type, resource_id)
+Hibernate: create index idx_folders_project_parent on folders (project_id, parent_folder_id)
+Hibernate: create index idx_folders_owner on folders (owner_id)
+Hibernate: create index idx_notifications_user_unread on notifications (user_id, is_read)
+Hibernate: create index idx_notifications_user_created on notifications (user_id, created_at)
+Hibernate: create index idx_shares_shared_with on shares (shared_with_user_id)
+Hibernate: create index idx_shares_resource on shares (resource_type, resource_id)
+Hibernate: create index idx_shares_project_access on shares (project_id, shared_with_user_id)
+Hibernate: create index idx_shares_token on shares (access_token)
+Hibernate: alter table if exists shares drop constraint if exists UKahedhs483qoau4npg9gcaxhvd
+2026-04-30T06:27:41.923+07:00  WARN 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-30T06:27:41.924+07:00  WARN 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukahedhs483qoau4npg9gcaxhvd" of relation "shares" does not exist, skipping
+Hibernate: alter table if exists shares add constraint UKahedhs483qoau4npg9gcaxhvd unique (access_token)
+Hibernate: alter table if exists users drop constraint if exists UK6dotkott2kjsp8vw4d0m25fb7
+2026-04-30T06:27:41.933+07:00  WARN 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-30T06:27:41.934+07:00  WARN 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uk6dotkott2kjsp8vw4d0m25fb7" of relation "users" does not exist, skipping
+Hibernate: alter table if exists users add constraint UK6dotkott2kjsp8vw4d0m25fb7 unique (email)
+2026-04-30T06:27:41.957+07:00  INFO 82842 --- [backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-30T06:27:42.277+07:00  INFO 82842 --- [backend] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-30T06:27:43.796+07:00  WARN 82842 --- [backend] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-30T06:27:44.057+07:00  INFO 82842 --- [backend] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-04-30T06:27:44.058+07:00  WARN 82842 --- [backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-04-30T06:27:44.768+07:00  INFO 82842 --- [backend] [           main] o.a.c.c.C.[.[localhost].[/api/v1]        : Initializing Spring TestDispatcherServlet ''
+2026-04-30T06:27:44.768+07:00  INFO 82842 --- [backend] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-30T06:27:44.769+07:00  INFO 82842 --- [backend] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-04-30T06:27:44.820+07:00  INFO 82842 --- [backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-04-30T06:27:44.820+07:00  INFO 82842 --- [backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6196a827]]
+2026-04-30T06:27:44.821+07:00  INFO 82842 --- [backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-04-30T06:27:44.896+07:00  INFO 82842 --- [backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 54805 (http) with context path '/api/v1'
+2026-04-30T06:27:44.909+07:00  INFO 82842 --- [backend] [           main] l.c.b.s.i.SearchIntegrationTest          : Started SearchIntegrationTest in 9.088 seconds (process running for 36.154)
+Hibernate: select js1_0.id,js1_0.access_token,js1_0.created_at,js1_0.expires_at,js1_0.password_hash,js1_0.permission,js1_0.project_id,js1_0.resource_id,js1_0.resource_type,js1_0.shared_with_user_id,js1_0.updated_at from shares js1_0
+2026-04-30T06:27:45.084+07:00  WARN 82842 --- [backend] [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-04-30T06:27:45.084+07:00  WARN 82842 --- [backend] [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/Users/ltphat/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+Hibernate: select js1_0.id from shares js1_0 where js1_0.project_id=? and js1_0.shared_with_user_id=? fetch first ? rows only
+Hibernate: insert into users (created_at,email,name,password_hash,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into users (created_at,email,name,password_hash,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into projects (created_at,deleted_at,name,owner_id,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into folders (created_at,deleted_at,name,owner_id,parent_folder_id,project_id,updated_at,id) values (?,?,?,?,?,?,?,?)
+Hibernate: insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
+2026-04-30T06:27:46.499+07:00  WARN 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 23502
+2026-04-30T06:27:46.500+07:00 ERROR 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: null value in column "minio_key" of relation "files" violates not-null constraint
+  Detail: Failing row contains (d2202446-9f69-4035-815b-c1fceed14e88, 2026-04-30 06:27:46.09168, null, null, 16c391a3-cdd3-43f4-afdb-cdf87856d5d6, application/pdf, null, report.pdf, 0132fa68-1724-4769-975d-f0ef58654b73, ef8512e5-45ef-412c-9929-19fa097a2487, null, 2026-04-30 06:27:46.091684, null).
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /search
+       Parameters = {q=[report], projectId=[ef8512e5-45ef-412c-9929-19fa097a2487]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = ltphat.cloudvault.backend.search.presentation.controller.SearchController
+           Method = ltphat.cloudvault.backend.search.presentation.controller.SearchController#search(String, UUID, UUID, UserPrincipal)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.dao.DataIntegrityViolationException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 500
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"success":false,"message":"An unexpected error occurred: could not execute statement [ERROR: null value in column \"minio_key\" of relation \"files\" violates not-null constraint\n  Detail: Failing row contains (d2202446-9f69-4035-815b-c1fceed14e88, 2026-04-30 06:27:46.09168, null, null, 16c391a3-cdd3-43f4-afdb-cdf87856d5d6, application/pdf, null, report.pdf, 0132fa68-1724-4769-975d-f0ef58654b73, ef8512e5-45ef-412c-9929-19fa097a2487, null, 2026-04-30 06:27:46.091684, null).] [insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)]; SQL [insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)]; constraint [minio_key\" of relation \"files]","data":null,"timestamp":"2026-04-30T06:27:46.553687"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+Hibernate: insert into users (created_at,email,name,password_hash,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into users (created_at,email,name,password_hash,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into projects (created_at,deleted_at,name,owner_id,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into folders (created_at,deleted_at,name,owner_id,parent_folder_id,project_id,updated_at,id) values (?,?,?,?,?,?,?,?)
+Hibernate: insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
+2026-04-30T06:27:47.102+07:00  WARN 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 23502
+2026-04-30T06:27:47.103+07:00 ERROR 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: null value in column "minio_key" of relation "files" violates not-null constraint
+  Detail: Failing row contains (57812e2e-4d06-463c-a4a9-b99f99e09a10, 2026-04-30 06:27:47.032714, null, null, a4cb739b-95d1-41a1-b8a3-d76ce8f52ef4, application/pdf, null, report.pdf, 2d8c3703-ca9e-412d-86ca-6621d97fc122, b0b1dc05-4516-4f86-9662-b7c6b4f223b4, null, 2026-04-30 06:27:47.032715, null).
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /search
+       Parameters = {q=[report]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = ltphat.cloudvault.backend.search.presentation.controller.SearchController
+           Method = ltphat.cloudvault.backend.search.presentation.controller.SearchController#search(String, UUID, UUID, UserPrincipal)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.dao.DataIntegrityViolationException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 500
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"success":false,"message":"An unexpected error occurred: could not execute statement [ERROR: null value in column \"minio_key\" of relation \"files\" violates not-null constraint\n  Detail: Failing row contains (57812e2e-4d06-463c-a4a9-b99f99e09a10, 2026-04-30 06:27:47.032714, null, null, a4cb739b-95d1-41a1-b8a3-d76ce8f52ef4, application/pdf, null, report.pdf, 2d8c3703-ca9e-412d-86ca-6621d97fc122, b0b1dc05-4516-4f86-9662-b7c6b4f223b4, null, 2026-04-30 06:27:47.032715, null).] [insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)]; SQL [insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)]; constraint [minio_key\" of relation \"files]","data":null,"timestamp":"2026-04-30T06:27:47.105679"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+Hibernate: select js1_0.id from shares js1_0 where js1_0.project_id=? and js1_0.shared_with_user_id=? fetch first ? rows only
+Hibernate: insert into users (created_at,email,name,password_hash,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into users (created_at,email,name,password_hash,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into projects (created_at,deleted_at,name,owner_id,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into folders (created_at,deleted_at,name,owner_id,parent_folder_id,project_id,updated_at,id) values (?,?,?,?,?,?,?,?)
+Hibernate: insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
+2026-04-30T06:27:47.480+07:00  WARN 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 23502
+2026-04-30T06:27:47.481+07:00 ERROR 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: null value in column "minio_key" of relation "files" violates not-null constraint
+  Detail: Failing row contains (fcc6cb72-9a95-4bc9-87bf-efb030b15276, 2026-04-30 06:27:47.419221, null, null, ae94fe85-035f-429e-85d9-d4f0b1e5728f, application/pdf, null, report.pdf, 43330f2e-a2cf-425d-afb1-b15e04a7108c, cb2b34c4-174d-4db1-864b-7a7cd4dc0c88, null, 2026-04-30 06:27:47.419228, null).
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /search
+       Parameters = {q=[notes], projectId=[cb2b34c4-174d-4db1-864b-7a7cd4dc0c88]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = ltphat.cloudvault.backend.search.presentation.controller.SearchController
+           Method = ltphat.cloudvault.backend.search.presentation.controller.SearchController#search(String, UUID, UUID, UserPrincipal)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.dao.DataIntegrityViolationException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 500
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"success":false,"message":"An unexpected error occurred: could not execute statement [ERROR: null value in column \"minio_key\" of relation \"files\" violates not-null constraint\n  Detail: Failing row contains (fcc6cb72-9a95-4bc9-87bf-efb030b15276, 2026-04-30 06:27:47.419221, null, null, ae94fe85-035f-429e-85d9-d4f0b1e5728f, application/pdf, null, report.pdf, 43330f2e-a2cf-425d-afb1-b15e04a7108c, cb2b34c4-174d-4db1-864b-7a7cd4dc0c88, null, 2026-04-30 06:27:47.419228, null).] [insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)]; SQL [insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)]; constraint [minio_key\" of relation \"files]","data":null,"timestamp":"2026-04-30T06:27:47.481368"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+Hibernate: insert into users (created_at,email,name,password_hash,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into users (created_at,email,name,password_hash,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into projects (created_at,deleted_at,name,owner_id,updated_at,id) values (?,?,?,?,?,?)
+Hibernate: insert into folders (created_at,deleted_at,name,owner_id,parent_folder_id,project_id,updated_at,id) values (?,?,?,?,?,?,?,?)
+Hibernate: insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
+2026-04-30T06:27:47.693+07:00  WARN 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 23502
+2026-04-30T06:27:47.693+07:00 ERROR 82842 --- [backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : ERROR: null value in column "minio_key" of relation "files" violates not-null constraint
+  Detail: Failing row contains (978d6f3e-f78d-4904-ace6-9db629ce4800, 2026-04-30 06:27:47.649954, null, null, c361c9fb-7701-4903-84ba-366c9b6fe7c2, application/pdf, null, report.pdf, 2d868afe-b155-45fb-89f7-fd5501b63369, 3274ec0f-6dde-43eb-8fa4-2aeffbc556af, null, 2026-04-30 06:27:47.649956, null).
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /search
+       Parameters = {q=[report]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = ltphat.cloudvault.backend.search.presentation.controller.SearchController
+           Method = ltphat.cloudvault.backend.search.presentation.controller.SearchController#search(String, UUID, UUID, UserPrincipal)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.dao.DataIntegrityViolationException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 500
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"success":false,"message":"An unexpected error occurred: could not execute statement [ERROR: null value in column \"minio_key\" of relation \"files\" violates not-null constraint\n  Detail: Failing row contains (978d6f3e-f78d-4904-ace6-9db629ce4800, 2026-04-30 06:27:47.649954, null, null, c361c9fb-7701-4903-84ba-366c9b6fe7c2, application/pdf, null, report.pdf, 2d868afe-b155-45fb-89f7-fd5501b63369, 3274ec0f-6dde-43eb-8fa4-2aeffbc556af, null, 2026-04-30 06:27:47.649956, null).] [insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)]; SQL [insert into files (created_at,current_version_id,deleted_at,folder_id,mime_type,minio_key,name,owner_id,project_id,size,updated_at,version_number,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)]; constraint [minio_key\" of relation \"files]","data":null,"timestamp":"2026-04-30T06:27:47.693761"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+[ERROR] Tests run: 4, Failures: 4, Errors: 0, Skipped: 0, Time elapsed: 37.03 s <<< FAILURE! -- in ltphat.cloudvault.backend.search.integration.SearchIntegrationTest
+[ERROR] ltphat.cloudvault.backend.search.integration.SearchIntegrationTest.search_AccessDenied_ReturnsError -- Time elapsed: 1.621 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<403> but was:<500>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at ltphat.cloudvault.backend.search.integration.SearchIntegrationTest.search_AccessDenied_ReturnsError(SearchIntegrationTest.java:150)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] ltphat.cloudvault.backend.search.integration.SearchIntegrationTest.search_Global_FindsAll -- Time elapsed: 0.438 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<500>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at ltphat.cloudvault.backend.search.integration.SearchIntegrationTest.search_Global_FindsAll(SearchIntegrationTest.java:114)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] ltphat.cloudvault.backend.search.integration.SearchIntegrationTest.search_InProject_FindsItems -- Time elapsed: 0.335 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<500>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at ltphat.cloudvault.backend.search.integration.SearchIntegrationTest.search_InProject_FindsItems(SearchIntegrationTest.java:125)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] ltphat.cloudvault.backend.search.integration.SearchIntegrationTest.search_SharedResource_Visibility -- Time elapsed: 0.212 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<500>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at ltphat.cloudvault.backend.search.integration.SearchIntegrationTest.search_SharedResource_Visibility(SearchIntegrationTest.java:139)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   SearchIntegrationTest.search_AccessDenied_ReturnsError:150 Status expected:<403> but was:<500>
+[ERROR]   SearchIntegrationTest.search_Global_FindsAll:114 Status expected:<200> but was:<500>
+[ERROR]   SearchIntegrationTest.search_InProject_FindsItems:125 Status expected:<200> but was:<500>
+[ERROR]   SearchIntegrationTest.search_SharedResource_Visibility:139 Status expected:<200> but was:<500>
+[INFO] 
+[ERROR] Tests run: 4, Failures: 4, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  43.470 s
+[INFO] Finished at: 2026-04-30T06:27:48+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.5:test (default-test) on project backend: There are test failures.
+[ERROR] 
+[ERROR] See /Users/ltphat/Learn/Personal-Project/cloud-vault/backend/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

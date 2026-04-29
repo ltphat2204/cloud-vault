@@ -11,6 +11,7 @@ The Shares Module manages resource sharing permissions for Projects, Folders, an
 - **Shared With Me**: Efficiently list resources shared with the authenticated user, sorted by date.
 - **Ownership Validation**: Strict security checks to ensure only resource owners can manage sharing permissions.
 - **Event-Driven Notifications**: Automatically integrates with the Notifications module to alert recipients of sharing activities.
+- **Search Scoping Support**: Provides unified access to all projects (owned and shared) to support platform-wide search authorization.
 
 ## Module Structure
 

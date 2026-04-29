@@ -16,4 +16,5 @@ public interface ShareService {
     ShareResponse getPublicShare(UUID token, String password);
     List<UUID> getProjectMemberIds(UUID projectId);
     boolean hasProjectAccess(UUID projectId, UUID userId);
+    List<UUID> getAccessibleProjectIds(UUID userId);
 }

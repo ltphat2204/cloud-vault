@@ -23,4 +23,6 @@ public interface SpringDataFolderRepository extends JpaRepository<JpaFolder, UUI
                    ") SELECT * FROM subfolders WHERE id != :parentId", nativeQuery = true)
     List<JpaFolder> findAllDescendants(@Param("parentId") UUID parentId);
     List<JpaFolder> findByOwnerIdAndDeletedAtIsNotNull(UUID ownerId);
+    List<JpaFolder> findByProjectIdInAndNameContainingIgnoreCaseAndDeletedAtIsNull(List<UUID> projectIds, String query);
+    List<JpaFolder> findByParentFolderIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(UUID parentFolderId, String query);
 }

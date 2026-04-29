@@ -71,4 +71,9 @@ public class SharePersistenceAdapter implements ShareRepository {
     public List<UUID> findSharedUserIdsByProjectId(UUID projectId) {
         return repository.findSharedUserIdsByProjectId(projectId);
     }
+
+    @Override
+    public List<UUID> findSharedProjectIdsByUserId(UUID userId) {
+        return repository.findSharedProjectIdsByUserId(userId);
+    }
 }

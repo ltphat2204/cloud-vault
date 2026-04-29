@@ -14,4 +14,6 @@ public interface IFileRepository {
     List<File> findAllDeletedByOwnerId(UUID ownerId);
     void hardDelete(UUID id);
     List<File> findByFolderId(UUID folderId);
+    List<File> findByProjectIdInAndNameContainingIgnoreCaseAndDeletedAtIsNull(List<UUID> projectIds, String query);
+    List<File> findByFolderIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(UUID folderId, String query);
 }

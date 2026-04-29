@@ -320,4 +320,18 @@ public class ShareServiceImpl implements ShareService {
     public boolean hasProjectAccess(UUID projectId, UUID userId) {
         return shareRepository.hasProjectAccess(projectId, userId);
     }
+
+    @Override
+    public List<UUID> getAccessibleProjectIds(UUID userId) {
+        List<UUID> ownedProjectIds = projectRepository.findByOwnerId(userId).stream()
+                .map(Project::getId)
+                .collect(Collectors.toList());
+        
+        List<UUID> sharedProjectIds = shareRepository.findSharedProjectIdsByUserId(userId);
+        
+        java.util.Set<UUID> allIds = new java.util.HashSet<>(ownedProjectIds);
+        allIds.addAll(sharedProjectIds);
+        
+        return new java.util.ArrayList<>(allIds);
+    }
 }

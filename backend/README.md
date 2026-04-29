@@ -13,6 +13,7 @@ The system is decomposed into highly cohesive modules, each following a strict l
 - [**`shares`**](src/main/java/ltphat/cloudvault/backend/shares/README.md): Resource sharing module. Enables internal user-to-user sharing and secure public link sharing.
 - [**`notifications`**](src/main/java/ltphat/cloudvault/backend/notifications/README.md): System-wide notification delivery and management.
 - [**`trash`**](src/main/java/ltphat/cloudvault/backend/trash/README.md): Centralized management for soft-deleted resources across all modules.
+- [**`search`**](src/main/java/ltphat/cloudvault/backend/search/README.md): Cross-module search functionality for files and folders.
 - [**`shared`**](src/main/java/ltphat/cloudvault/backend/shared/README.md): Cross-cutting concerns, including global security configuration, common DTOs, and exception handlers.
 
 ## Architecture
