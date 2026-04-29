@@ -1,4 +1,4 @@
-import { MoreVertical, Download, Edit2, Move, Trash2, Share2 } from 'lucide-react'
+import { MoreVertical, Download, Edit2, Move, Trash2, Share2, History } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,7 @@ interface ItemActionsProps {
   onMove: () => void
   onDelete: () => void
   onShare: () => void
+  onViewHistory: () => void
 }
 
 export function ItemActions({
@@ -24,6 +25,7 @@ export function ItemActions({
   onMove,
   onDelete,
   onShare,
+  onViewHistory,
 }: ItemActionsProps) {
   return (
     <DropdownMenu>
@@ -57,6 +59,10 @@ export function ItemActions({
         <DropdownMenuItem onClick={onMove} className="cursor-pointer gap-2">
           <Move size={14} />
           Move to...
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onViewHistory} className="cursor-pointer gap-2">
+          <History size={14} />
+          View History
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

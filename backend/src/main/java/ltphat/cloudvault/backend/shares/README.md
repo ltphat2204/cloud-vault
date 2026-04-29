@@ -6,6 +6,7 @@ The Shares Module manages resource sharing permissions for Projects, Folders, an
 
 - **Internal Sharing**: Grant `VIEW` or `EDIT` permissions to registered users via email.
 - **Public Link Sharing**: Generate unique, shareable access tokens for resources with optional security controls.
+- **Project-Wide Access Control**: Efficiently verify access to nested resources (folders/files) by denormalizing `projectId` into share records, eliminating recursive permission lookups.
 - **Security Controls**: Protect public links with BCrypt-hashed passwords and set expiration dates.
 - **Shared With Me**: Efficiently list resources shared with the authenticated user, sorted by date.
 - **Ownership Validation**: Strict security checks to ensure only resource owners can manage sharing permissions.

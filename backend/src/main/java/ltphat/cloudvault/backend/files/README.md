@@ -8,6 +8,7 @@ The Files Module is responsible for managing file metadata, versioning, and bina
 - **Versioning System**: Automatically track file history. Every upload of an existing file creates a new version, preserving previous states.
 - **Storage Integration**: Seamlessly integrates with MinIO (S3-compatible) for robust binary content storage.
 - **Hierarchical Organization**: Supports organizing files within projects and folders.
+- **Collaborative Access**: Fully integrates with the Sharing module to allow access for project members and public link holders.
 - **Soft Deletion**: Implements soft deletion logic to allow recovery via the Trash module.
 
 ## Module Structure

@@ -14,6 +14,7 @@ import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
 import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
+import ltphat.cloudvault.backend.shares.application.service.ShareService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class ProjectServiceImpl implements IProjectService {
     private final ProjectApplicationMapper projectApplicationMapper;
     private final IFolderService folderService;
     private final IActivityLogService auditService;
+    private final ShareService shareService;
 
     @Override
     @Transactional
@@ -56,7 +58,7 @@ public class ProjectServiceImpl implements IProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ProjectNotFoundException(id));
         
-        if (!project.getOwnerId().equals(ownerId)) {
+        if (!project.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(id, ownerId)) {
             throw new AccessDeniedException("You do not have access to this project");
         }
         

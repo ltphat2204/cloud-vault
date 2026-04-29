@@ -16,6 +16,7 @@ public class Share {
     private UUID id;
     private ResourceType resourceType;
     private UUID resourceId;
+    private UUID projectId;
     private UUID sharedWithUserId;
     private Permission permission;
     private UUID accessToken;
@@ -24,10 +25,11 @@ public class Share {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static Share createInternal(ResourceType type, UUID resourceId, UUID userId, Permission permission) {
+    public static Share createInternal(ResourceType type, UUID resourceId, UUID projectId, UUID userId, Permission permission) {
         return Share.builder()
                 .resourceType(type)
                 .resourceId(resourceId)
+                .projectId(projectId)
                 .sharedWithUserId(userId)
                 .permission(permission)
                 .createdAt(LocalDateTime.now())
@@ -35,10 +37,11 @@ public class Share {
                 .build();
     }
 
-    public static Share createPublic(ResourceType type, UUID resourceId, String passwordHash, LocalDateTime expiresAt) {
+    public static Share createPublic(ResourceType type, UUID resourceId, UUID projectId, String passwordHash, LocalDateTime expiresAt) {
         return Share.builder()
                 .resourceType(type)
                 .resourceId(resourceId)
+                .projectId(projectId)
                 .accessToken(UUID.randomUUID())
                 .passwordHash(passwordHash)
                 .expiresAt(expiresAt)

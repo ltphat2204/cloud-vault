@@ -10,6 +10,7 @@ import {
   User,
   ChevronRight,
   Users,
+  History,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -37,6 +38,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const navItems = [
     { icon: Cloud, label: 'Projects', href: '/dashboard/projects' },
     { icon: Users, label: 'Shared with me', href: '/dashboard/shared-with-me' },
+    { icon: History, label: 'Activities', href: '/dashboard/activities' },
     { icon: Trash2, label: 'Trash', href: '/dashboard/trash' },
   ]
 

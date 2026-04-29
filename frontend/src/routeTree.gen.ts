@@ -19,6 +19,7 @@ import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-qu
 import { Route as DashboardTrashRouteImport } from './routes/dashboard/trash'
 import { Route as DashboardSharedWithMeRouteImport } from './routes/dashboard/shared-with-me'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard/notifications'
+import { Route as DashboardActivitiesRouteImport } from './routes/dashboard/activities'
 import { Route as DashboardProjectsIndexRouteImport } from './routes/dashboard/projects/index'
 import { Route as DemoFormSimpleRouteImport } from './routes/demo/form.simple'
 import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
@@ -74,6 +75,11 @@ const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardActivitiesRoute = DashboardActivitiesRouteImport.update({
+  id: '/activities',
+  path: '/activities',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardProjectsIndexRoute = DashboardProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard/activities': typeof DashboardActivitiesRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/shared-with-me': typeof DashboardSharedWithMeRoute
   '/dashboard/trash': typeof DashboardTrashRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard/activities': typeof DashboardActivitiesRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/shared-with-me': typeof DashboardSharedWithMeRoute
   '/dashboard/trash': typeof DashboardTrashRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard/activities': typeof DashboardActivitiesRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/shared-with-me': typeof DashboardSharedWithMeRoute
   '/dashboard/trash': typeof DashboardTrashRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard/activities'
     | '/dashboard/notifications'
     | '/dashboard/shared-with-me'
     | '/dashboard/trash'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/register'
+    | '/dashboard/activities'
     | '/dashboard/notifications'
     | '/dashboard/shared-with-me'
     | '/dashboard/trash'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard/activities'
     | '/dashboard/notifications'
     | '/dashboard/shared-with-me'
     | '/dashboard/trash'
@@ -277,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardNotificationsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/activities': {
+      id: '/dashboard/activities'
+      path: '/activities'
+      fullPath: '/dashboard/activities'
+      preLoaderRoute: typeof DashboardActivitiesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/projects/': {
       id: '/dashboard/projects/'
       path: '/projects'
@@ -309,6 +328,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardActivitiesRoute: typeof DashboardActivitiesRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardSharedWithMeRoute: typeof DashboardSharedWithMeRoute
   DashboardTrashRoute: typeof DashboardTrashRoute
@@ -318,6 +338,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardActivitiesRoute: DashboardActivitiesRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardSharedWithMeRoute: DashboardSharedWithMeRoute,
   DashboardTrashRoute: DashboardTrashRoute,

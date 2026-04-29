@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useShares } from '@/hooks/queries/use-shares'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Folder, File, Users, Clock, Shield, Layout } from 'lucide-react'
@@ -19,6 +19,27 @@ export const Route = createFileRoute('/dashboard/shared-with-me')({
 
 function SharedWithMePage() {
   const { sharedWithMe, isLoading } = useShares()
+  const navigate = useNavigate()
+
+  const handleRowClick = (item: any) => {
+    if (item.resourceType === 'PROJECT') {
+      navigate({ to: `/dashboard/projects/${item.resourceId}` })
+    } else if (item.resourceType === 'FOLDER') {
+      if (item.projectId) {
+        navigate({ 
+          to: `/dashboard/projects/${item.projectId}`,
+          search: { folderId: item.resourceId }
+        })
+      }
+    } else if (item.resourceType === 'FILE') {
+       if (item.projectId) {
+        navigate({ 
+          to: `/dashboard/projects/${item.projectId}`,
+          search: { folderId: item.folderId || undefined } // Navigate to the parent folder if possible
+        })
+      }
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -64,11 +85,12 @@ function SharedWithMePage() {
               {sharedWithMe.map((item) => (
                 <TableRow
                   key={item.id}
-                  className="hover:bg-[var(--lagoon)]/5 border-[var(--line)] transition-colors"
+                  onClick={() => handleRowClick(item)}
+                  className="hover:bg-[var(--lagoon)]/5 border-[var(--line)] transition-colors cursor-pointer group"
                 >
                   <TableCell className="py-5 pl-8">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--lagoon)]/15 text-[var(--lagoon-deep)]">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--lagoon)]/15 text-[var(--lagoon-deep)] group-hover:bg-[var(--lagoon)] group-hover:text-white transition-colors">
                         {item.resourceType === 'PROJECT' ? (
                           <Layout size={20} />
                         ) : item.resourceType === 'FOLDER' ? (
@@ -78,7 +100,7 @@ function SharedWithMePage() {
                         )}
                       </div>
                       <div>
-                        <p className="font-bold text-[var(--sea-ink)]">{item.resourceName}</p>
+                        <p className="font-bold text-[var(--sea-ink)] group-hover:text-[var(--lagoon-deep)] transition-colors">{item.resourceName}</p>
                         <p className="text-[10px] text-[var(--sea-ink-soft)] font-bold uppercase tracking-tight">
                           {item.resourceType}
                         </p>

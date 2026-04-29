@@ -49,7 +49,7 @@ public class FolderServiceImpl implements IFolderService {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        if (!project.getOwnerId().equals(ownerId)) {
+        if (!project.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(request.getProjectId(), ownerId)) {
             throw new AccessDeniedException("You do not have access to this project");
         }
 
@@ -84,7 +84,7 @@ public class FolderServiceImpl implements IFolderService {
         Folder folder = folderRepository.findById(id)
                 .orElseThrow(() -> new FolderNotFoundException(id));
 
-        if (!folder.getOwnerId().equals(ownerId)) {
+        if (!folder.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(folder.getProjectId(), ownerId)) {
             throw new AccessDeniedException("You do not have access to this folder");
         }
 
@@ -97,7 +97,13 @@ public class FolderServiceImpl implements IFolderService {
 
     @Override
     public List<FolderDto> listFolders(UUID projectId, UUID parentFolderId, UUID ownerId) {
-        // Basic security check could be added here if needed to verify project access
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        if (!project.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(projectId, ownerId)) {
+            throw new AccessDeniedException("You do not have access to this project");
+        }
+
         return folderRepository.findByProjectIdAndParentFolderId(projectId, parentFolderId).stream()
                 .filter(f -> !f.isDeleted())
                 .map(folderApplicationMapper::toDto)
@@ -228,7 +234,7 @@ public class FolderServiceImpl implements IFolderService {
             Folder folder = folderRepository.findById(currentId)
                     .orElseThrow(() -> new FolderNotFoundException(id));
 
-            if (!folder.getOwnerId().equals(ownerId)) {
+            if (!folder.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(folder.getProjectId(), ownerId)) {
                 throw new AccessDeniedException("Access denied");
             }
 
