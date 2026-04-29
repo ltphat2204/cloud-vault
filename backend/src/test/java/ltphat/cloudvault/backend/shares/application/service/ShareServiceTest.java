@@ -20,6 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ltphat.cloudvault.backend.notifications.application.service.NotificationService;
+import ltphat.cloudvault.backend.notifications.domain.model.NotificationType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +42,7 @@ class ShareServiceTest {
     @Mock private IFolderRepository folderRepository;
     @Mock private IFileRepository fileRepository;
     @Mock private PasswordEncoder passwordEncoder;
+    @Mock private NotificationService notificationService;
 
     @InjectMocks private ShareServiceImpl shareService;
 
@@ -78,6 +81,7 @@ class ShareServiceTest {
         assertThat(response.getResourceType()).isEqualTo(ResourceType.PROJECT);
         assertThat(response.getSharedWithUser().getEmail()).isEqualTo("recipient@example.com");
         verify(shareRepository).save(any());
+        verify(notificationService).createNotification(eq(recipientId), eq(NotificationType.SHARE_RECEIVED), anyString(), anyMap());
     }
 
     @Test
@@ -130,5 +134,35 @@ class ShareServiceTest {
         assertThat(result).hasSize(2);
         // Repository should already return sorted list due to findBySharedWithUserIdOrderByCreatedAtDesc
         verify(shareRepository).findBySharedWithUserId(userId);
+    }
+
+    @Test
+    void updateShare_Success() {
+        UpdateShareRequest request = new UpdateShareRequest(Permission.EDIT);
+        UUID shareId = UUID.randomUUID();
+        Share share = Share.createInternal(ResourceType.PROJECT, projectId, recipientId, Permission.VIEW);
+
+        when(shareRepository.findById(shareId)).thenReturn(Optional.of(share));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        shareService.updateShare(shareId, request, userId);
+
+        assertThat(share.getPermission()).isEqualTo(Permission.EDIT);
+        verify(shareRepository).save(share);
+        verify(notificationService).createNotification(eq(recipientId), eq(NotificationType.SHARE_UPDATED), anyString(), anyMap());
+    }
+
+    @Test
+    void revokeShare_Success() {
+        UUID shareId = UUID.randomUUID();
+        Share share = Share.createInternal(ResourceType.PROJECT, projectId, recipientId, Permission.VIEW);
+
+        when(shareRepository.findById(shareId)).thenReturn(Optional.of(share));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        shareService.revokeShare(shareId, userId);
+
+        verify(shareRepository).delete(shareId);
+        verify(notificationService).createNotification(eq(recipientId), eq(NotificationType.SHARE_REVOKED), anyString(), anyMap());
     }
 }

@@ -12,7 +12,7 @@ These test cases verify the Shares module, covering internal resource sharing, s
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
-| 1 | Submit valid `resourceType`, `resourceId`, `userEmail`, and `permission` (VIEW). | 201 Created; Share record saved; Recipient can now access the resource. |
+| 1 | Submit valid `resourceType`, `resourceId`, `userEmail`, and `permission` (VIEW). | 201 Created; Share record saved; Recipient can now access the resource; **Notification created for recipient**. |
 | 2 | Submit with non-existent user email. | 404 Not Found; Error "User not found". |
 | 3 | Submit sharing a resource not owned by the requester. | 403 Forbidden; Error "You do not have permission to share this resource". |
 | 4 | Submit duplicate share (same user, same resource). | 400 Bad Request; Error "Resource already shared with this user". |
@@ -26,7 +26,7 @@ These test cases verify the Shares module, covering internal resource sharing, s
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
-| 1 | Change `permission` from VIEW to EDIT for an existing share. | 200 OK; Permission updated in database. |
+| 1 | Change `permission` from VIEW to EDIT for an existing share. | 200 OK; Permission updated in database; **Notification created for recipient**. |
 | 2 | Attempt to update a share for a resource not owned by requester. | 403 Forbidden. |
 | 3 | Attempt to update a non-existent share ID. | 404 Not Found. |
 
@@ -39,7 +39,7 @@ These test cases verify the Shares module, covering internal resource sharing, s
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
-| 1 | Delete an existing share record. | 200 OK; Share record removed; Recipient loses access. |
+| 1 | Delete an existing share record. | 200 OK; Share record removed; Recipient loses access; **Notification created for recipient**. |
 | 2 | Attempt to delete a share for a resource not owned by requester. | 403 Forbidden. |
 
 ---

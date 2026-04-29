@@ -10,17 +10,20 @@ import ltphat.cloudvault.backend.shared.AbstractIntegrationTest;
 import ltphat.cloudvault.backend.shares.application.dto.ShareResourceRequest;
 import ltphat.cloudvault.backend.shares.domain.model.Permission;
 import ltphat.cloudvault.backend.shares.domain.model.ResourceType;
+import ltphat.cloudvault.backend.notifications.domain.model.NotificationType;
+import ltphat.cloudvault.backend.notifications.domain.repository.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,6 +37,7 @@ class ShareIntegrationTest extends AbstractIntegrationTest {
     @Autowired private JwtTokenProvider jwtTokenProvider;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private ObjectMapper objectMapper;
+    @Autowired private NotificationRepository notificationRepository;
 
     private User owner;
     private User recipient;
@@ -79,7 +83,12 @@ class ShareIntegrationTest extends AbstractIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
 
-        // 2. Recipient lists "Shared with me"
+        // 2. Verify notification created
+        var notifications = notificationRepository.findAllByUserId(recipient.getId(), Pageable.unpaged());
+        assertThat(notifications.getContent()).hasSize(1);
+        assertThat(notifications.getContent().get(0).getType()).isEqualTo(NotificationType.SHARE_RECEIVED);
+
+        // 3. Recipient lists "Shared with me"
         mockMvc.perform(get("/shares/shared-with-me")
                         .header("Authorization", "Bearer " + recipientToken))
                 .andExpect(status().isOk())
@@ -117,5 +126,43 @@ class ShareIntegrationTest extends AbstractIntegrationTest {
         mockMvc.perform(get("/shares/public/" + token)
                         .param("password", "wrong"))
                 .andExpect(status().isBadRequest()); // ShareException mapped to 400
+    }
+
+    @Test
+    void updateAndRevokeShare() throws Exception {
+        ShareResourceRequest request = ShareResourceRequest.builder()
+                .resourceType(ResourceType.PROJECT)
+                .resourceId(project.getId())
+                .userEmail(recipient.getEmail())
+                .permission(Permission.VIEW)
+                .build();
+
+        // 1. Share
+        String response = mockMvc.perform(post("/shares")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String shareId = objectMapper.readTree(response).get("data").get("id").asText();
+
+        // 2. Update permission
+        mockMvc.perform(patch("/shares/" + shareId)
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"permission\": \"EDIT\"}"))
+                .andExpect(status().isOk());
+
+        var updateNotif = notificationRepository.findAllByUserId(recipient.getId(), Pageable.unpaged());
+        assertThat(updateNotif.getContent().stream().anyMatch(n -> n.getType() == NotificationType.SHARE_UPDATED)).isTrue();
+
+        // 3. Revoke share
+        mockMvc.perform(delete("/shares/" + shareId)
+                        .header("Authorization", "Bearer " + ownerToken))
+                .andExpect(status().isOk());
+
+        var revokeNotif = notificationRepository.findAllByUserId(recipient.getId(), Pageable.unpaged());
+        assertThat(revokeNotif.getContent().stream().anyMatch(n -> n.getType() == NotificationType.SHARE_REVOKED)).isTrue();
     }
 }
