@@ -27,3 +27,10 @@ Following Clean Architecture principles:
 - `IFileVersionRepository`: Domain interface for version history persistence.
 - `MinioStorageAdapter`: Infrastructure adapter for S3-compatible storage operations.
 - `FileDto` / `FileVersionDto`: Data transfer objects for API communication.
+
+## Pagination & Sorting
+
+The file listing API support cursor-based pagination and flexible sorting.
+- **Endpoint**: `GET /api/v1/files`
+- **Parameters**: `projectId`, `folderId` (optional), `cursor`, `size`, `sortBy` (name, size, createdAt), `direction`.
+- **Stable Navigation**: Uses keyset pagination to ensure no items are missed or duplicated during scrolling.

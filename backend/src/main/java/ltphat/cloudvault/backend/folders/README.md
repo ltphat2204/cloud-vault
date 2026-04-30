@@ -29,6 +29,13 @@ The module follows Clean Architecture:
 - `MoveFolderRequest`: Input DTO for folder movement operations.
 - `FolderRepositoryAdapter`: Infrastructure adapter for persistence.
 
+## Pagination & Sorting
+
+Folder listings support cursor-based pagination for efficient navigation in large projects.
+- **Endpoint**: `GET /api/v1/folders`
+- **Parameters**: `projectId`, `parentFolderId` (optional), `cursor`, `size`, `sortBy`, `direction`.
+- **Response**: Returns a `CursorPageResponse` containing the content and `nextCursor`.
+
 ## Hierarchy Validation
 
 When moving a folder, the system validates that:

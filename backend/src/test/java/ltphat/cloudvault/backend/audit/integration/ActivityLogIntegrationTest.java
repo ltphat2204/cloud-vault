@@ -70,9 +70,9 @@ class ActivityLogIntegrationTest extends AbstractIntegrationTest {
                         .param("resourceType", "FILE")
                         .param("action", "FILE_UPLOADED"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[0].action").value("FILE_UPLOADED"))
-                .andExpect(jsonPath("$.data.content[0].resourceType").value("FILE"))
-                .andExpect(jsonPath("$.data.content[0].details.name").exists()); // Adjust based on details key
+                .andExpect(jsonPath("$.data.items[0].action").value("FILE_UPLOADED"))
+                .andExpect(jsonPath("$.data.items[0].resourceType").value("FILE"))
+                .andExpect(jsonPath("$.data.items[0].details.name").exists()); // Adjust based on details key
 
         // 3. Get resource history
         UUID fileId = UUID.fromString(
@@ -86,7 +86,7 @@ class ActivityLogIntegrationTest extends AbstractIntegrationTest {
                         .header("Authorization", "Bearer " + token)
                         .param("resourceType", "FILE"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[0].resourceId").value(fileId.toString()));
+                .andExpect(jsonPath("$.data.items[0].resourceId").value(fileId.toString()));
     }
 
     @Test

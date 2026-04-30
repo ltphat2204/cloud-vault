@@ -8,7 +8,7 @@ import ltphat.cloudvault.backend.files.application.service.IFileService;
 import ltphat.cloudvault.backend.shared.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
@@ -74,7 +74,7 @@ class FileVersioningIntegrationTest extends AbstractIntegrationTest {
         assertThat(downloadedCurrent).isEqualTo(content2);
         
         // 6. Verify Audit Logs
-        var logs = auditRepository.findByUserId(ownerId, null, null, Pageable.unpaged()).getContent();
+        var logs = auditRepository.findByUserId(ownerId, null, null, CursorParams.builder().size(100).build());
         assertThat(logs).anyMatch(l -> l.getAction().equals(ActivityAction.FILE_UPLOADED));
         assertThat(logs).anyMatch(l -> l.getAction().equals(ActivityAction.FILE_DOWNLOADED));
     }

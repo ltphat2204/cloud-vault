@@ -16,6 +16,8 @@ import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
 import ltphat.cloudvault.backend.shares.application.service.ShareService;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +32,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -163,7 +165,7 @@ class FileServiceImplTest {
         long size = 123L;
         java.io.InputStream inputStream = new java.io.ByteArrayInputStream("hello".getBytes());
 
-        when(fileRepository.findByProjectIdAndFolderId(projectId, null)).thenReturn(java.util.List.of());
+        when(fileRepository.findByNameAndFolderIdAndProjectId(eq(name), isNull(), eq(projectId))).thenReturn(Optional.empty());
         when(fileRepository.save(any(File.class))).thenAnswer(inv -> {
             File f = inv.getArgument(0);
             if (f.getId() == null) {
@@ -218,15 +220,17 @@ class FileServiceImplTest {
     void listFiles_SharedAccess_Success() {
         // Arrange
         UUID otherUserId = UUID.randomUUID();
+        CursorParams params = CursorParams.builder().size(10).build();
         when(shareService.hasProjectAccess(projectId, otherUserId)).thenReturn(true);
-        when(fileRepository.findByProjectIdAndFolderId(projectId, null)).thenReturn(java.util.List.of(file));
+        when(fileRepository.findByProjectIdAndFolderId(eq(projectId), isNull(), eq(params))).thenReturn(java.util.List.of(file));
+        when(fileApplicationMapper.toDto(any(File.class))).thenReturn(FileDto.builder().name("test.txt").build());
 
         // Act
-        java.util.List<FileDto> result = fileService.listFiles(projectId, null, otherUserId);
+        CursorPageResponse<FileDto> result = fileService.listFiles(projectId, null, otherUserId, params);
 
         // Assert
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("test.txt");
+        assertThat(result.getItems()).hasSize(1);
+        assertThat(result.getItems().get(0).getName()).isEqualTo("test.txt");
         verify(shareService).hasProjectAccess(projectId, otherUserId);
     }
 }

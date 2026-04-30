@@ -9,6 +9,8 @@ import ltphat.cloudvault.backend.folders.application.dto.MoveFolderRequest;
 import ltphat.cloudvault.backend.folders.application.dto.UpdateFolderRequest;
 import ltphat.cloudvault.backend.folders.application.service.IFolderService;
 import ltphat.cloudvault.backend.shared.dto.ApiResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,14 +50,25 @@ public class FolderController {
     }
 
     @GetMapping
-    @Operation(summary = "List folders", description = "Lists folders within a project or specific parent folder")
-    public ResponseEntity<ApiResponse<List<FolderDto>>> listFolders(
+    @Operation(summary = "List folders", description = "Lists folders within a project or specific parent folder using cursor pagination")
+    public ResponseEntity<ApiResponse<CursorPageResponse<FolderDto>>> listFolders(
             @RequestParam UUID projectId,
             @RequestParam(required = false) UUID parentFolderId,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "20") Integer size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String direction,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
-        List<FolderDto> folders = folderService.listFolders(projectId, parentFolderId, principal.getId());
-        return ResponseEntity.ok(ApiResponse.success(folders));
+        CursorParams params = CursorParams.builder()
+                .cursor(cursor)
+                .size(size)
+                .sortBy(sortBy)
+                .direction(direction)
+                .build();
+        
+        CursorPageResponse<FolderDto> result = folderService.listFolders(projectId, parentFolderId, principal.getId(), params);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PatchMapping("/{id}")
@@ -89,6 +102,7 @@ public class FolderController {
         folderService.deleteFolder(id, principal.getId());
         return ResponseEntity.ok(ApiResponse.success(null, "Folder deleted successfully"));
     }
+    
     @GetMapping("/{id}/path")
     @Operation(summary = "Get folder path", description = "Retrieves the full path of a folder from root")
     public ResponseEntity<ApiResponse<List<FolderDto>>> getFolderPath(
@@ -108,5 +122,4 @@ public class FolderController {
         List<FolderDto> folders = folderService.listAllFolders(projectId, principal.getId());
         return ResponseEntity.ok(ApiResponse.success(folders));
     }
-
 }

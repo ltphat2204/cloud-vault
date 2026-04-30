@@ -7,6 +7,8 @@ import ltphat.cloudvault.backend.folders.application.dto.UpdateFolderRequest;
 import ltphat.cloudvault.backend.folders.application.service.IFolderService;
 import ltphat.cloudvault.backend.iam.application.dto.UserDto;
 import ltphat.cloudvault.backend.iam.application.service.IAuthService;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import ltphat.cloudvault.backend.shared.security.JwtAuthenticationFilter;
 import ltphat.cloudvault.backend.shared.security.JwtTokenProvider;
 import ltphat.cloudvault.backend.iam.infrastructure.security.SecurityConfig;
@@ -97,15 +99,18 @@ class FolderControllerTest {
     void listFolders_ReturnsList() throws Exception {
         UUID projectId = UUID.randomUUID();
         FolderDto folder = FolderDto.builder().id(UUID.randomUUID()).name("Folder 1").build();
-        List<FolderDto> response = Collections.singletonList(folder);
+        CursorPageResponse<FolderDto> response = CursorPageResponse.<FolderDto>builder()
+                .items(Collections.singletonList(folder))
+                .hasNext(false)
+                .build();
 
-        when(folderService.listFolders(any(), any(), any())).thenReturn(response);
+        when(folderService.listFolders(any(), any(), any(), any())).thenReturn(response);
 
         mockMvc.perform(get("/folders")
                         .header("Authorization", "Bearer dummy-token")
                         .param("projectId", projectId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].name").value("Folder 1"));
+                .andExpect(jsonPath("$.data.items[0].name").value("Folder 1"));
     }
 
     @Test

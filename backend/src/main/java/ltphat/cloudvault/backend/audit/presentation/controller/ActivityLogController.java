@@ -9,10 +9,8 @@ import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
 import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
 import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
 import ltphat.cloudvault.backend.shared.dto.ApiResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,26 +26,42 @@ public class ActivityLogController {
     private final IActivityLogService activityLogService;
 
     @GetMapping
-    @Operation(summary = "List user activity logs", description = "Fetch all activity logs for the authenticated user")
-    public ResponseEntity<ApiResponse<Page<ActivityLogDto>>> listActivities(
+    @Operation(summary = "List user activity logs", description = "Fetch all activity logs for the authenticated user using cursor pagination")
+    public ResponseEntity<ApiResponse<CursorPageResponse<ActivityLogDto>>> listActivities(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(required = false) ActivityAction action,
             @RequestParam(required = false) ResourceType resourceType,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "20") Integer size) {
         
-        Page<ActivityLogDto> result = activityLogService.getUserActivityLogs(userPrincipal.getId(), action, resourceType, pageable);
+        CursorParams params = CursorParams.builder()
+                .cursor(cursor)
+                .size(size)
+                .sortBy("createdAt")
+                .direction("DESC")
+                .build();
+
+        CursorPageResponse<ActivityLogDto> result = activityLogService.getUserActivityLogs(userPrincipal.getId(), action, resourceType, params);
         return ResponseEntity.ok(ApiResponse.success(result, "Activity logs retrieved successfully"));
     }
 
     @GetMapping("/resources/{resourceId}")
-    @Operation(summary = "Get resource activity history", description = "Fetch the activity history for a specific resource")
-    public ResponseEntity<ApiResponse<Page<ActivityLogDto>>> getResourceHistory(
+    @Operation(summary = "Get resource activity history", description = "Fetch the activity history for a specific resource using cursor pagination")
+    public ResponseEntity<ApiResponse<CursorPageResponse<ActivityLogDto>>> getResourceHistory(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable UUID resourceId,
             @RequestParam ResourceType resourceType,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "20") Integer size) {
         
-        Page<ActivityLogDto> result = activityLogService.getResourceActivityLogs(resourceId, resourceType, userPrincipal.getId(), pageable);
+        CursorParams params = CursorParams.builder()
+                .cursor(cursor)
+                .size(size)
+                .sortBy("createdAt")
+                .direction("DESC")
+                .build();
+
+        CursorPageResponse<ActivityLogDto> result = activityLogService.getResourceActivityLogs(resourceId, resourceType, userPrincipal.getId(), params);
         return ResponseEntity.ok(ApiResponse.success(result, "Resource history retrieved successfully"));
     }
 }

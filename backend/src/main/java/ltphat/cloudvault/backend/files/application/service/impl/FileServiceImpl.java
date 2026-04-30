@@ -22,6 +22,9 @@ import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
 import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
 import ltphat.cloudvault.backend.notifications.domain.model.RealTimeUpdateType;
 import ltphat.cloudvault.backend.shares.application.service.ShareService;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
+import ltphat.cloudvault.backend.shared.utils.CursorUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,9 +58,8 @@ public class FileServiceImpl implements IFileService {
         }
 
         // Check for existing file
-        Optional<File> existingFileOpt = fileRepository.findByProjectIdAndFolderId(projectId, folderId).stream()
-                .filter(f -> f.getName().equals(name) && !f.isDeleted())
-                .findFirst();
+        Optional<File> existingFileOpt = fileRepository.findByNameAndFolderIdAndProjectId(name, folderId, projectId)
+                .filter(f -> !f.isDeleted());
 
         File file;
         int nextVersion;
@@ -171,14 +173,39 @@ public class FileServiceImpl implements IFileService {
     }
 
     @Override
-    public List<FileDto> listFiles(UUID projectId, UUID folderId, UUID ownerId) {
+    public CursorPageResponse<FileDto> listFiles(UUID projectId, UUID folderId, UUID ownerId, CursorParams cursorParams) {
         boolean hasSharedAccess = shareService.hasProjectAccess(projectId, ownerId);
         
-        return fileRepository.findByProjectIdAndFolderId(projectId, folderId).stream()
+        List<File> files = fileRepository.findByProjectIdAndFolderId(projectId, folderId, cursorParams);
+        
+        // Filter by permissions (should ideally be done in repository)
+        List<File> filteredFiles = files.stream()
                 .filter(f -> !f.isDeleted())
                 .filter(f -> f.getOwnerId().equals(ownerId) || hasSharedAccess)
-                .map(fileApplicationMapper::toDto)
                 .collect(Collectors.toList());
+
+        return toCursorPageResponse(filteredFiles, cursorParams);
+    }
+
+    private CursorPageResponse<FileDto> toCursorPageResponse(List<File> files, CursorParams params) {
+        boolean hasNext = files.size() > params.getPageSize();
+        List<File> items = hasNext ? files.subList(0, params.getPageSize()) : files;
+        
+        String nextCursor = null;
+        if (hasNext && !items.isEmpty()) {
+            File lastItem = items.get(items.size() - 1);
+            if (lastItem.getCreatedAt() != null) {
+                String sortField = params.getSortField();
+                String fieldValue = switch (sortField) {
+                    case "name" -> lastItem.getName();
+                    case "size" -> lastItem.getSize().toString();
+                    default -> lastItem.getCreatedAt().toString();
+                };
+                nextCursor = CursorUtils.encode(fieldValue, lastItem.getId().toString());
+            }
+        }
+        
+        return CursorPageResponse.of(items.stream().map(fileApplicationMapper::toDto).toList(), nextCursor, hasNext);
     }
 
     @Override

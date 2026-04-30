@@ -9,6 +9,8 @@ import ltphat.cloudvault.backend.files.application.dto.UpdateFileRequest;
 import ltphat.cloudvault.backend.files.application.dto.FileVersionDto;
 import ltphat.cloudvault.backend.files.application.service.IFileService;
 import ltphat.cloudvault.backend.shared.dto.ApiResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -43,14 +45,25 @@ public class FileController {
     }
 
     @GetMapping
-    @Operation(summary = "List files", description = "Lists files within a project or folder")
-    public ResponseEntity<ApiResponse<List<FileDto>>> listFiles(
+    @Operation(summary = "List files", description = "Lists files within a project or folder using cursor pagination")
+    public ResponseEntity<ApiResponse<CursorPageResponse<FileDto>>> listFiles(
             @RequestParam UUID projectId,
             @RequestParam(required = false) UUID folderId,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "20") Integer size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String direction,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
-        List<FileDto> files = fileService.listFiles(projectId, folderId, principal.getId());
-        return ResponseEntity.ok(ApiResponse.success(files));
+        CursorParams params = CursorParams.builder()
+                .cursor(cursor)
+                .size(size)
+                .sortBy(sortBy)
+                .direction(direction)
+                .build();
+        
+        CursorPageResponse<FileDto> result = fileService.listFiles(projectId, folderId, principal.getId(), params);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -6,8 +6,14 @@ import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import ltphat.cloudvault.backend.folders.infrastructure.persistence.jpa.JpaFolder;
 import ltphat.cloudvault.backend.folders.infrastructure.persistence.jpa.SpringDataFolderRepository;
 import ltphat.cloudvault.backend.folders.infrastructure.persistence.mapper.FolderPersistenceMapper;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
+import ltphat.cloudvault.backend.shared.utils.CursorUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,10 +40,27 @@ public class FolderRepositoryAdapter implements IFolderRepository {
     }
 
     @Override
-    public List<Folder> findByProjectIdAndParentFolderId(UUID projectId, UUID parentFolderId) {
-        return springDataFolderRepository.findByProjectIdAndParentFolderId(projectId, parentFolderId).stream()
+    public List<Folder> findByProjectIdAndParentFolderId(UUID projectId, UUID parentFolderId, CursorParams cursorParams) {
+        LocalDateTime cursorTime = null;
+        UUID cursorId = null;
+        String[] decoded = CursorUtils.decode(cursorParams.getCursor());
+        if (decoded != null) {
+            cursorTime = LocalDateTime.parse(decoded[0]);
+            cursorId = UUID.fromString(decoded[1]);
+        }
+
+        Pageable pageable = PageRequest.of(0, cursorParams.getPageSize() + 1, 
+                Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+
+        return springDataFolderRepository.findByProjectIdAndParentFolderIdWithCursor(projectId, parentFolderId, cursorTime, cursorId, pageable).stream()
                 .map(folderPersistenceMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Folder> findByNameAndParentFolderIdAndProjectId(String name, UUID parentFolderId, UUID projectId) {
+        return springDataFolderRepository.findByNameAndParentFolderIdAndProjectId(name, parentFolderId, projectId)
+                .map(folderPersistenceMapper::toDomain);
     }
 
     @Override

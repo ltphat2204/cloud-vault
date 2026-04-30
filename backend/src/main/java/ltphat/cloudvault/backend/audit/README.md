@@ -26,6 +26,13 @@ Following Clean Architecture principles:
 - `ActivityLogPersistenceAdapter`: Infrastructure bridge to Spring Data JPA.
 - `ActivityLogController`: API entry point at `/api/v1/audit`.
 
+## Pagination & Sorting
+
+This module uses cursor-based pagination for listing activities.
+- **Default Sort**: `createdAt` DESC.
+- **Parameters**: `cursor`, `size` (default 20), `action`, `resourceType`.
+- **Response**: `CursorPageResponse<ActivityLogDto>`.
+
 ## Integration Guide
 
 Other modules can log activities by injecting the `IActivityLogService` interface.
