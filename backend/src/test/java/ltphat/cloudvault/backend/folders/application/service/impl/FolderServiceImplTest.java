@@ -11,6 +11,7 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.files.application.service.IStorageService;
 import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
 import ltphat.cloudvault.backend.shares.application.service.ShareService;
 import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
@@ -23,8 +24,12 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.zip.ZipInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,6 +50,9 @@ class FolderServiceImplTest {
 
     @Spy
     private FolderApplicationMapper folderApplicationMapper;
+
+    @Mock
+    private IStorageService storageService;
 
     @Mock
     private IActivityLogService auditService;
@@ -229,5 +237,52 @@ class FolderServiceImplTest {
         // Act & Assert
         assertThatThrownBy(() -> folderService.listFolders(projectId, null, otherUserId, params))
                 .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+    }
+
+    @Test
+    void downloadFolder_Success() throws Exception {
+        // Arrange
+        UUID folderId = UUID.randomUUID();
+        Folder folder = Folder.builder().id(folderId).name("Root").ownerId(ownerId).projectId(projectId).build();
+        
+        UUID subFolderId = UUID.randomUUID();
+        Folder subfolder = Folder.builder().id(subFolderId).name("Sub").parentFolderId(folderId).ownerId(ownerId).projectId(projectId).build();
+        
+        ltphat.cloudvault.backend.files.domain.model.File file = ltphat.cloudvault.backend.files.domain.model.File.builder()
+                .id(UUID.randomUUID())
+                .name("test.txt")
+                .folderId(subFolderId)
+                .minioKey("key1")
+                .build();
+
+        when(folderRepository.findById(folderId)).thenReturn(Optional.of(folder));
+        when(folderRepository.findAllSubfolders(folderId)).thenReturn(new ArrayList<>(java.util.List.of(subfolder)));
+        when(fileRepository.findByFolderId(folderId)).thenReturn(new ArrayList<>());
+        when(fileRepository.findByFolderId(subFolderId)).thenReturn(new ArrayList<>(java.util.List.of(file)));
+        when(storageService.download("key1")).thenReturn(new ByteArrayInputStream("hello".getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        // Act
+        folderService.downloadFolder(folderId, ownerId, outputStream);
+
+        // Assert
+        byte[] zipBytes = outputStream.toByteArray();
+        assertThat(zipBytes).isNotEmpty();
+
+        try (ZipInputStream zipIn = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+            java.util.zip.ZipEntry entry = zipIn.getNextEntry();
+            assertThat(entry).isNotNull();
+            assertThat(entry.getName()).isEqualTo("Sub/");
+            
+            entry = zipIn.getNextEntry();
+            assertThat(entry).isNotNull();
+            assertThat(entry.getName()).isEqualTo("Sub/test.txt");
+            
+            byte[] content = zipIn.readAllBytes();
+            assertThat(new String(content)).isEqualTo("hello");
+        }
+        
+        verify(auditService).logActivity(eq(ownerId), eq(ltphat.cloudvault.backend.audit.domain.model.ActivityAction.FOLDER_DOWNLOADED), any(), eq(folderId), any());
     }
 }

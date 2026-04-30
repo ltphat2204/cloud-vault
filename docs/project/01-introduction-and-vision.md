@@ -8,7 +8,7 @@
 
 CloudVault is a web platform that enables **multiple users** to register accounts and use their own private file storage space. Each user can create multiple **Projects**. Within each Project, users can freely organize files and folders.
 
-The system provides all basic storage features along with advanced capabilities such as **flexible sharing** (sharing an entire Project, a Folder, or individual Files), **real-time notifications**, **asynchronous event processing**, and high performance through caching.
+The system provides all basic storage features along with advanced capabilities such as **flexible sharing** (sharing an entire Project, a Folder, or individual Files), **recursive folder downloads**, **real-time notifications**, **asynchronous event processing**, and high performance through caching.
 
 The project aims to build a complete, secure, easy-to-use, and scalable system, suitable for showcasing in a portfolio and demonstrating modern full-stack skills.
 

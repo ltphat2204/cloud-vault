@@ -65,25 +65,27 @@ Lists folders within a project or a specific parent folder.
 - **Auth required**: Yes
 - **Query Parameters**:
   - `projectId` (required): UUID of the project.
-  - `parentFolderId` (optional): UUID of the parent folder to list contents from.
+  - `parentFolderId` (optional): UUID of the parent folder.
+  - `cursor` (optional): Opaque string for pagination.
+  - `size` (optional, default 20): Number of items to return.
+  - `sortBy` (optional, default "createdAt"): Field to sort by.
+  - `direction` (optional, default "DESC"): Sort direction (ASC/DESC).
 - **Success Response**: `200 OK`
   ```json
   {
     "success": true,
-    "data": [
-      {
-        "id": "folder-uuid-1",
-        "name": "Subfolder A",
-        "projectId": "project-uuid",
-        "parentFolderId": "parent-folder-uuid"
-      },
-      {
-        "id": "folder-uuid-2",
-        "name": "Subfolder B",
-        "projectId": "project-uuid",
-        "parentFolderId": "parent-folder-uuid"
-      }
-    ]
+    "data": {
+      "content": [
+        {
+          "id": "folder-uuid-1",
+          "name": "Subfolder A",
+          "projectId": "project-uuid",
+          "parentFolderId": "parent-folder-uuid"
+        }
+      ],
+      "nextCursor": "base64-string",
+      "hasNext": true
+    }
   }
   ```
 
@@ -208,6 +210,21 @@ Soft deletes a folder and all its contents (subfolders and files). The deleted i
     "message": "Folder deleted successfully"
   }
   ```
+
+---
+
+### 9. Download Folder
+Downloads the folder and all its contents (recursive subfolders and files) as a ZIP archive.
+
+- **URL**: `GET /api/v1/folders/{id}/download`
+- **Auth required**: Yes
+- **Path Variables**:
+  - `id` (UUID): Unique ID of the folder.
+- **Success Response**: `200 OK`
+  - **Content-Type**: `application/zip`
+  - **Body**: ZIP binary data.
+
+---
 
 ## Schemas
 

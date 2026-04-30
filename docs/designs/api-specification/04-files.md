@@ -39,18 +39,26 @@ Lists files within a project or a specific parent folder.
 - **Query Parameters**:
   - `projectId` (required): UUID of the project.
   - `folderId` (optional): UUID of the parent folder.
+  - `cursor` (optional): Opaque string for pagination.
+  - `size` (optional, default 20): Number of items to return.
+  - `sortBy` (optional, default "createdAt"): Field to sort by (name, size, createdAt).
+  - `direction` (optional, default "DESC"): Sort direction (ASC/DESC).
 - **Success Response**: `200 OK`
   ```json
   {
     "success": true,
-    "data": [
-      {
-        "id": "file-uuid-1",
-        "name": "invoice.pdf",
-        "size": 54321,
-        "mimeType": "application/pdf"
-      }
-    ]
+    "data": {
+      "content": [
+        {
+          "id": "file-uuid-1",
+          "name": "invoice.pdf",
+          "size": 54321,
+          "mimeType": "application/pdf"
+        }
+      ],
+      "nextCursor": "base64-string",
+      "hasNext": true
+    }
   }
   ```
 

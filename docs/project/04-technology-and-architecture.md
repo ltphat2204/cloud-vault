@@ -40,3 +40,10 @@
 - **Clear separation of concerns**: Application metadata lives in PostgreSQL (cached with Redis when appropriate); binary file content is stored in MinIO (S3-compatible object storage).
 - **Event-Driven**: Significant domain events (FileUploaded, ProjectShared, etc.) are published to RabbitMQ. Dedicated consumers in the infrastructure layer process them asynchronously (thumbnail generation, search indexing, notification dispatch) without blocking the request cycle.
 - **Real-time**: Notifications and upload progress are pushed to the frontend via WebSocket, keeping the UI instantly synced with backend changes.
+- **Streaming**: Large downloads (e.g., folder ZIP archives) are streamed directly to the client using `StreamingResponseBody`, minimizing memory pressure on the server.
+
+## 4.3 Navigation & Pagination
+
+- **Cursor-Based Pagination**: The system uses keyset (cursor) pagination for all listing endpoints (Files, Folders, Audit Logs). This approach ensures stable paging even as new data is added, improves performance on large datasets, and enables seamless infinite scrolling in the UI.
+- **Sorting**: Sorting is supported on multiple fields (e.g., name, size, createdAt) and is integrated with the cursor generation logic to maintain consistency.
+- **Base64 Encoding**: Cursors are Base64 encoded to abstract internal database fields (timestamps, IDs) from the client.

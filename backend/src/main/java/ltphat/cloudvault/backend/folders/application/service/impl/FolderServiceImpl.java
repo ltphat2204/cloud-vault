@@ -20,6 +20,7 @@ import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
 import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
 import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
 import ltphat.cloudvault.backend.notifications.domain.model.RealTimeUpdateType;
+import ltphat.cloudvault.backend.files.application.service.IStorageService;
 import ltphat.cloudvault.backend.shares.application.service.ShareService;
 import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
 import ltphat.cloudvault.backend.shared.dto.CursorParams;
@@ -28,11 +29,17 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +49,7 @@ public class FolderServiceImpl implements IFolderService {
     private final IFileRepository fileRepository;
     private final IProjectRepository projectRepository;
     private final FolderApplicationMapper folderApplicationMapper;
+    private final IStorageService storageService;
     private final IActivityLogService auditService;
     private final ShareService shareService;
     private final RealTimeUpdateService realTimeUpdateService;
@@ -274,5 +282,69 @@ public class FolderServiceImpl implements IFolderService {
                 .filter(f -> !f.isDeleted())
                 .map(folderApplicationMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void downloadFolder(UUID id, UUID ownerId, OutputStream outputStream) {
+        Folder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new FolderNotFoundException(id));
+
+        if (!folder.getOwnerId().equals(ownerId) && !shareService.hasProjectAccess(folder.getProjectId(), ownerId)) {
+            throw new AccessDeniedException("You do not have access to this folder");
+        }
+
+        List<Folder> descendants = folderRepository.findAllSubfolders(id);
+        List<Folder> allFolders = new ArrayList<>(descendants);
+        allFolders.add(folder);
+
+        Map<UUID, Folder> folderMap = allFolders.stream()
+                .collect(Collectors.toMap(Folder::getId, f -> f));
+
+        try (ZipOutputStream zipOut = new ZipOutputStream(outputStream)) {
+            for (Folder f : allFolders) {
+                String relativePath = getRelativePath(f, id, folderMap);
+                
+                // Add directory entry (important for empty folders)
+                if (!relativePath.isEmpty()) {
+                    zipOut.putNextEntry(new ZipEntry(relativePath));
+                    zipOut.closeEntry();
+                }
+
+                List<File> files = fileRepository.findByFolderId(f.getId()).stream()
+                        .filter(file -> !file.isDeleted())
+                        .collect(Collectors.toList());
+
+                for (File file : files) {
+                    ZipEntry zipEntry = new ZipEntry(relativePath + file.getName());
+                    zipOut.putNextEntry(zipEntry);
+                    
+                    try (InputStream fileStream = storageService.download(file.getMinioKey())) {
+                        fileStream.transferTo(zipOut);
+                    }
+                    zipOut.closeEntry();
+                }
+            }
+            zipOut.finish();
+        } catch (IOException e) {
+            throw new FolderException("Failed to generate ZIP archive: " + e.getMessage());
+        }
+
+        auditService.logActivity(ownerId, ActivityAction.FOLDER_DOWNLOADED, ResourceType.FOLDER, id, 
+                Map.of("name", folder.getName()));
+    }
+
+    private String getRelativePath(Folder folder, UUID targetId, Map<UUID, Folder> folderMap) {
+        if (folder.getId().equals(targetId)) {
+            return "";
+        }
+        
+        List<String> parts = new ArrayList<>();
+        Folder current = folder;
+        while (current != null && !current.getId().equals(targetId)) {
+            parts.add(0, current.getName());
+            current = folderMap.get(current.getParentFolderId());
+        }
+        
+        return String.join("/", parts) + "/";
     }
 }

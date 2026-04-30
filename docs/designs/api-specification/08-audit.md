@@ -8,14 +8,14 @@ Endpoints for retrieving user activity logs and resource history.
 ## Endpoints
 
 ### 1. List My Activities
-Fetch all activity logs for the authenticated user, sorted by time (newest first).
+Fetch all activity logs for the authenticated user using cursor-based pagination.
 
 - **URL**: `/`
 - **Method**: `GET`
 - **Auth Required**: YES
 - **Query Parameters**:
-  - `page` (int, default: 0)
-  - `size` (int, default: 20)
+  - `cursor` (string, optional) - Opaque string for pagination.
+  - `size` (int, default: 20) - Number of items to return.
   - `action` (string, optional) - Filter by action (e.g., FILE_UPLOADED)
   - `resourceType` (string, optional) - Filter by resource type (PROJECT, FOLDER, FILE)
 
@@ -41,22 +41,22 @@ Fetch all activity logs for the authenticated user, sorted by time (newest first
             "createdAt": "2024-04-29T10:00:00Z"
           }
         ],
-        "totalPages": 1,
-        "totalElements": 1
+        "nextCursor": "base64-string",
+        "hasNext": true
       },
       "timestamp": "..."
     }
     ```
 
 ### 2. Get Resource History
-Fetch the activity history for a specific resource. The user must have permission (owner or shared access) to view the resource history.
+Fetch the activity history for a specific resource using cursor-based pagination. The user must have permission (owner or shared access) to view the resource history.
 
 - **URL**: `/resources/{resourceId}`
 - **Method**: `GET`
 - **Auth Required**: YES
 - **Query Parameters**:
-  - `page` (int, default: 0)
-  - `size` (int, default: 20)
+  - `cursor` (string, optional) - Opaque string for pagination.
+  - `size` (int, default: 20) - Number of items to return.
   - `resourceType` (string, REQUIRED) - One of PROJECT, FOLDER, FILE
 
 - **Success Response**:
@@ -81,8 +81,8 @@ Fetch the activity history for a specific resource. The user must have permissio
             "createdAt": "2024-04-29T11:00:00Z"
           }
         ],
-        "totalPages": 1,
-        "totalElements": 1
+        "nextCursor": "base64-string",
+        "hasNext": true
       },
       "timestamp": "..."
     }
