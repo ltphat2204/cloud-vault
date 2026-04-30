@@ -110,4 +110,25 @@ public class AuthController {
         authService.verify(token);
         return ResponseEntity.ok(ApiResponse.success(null, "Email verified successfully"));
     }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Request password reset", description = "Sends a password reset email if the account exists and is verified")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok(ApiResponse.success(null, "If an account exists with this email and is verified, a password reset link has been sent."));
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Reset password", description = "Resets user password using a valid reset token")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.success(null, "Password has been reset successfully"));
+    }
+
+    @PostMapping("/resend-verification")
+    @Operation(summary = "Resend verification email", description = "Resends the account verification email")
+    public ResponseEntity<ApiResponse<Void>> resendVerification(@RequestParam String email) {
+        authService.resendVerification(email);
+        return ResponseEntity.ok(ApiResponse.success(null, "Verification email has been resent"));
+    }
 }

@@ -13,6 +13,7 @@ public class ManualUserPersistenceMapper implements UserPersistenceMapper {
                 .email(jpaUser.getEmail())
                 .passwordHash(jpaUser.getPasswordHash())
                 .name(jpaUser.getName())
+                .isVerified(jpaUser.isVerified())
                 .createdAt(jpaUser.getCreatedAt())
                 .updatedAt(jpaUser.getUpdatedAt())
                 .build();
@@ -26,6 +27,7 @@ public class ManualUserPersistenceMapper implements UserPersistenceMapper {
                 .email(user.getEmail())
                 .passwordHash(user.getPasswordHash())
                 .name(user.getName())
+                .isVerified(user.isVerified())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
