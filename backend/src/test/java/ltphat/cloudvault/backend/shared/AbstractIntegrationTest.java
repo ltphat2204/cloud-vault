@@ -19,7 +19,7 @@ public abstract class AbstractIntegrationTest {
                 .withUsername("test")
                 .withPassword("test")
                 .waitingFor(Wait.forListeningPort());
-        
+
         minio = new MinIOContainer("minio/minio:latest")
                 .waitingFor(Wait.forHttp("/minio/health/live").forPort(9000));
 
