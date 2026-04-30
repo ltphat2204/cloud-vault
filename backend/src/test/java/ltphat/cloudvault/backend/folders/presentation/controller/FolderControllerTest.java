@@ -8,7 +8,6 @@ import ltphat.cloudvault.backend.folders.application.service.IFolderService;
 import ltphat.cloudvault.backend.iam.application.dto.UserDto;
 import ltphat.cloudvault.backend.iam.application.service.IAuthService;
 import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
-import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import ltphat.cloudvault.backend.shared.security.JwtAuthenticationFilter;
 import ltphat.cloudvault.backend.shared.security.JwtTokenProvider;
 import ltphat.cloudvault.backend.iam.infrastructure.security.SecurityConfig;
@@ -25,7 +24,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -152,5 +150,19 @@ class FolderControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Folder deleted successfully"));
+    }
+
+    @Test
+    void downloadFolder_ReturnsZip() throws Exception {
+        UUID folderId = UUID.randomUUID();
+        FolderDto folder = FolderDto.builder().id(folderId).name("TestFolder").build();
+
+        when(folderService.getFolder(any(), any())).thenReturn(folder);
+
+        mockMvc.perform(get("/folders/{id}/download", folderId)
+                        .header("Authorization", "Bearer dummy-token"))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header().string("Content-Disposition", "attachment; filename=\"TestFolder.zip\""))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header().string("Content-Type", "application/zip"));
     }
 }

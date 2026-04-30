@@ -15,6 +15,7 @@ public enum ActivityAction {
     FOLDER_DELETED,
     FOLDER_RESTORED,
     FOLDER_PERMANENTLY_DELETED,
+    FOLDER_DOWNLOADED,
     
     // File actions
     FILE_UPLOADED,

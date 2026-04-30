@@ -20,4 +20,5 @@ public interface IFolderService {
     void deleteFolder(UUID id, UUID ownerId);
     List<FolderDto> getFolderPath(UUID id, UUID ownerId);
     List<FolderDto> listAllFolders(UUID projectId, UUID ownerId);
+    void downloadFolder(UUID id, UUID ownerId, java.io.OutputStream outputStream);
 }

@@ -12,10 +12,13 @@ import ltphat.cloudvault.backend.shared.dto.ApiResponse;
 import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
 import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import ltphat.cloudvault.backend.iam.infrastructure.security.UserPrincipal;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.List;
 import java.util.UUID;
@@ -121,5 +124,23 @@ public class FolderController {
     ) {
         List<FolderDto> folders = folderService.listAllFolders(projectId, principal.getId());
         return ResponseEntity.ok(ApiResponse.success(folders));
+    }
+
+    @GetMapping("/{id}/download")
+    @Operation(summary = "Download folder as ZIP", description = "Downloads the folder and all its contents as a ZIP archive")
+    public ResponseEntity<StreamingResponseBody> downloadFolder(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        FolderDto folder = folderService.getFolder(id, principal.getId());
+        
+        StreamingResponseBody responseBody = outputStream -> {
+            folderService.downloadFolder(id, principal.getId(), outputStream);
+        };
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + folder.getName() + ".zip\"")
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .body(responseBody);
     }
 }

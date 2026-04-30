@@ -19,6 +19,7 @@
 - Create, rename, move, delete Folders (supports tree-like folder structure).
 - File upload (supports multiple files at once, drag & drop, real-time progress bar).
 - File download (single file or multiple files compressed as a zip archive).
+- Folder download (recursive ZIP archive of all subfolders and files).
 - View file details (name, size, type, creation/modification date, owner).
 - Soft delete → move to **Trash Bin**, with options to restore or permanently delete.
 - Search files/folders by name (globally or within a specific Project/Folder).
