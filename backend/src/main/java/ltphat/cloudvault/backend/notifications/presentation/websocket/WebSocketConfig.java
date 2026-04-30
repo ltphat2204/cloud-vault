@@ -1,4 +1,4 @@
-package ltphat.cloudvault.backend.notifications.infrastructure.websocket;
+package ltphat.cloudvault.backend.notifications.presentation.websocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

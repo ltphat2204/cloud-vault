@@ -9,7 +9,7 @@ import ltphat.cloudvault.backend.notifications.domain.model.NotificationType;
 import ltphat.cloudvault.backend.notifications.domain.repository.NotificationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ import java.util.UUID;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final RealTimeUpdateService realTimeUpdateService;
 
     @Override
     public Page<NotificationDTO> getUserNotifications(UUID userId, boolean unreadOnly, Pageable pageable) {
@@ -66,11 +66,8 @@ public class NotificationServiceImpl implements NotificationService {
 
         notificationRepository.save(notification);
 
-        // Broadcast via WebSocket
-        messagingTemplate.convertAndSendToUser(
-                userId.toString(),
-                "/queue/notifications",
-                toDTO(notification));
+        // Broadcast via WebSocket using the service abstraction
+        realTimeUpdateService.sendNotification(userId, toDTO(notification));
     }
 
     private NotificationDTO toDTO(Notification notification) {

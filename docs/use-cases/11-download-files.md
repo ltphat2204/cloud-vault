@@ -6,15 +6,11 @@
 **Preconditions:** User has access to the files.  
 **Postconditions:** User receives the file content.  
 
-**Main Flow (Single File):**
-1. User clicks "Download" on a file.
-2. System generates a temporary signed URL for MinIO or proxies the stream.
-3. Frontend triggers browser download.
-
-**Main Flow (Multiple Files/Folders):**
-1. User selects multiple items and clicks "Download".
-2. System gathers all file metadata.
-3. System creates a ZIP stream of the requested items.
-4. System returns the ZIP stream to the browser.
+**Main Flow:**
+1. User selects a single file or a folder.
+2. User clicks the "Download" button.
+3. System checks user's VIEW permission on the resource.
+4. For a single file: System retrieves the file from storage and streams it to the user.
+5. For a folder: System recursively collects all contents and streams them as a ZIP archive.
 
 **Exceptions:** 401, 403, 404, 500.

@@ -14,10 +14,10 @@ The Notifications Module is a system-wide service responsible for managing and d
 
 Following Clean Architecture principles:
 
-- **presentation**: REST controllers for listing notifications and marking them as read.
-- **application**: Business logic for notification creation, state management, and DTO mapping.
+- **presentation**: REST controllers and WebSocket configuration (`WebSocketConfig`).
+- **application**: Business logic for notification creation, state management, and delivery interfaces.
 - **domain**: Core aggregate root (`Notification`), `NotificationType` enum, and repository interfaces.
-- **infrastructure**: JPA persistence adapters and MapStruct mappers for data conversion.
+- **infrastructure**: JPA persistence adapters and WebSocket delivery adapters (`WebSocketRealTimeUpdateAdapter`).
 
 ## Key Components
 
@@ -26,6 +26,8 @@ Following Clean Architecture principles:
 - `NotificationPersistenceAdapter`: Infrastructure bridge to Spring Data JPA.
 - `NotificationPersistenceMapper`: MapStruct mapper for domain-persistence conversion.
 - `NotificationController`: API entry point at `/api/v1/notifications`.
+- `WebSocketConfig`: WebSocket STOMP endpoint registration.
+- `WebSocketRealTimeUpdateAdapter`: Real-time event delivery implementation.
 
 ## Integration Guide
 

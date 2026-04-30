@@ -39,7 +39,7 @@ Technical implementations:
 - **Messaging**: `RabbitMqEventPublisher`, `RabbitMqListener` (consumers)
 - **Caching**: `RedisCacheService` wrapping frequently accessed metadata
 - **Security**: JWT authentication filter, token refresh logic
-- **Real‑time**: WebSocket sessions managed via a `NotificationSocketService`
+- **Real‑time Delivery**: `WebSocketRealTimeUpdateAdapter` implementing `RealTimeUpdateService`
 
 ### 4. Interface / Presentation Layer
 - REST Controllers (authenticated endpoints)
