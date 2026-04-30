@@ -18,7 +18,7 @@
 4. System checks that email is not already in use.
 5. System hashes the password and creates a `User` record.
 6. System returns a success response (no auto‑login).
-7. (Optional) System sends a verification email with a token.
+7. System sends a verification email with a token (required for account activation and features like UC-04).
 
 **Alternative Flows:**
 - **2a. Invalid input:** show validation errors inline.

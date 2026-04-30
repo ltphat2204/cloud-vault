@@ -10,10 +10,10 @@
 - PostgreSQL as the primary database (stores user, Project, Folder, File metadata, sharing permissions, version history, etc.).
 - MinIO as the object storage for actual files (S3-compatible storage).
 - Redis for caching (frequently accessed file lists, metadata, sessions, etc.) to improve speed.
-- RabbitMQ for Event-Driven Architecture (asynchronous processing of events such as: after successful upload → generate thumbnail, send notification, update search index, etc.).
+- RabbitMQ for Event-Driven Architecture (asynchronous processing of events such as: sending verification and password reset emails).
 - SLF4J with Logback for detailed logging.
 - Swagger (OpenAPI) for API documentation and testing.
-- **Testing:** JUnit 5, Mockito, MockMvc for robust TDD and integration testing.
+- Unit 5, Mockito, MockMvc for robust TDD and integration testing.
 
 **Frontend:**
 
@@ -38,7 +38,7 @@
     - **Infrastructure Layer** – Implements repository contracts, external service adapters (MinIO, RabbitMQ, Redis), event dispatching, and persistence details (Spring Data JPA, Hibernate). This layer bridges the domain to the outside world.
     - **Interface / Presentation Layer** – REST controllers, WebSocket endpoints, and any external APIs that translate HTTP and real-time requests into application use cases.
 - **Clear separation of concerns**: Application metadata lives in PostgreSQL (cached with Redis when appropriate); binary file content is stored in MinIO (S3-compatible object storage).
-- **Event-Driven**: Significant domain events (FileUploaded, ProjectShared, etc.) are published to RabbitMQ. Dedicated consumers in the infrastructure layer process them asynchronously (thumbnail generation, search indexing, notification dispatch) without blocking the request cycle.
+- **Event-Driven**: Authentication events (RegistrationCompleted, PasswordResetRequested) are published to RabbitMQ. Dedicated consumers in the infrastructure layer handle asynchronous email delivery without blocking the request cycle.
 - **Real-time**: Notifications and upload progress are pushed to the frontend via WebSocket, keeping the UI instantly synced with backend changes.
 - **Streaming**: Large downloads (e.g., folder ZIP archives) are streamed directly to the client using `StreamingResponseBody`, minimizing memory pressure on the server.
 

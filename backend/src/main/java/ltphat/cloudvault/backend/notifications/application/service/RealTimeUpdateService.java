@@ -14,4 +14,12 @@ public interface RealTimeUpdateService {
      * @param metadata Additional context for the event (resource IDs, names, etc.).
      */
     void sendSyncEvent(UUID userId, RealTimeUpdateType type, Map<String, Object> metadata);
+
+    /**
+     * Sends a persistent notification to a specific user via WebSocket.
+     * 
+     * @param userId The ID of the recipient user.
+     * @param notification The notification data transfer object.
+     */
+    void sendNotification(UUID userId, Object notification);
 }

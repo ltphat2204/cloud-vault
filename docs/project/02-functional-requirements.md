@@ -3,6 +3,7 @@
 ## 2.1 User Management & Authentication
 
 - Account registration (email + password).
+- Email verification.
 - Login / Logout.
 - Forgot password (reset password).
 - JWT Authentication with Refresh Token.
@@ -18,7 +19,7 @@
 
 - Create, rename, move, delete Folders (supports tree-like folder structure).
 - File upload (supports multiple files at once, drag & drop, real-time progress bar).
-- File download (single file or multiple files compressed as a zip archive).
+- File download (single file).
 - Folder download (recursive ZIP archive of all subfolders and files).
 - View file details (name, size, type, creation/modification date, owner).
 - Soft delete → move to **Trash Bin**, with options to restore or permanently delete.
@@ -38,9 +39,7 @@
 - Show real-time upload progress (percentage, speed).
 - Instant notifications when:
     - Someone shares a Project/Folder/File with you.
-    - A new file is uploaded to a Project/Folder you are following.
     - Sharing permissions change.
-    - A file is deleted or restored.
 - Real-time updates to the file/folder list when another user makes changes (if the same Project is open).
 
 ## 2.6 File Versioning
@@ -50,6 +49,5 @@
 
 ## 2.7 Additional Supporting Features
 
-- Preview certain file types (image, PDF, text).
 - Pagination and sorting of file listings (by name, size, modification date).
 - Configurable upload file size limit.

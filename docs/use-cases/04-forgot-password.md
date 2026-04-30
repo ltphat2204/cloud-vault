@@ -3,7 +3,7 @@
 **ID:** UC-04  
 **Name:** Forgot Password / Reset  
 **Actors:** Unauthenticated User  
-**Preconditions:** User has a registered email.  
+**Preconditions:** User has a registered and verified email address.  
 **Postconditions:** User's password is updated.  
 
 **Main Flow (Request Reset):**
