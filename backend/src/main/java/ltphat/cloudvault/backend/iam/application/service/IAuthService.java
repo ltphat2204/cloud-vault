@@ -12,4 +12,7 @@ public interface IAuthService {
     void logout(String accessToken, String refreshToken);
     UserDto getMe(String email);
     void verify(String token);
+    void forgotPassword(ltphat.cloudvault.backend.iam.application.dto.ForgotPasswordRequest request);
+    void resetPassword(ltphat.cloudvault.backend.iam.application.dto.ResetPasswordRequest request);
+    void resendVerification(String email);
 }

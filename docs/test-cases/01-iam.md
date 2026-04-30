@@ -11,7 +11,7 @@ These test cases verify the Identity and Access Management (IAM) module, focusin
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
-| 1 | Submit valid `email`, `password`, and `name`. | 201 Created; User record saved in DB; Password hashed. |
+| 1 | Submit valid `email`, `password`, and `name`. | 201 Created; User record saved in DB with `is_verified: false`; Password hashed; Verification email sent via RabbitMQ. |
 | 2 | Submit registration with an email that already exists. | 409 Conflict; Error message "Email already exists". |
 | 3 | Submit with missing required fields or invalid email format. | 400 Bad Request; Validation error details. |
 
@@ -24,9 +24,10 @@ These test cases verify the Identity and Access Management (IAM) module, focusin
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
-| 1 | Submit valid credentials with `X-Device-Id` header. | 200 OK; Access Token in body; Refresh Token in HttpOnly cookie. |
+| 1 | Submit valid credentials for a verified account with `X-Device-Id` header. | 200 OK; Access Token in body; Refresh Token in HttpOnly cookie. |
 | 2 | Submit invalid password. | 401 Unauthorized; Error "Invalid email or password". |
-| 3 | Submit without `X-Device-Id` header. | 400 Bad Request (Header required). |
+| 3 | Submit valid credentials for an **unverified** account. | 403 Forbidden; Error "User account is not verified". |
+| 4 | Submit without `X-Device-Id` header. | 400 Bad Request (Header required). |
 
 ---
 
@@ -81,12 +82,36 @@ These test cases verify the Identity and Access Management (IAM) module, focusin
 
 ---
 
-### TC-IAM-07: Token Verification
-**Description:** Verify that the system can validate a JWT token without returning full user profile.
-**Endpoints:** `GET /api/v1/auth/verify`
-**Headers:** `Authorization: Bearer <access_token>`
+### TC-IAM-07: Account Verification (Email Token)
+**Description:** Verify that an account can be activated using a valid verification token.
+**Endpoints:** `POST /api/v1/auth/verify?token=<token>`
 
 | Step | Action | Expected Result |
 | :--- | :--- | :--- |
-| 1 | Call endpoint with a valid AT. | 200 OK; Returns boolean `valid: true`. |
-| 2 | Call endpoint with an invalid or expired AT. | 401 Unauthorized or 200 OK with `valid: false` (depending on implementation). |
+| 1 | Submit a valid, non-expired token. | 200 OK; User status updated to `is_verified: true`. |
+| 2 | Submit an expired token. | 400 Bad Request; Error "Token has expired". |
+| 3 | Submit an invalid/non-existent token. | 400 Bad Request; Error "Invalid token". |
+
+---
+
+### TC-IAM-08: Forgot Password Flow
+**Description:** Verify that a user can request a password reset and update their password using the token.
+**Endpoints:** `POST /api/v1/auth/forgot-password`, `POST /api/v1/auth/reset-password`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | Request reset for a verified email. | 200 OK; Reset email sent via RabbitMQ. |
+| 2 | Request reset for an **unverified** email. | 403 Forbidden; Error "User account is not verified". |
+| 3 | Reset password using valid token and new password. | 200 OK; Password hash updated in DB; Token invalidated. |
+| 4 | Reset password using expired token. | 400 Bad Request; Error "Token has expired". |
+
+---
+
+### TC-IAM-09: Resend Verification Email
+**Description:** Verify that a user can request a new verification email.
+**Endpoints:** `POST /api/v1/auth/resend-verification?email=<email>`
+
+| Step | Action | Expected Result |
+| :--- | :--- | :--- |
+| 1 | Request resend for an unverified account. | 200 OK; New verification email sent. |
+| 2 | Request resend for an already verified account. | 400 Bad Request; Error "User is already verified". |

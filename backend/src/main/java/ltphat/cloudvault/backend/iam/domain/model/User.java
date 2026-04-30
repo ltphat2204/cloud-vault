@@ -17,6 +17,7 @@ public class User {
     private String email;
     private String passwordHash;
     private String name;
+    private boolean isVerified;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -25,7 +26,32 @@ public class User {
                 .email(email)
                 .passwordHash(passwordHash)
                 .name(name)
+                .isVerified(false)
                 .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    public User markAsVerified() {
+        return User.builder()
+                .id(id)
+                .email(email)
+                .passwordHash(passwordHash)
+                .name(name)
+                .isVerified(true)
+                .createdAt(createdAt)
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    public User updatePasswordHash(String newHash) {
+        return User.builder()
+                .id(id)
+                .email(email)
+                .passwordHash(newHash)
+                .name(name)
+                .isVerified(isVerified)
+                .createdAt(createdAt)
                 .updatedAt(LocalDateTime.now())
                 .build();
     }

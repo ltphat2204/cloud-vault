@@ -8,8 +8,8 @@
 - Email is not already registered.
 
 **Postconditions:**
-- A new user account is created.
-- User receives a success message; optionally a verification email.
+- A new user account is created with `isVerified: false`.
+- User receives a success message and a mandatory verification email.
 
 **Main Flow:**
 1. User navigates to the registration page.

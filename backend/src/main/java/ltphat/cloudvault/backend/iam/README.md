@@ -8,8 +8,10 @@ The IAM module handles user authentication, authorization, and profile managemen
 - **User Login**: Secure authentication with support for device and IP address tracking for enhanced security.
 - **Token Management**: JWT-based authentication with support for access and refresh tokens.
 - **Logout**: Securely invalidates user sessions.
+- **Email Verification**: Mandatory email verification flow for new registrations.
+- **Forgot Password**: Secure password reset flow using one-time tokens.
 - **User Profile**: Retrieve the currently authenticated user's information.
-- **Token Verification**: Endpoint to validate JWT tokens.
+- **Account Verification**: Endpoint to verify accounts via email tokens.
 
 ## Module Structure
 
@@ -25,3 +27,4 @@ The module is organized into four main layers following Clean Architecture:
 - `AuthResult`: Encapsulates the results of a successful authentication, including tokens and user info.
 - `IAuthService`: The primary interface defining authentication use cases.
 - `LoginRequest`/`RegisterRequest`: DTOs for capturing user input.
+- `ForgotPasswordRequest`/`ResetPasswordRequest`: DTOs for password reset flow.

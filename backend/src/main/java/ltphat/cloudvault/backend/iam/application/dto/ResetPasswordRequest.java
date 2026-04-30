@@ -1,0 +1,15 @@
+package ltphat.cloudvault.backend.iam.application.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResetPasswordRequest {
+    private String token;
+    private String newPassword;
+}

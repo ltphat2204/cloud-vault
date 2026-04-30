@@ -33,6 +33,9 @@ public class JpaUser {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private boolean isVerified;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

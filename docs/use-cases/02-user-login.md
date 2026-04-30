@@ -9,11 +9,12 @@
 **Main Flow:**
 1. User submits email and password.
 2. System validates credentials.
-3. System generates JWT pair (access 15 min, refresh 7 days).
-4. System returns tokens and user profile.
+3. System checks if account is verified.
+4. System generates JWT pair (access 15 min, refresh 7 days).
+5. System returns tokens and user profile.
 
 **Alternative Flows:**
 - **2a. Invalid credentials:** 401 Unauthorized.
-- **3a. Account locked (future):** 403 Forbidden.
+- **3a. Account not verified:** 403 Forbidden; User is prompted to verify email.
 
 **Exceptions:** 401, 500.
