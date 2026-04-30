@@ -8,10 +8,15 @@ import ltphat.cloudvault.backend.audit.domain.repository.IActivityLogRepository;
 import ltphat.cloudvault.backend.audit.infrastructure.persistence.jpa.JpaActivityLog;
 import ltphat.cloudvault.backend.audit.infrastructure.persistence.jpa.SpringDataActivityLogRepository;
 import ltphat.cloudvault.backend.audit.infrastructure.persistence.mapper.ActivityLogPersistenceMapper;
-import org.springframework.data.domain.Page;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
+import ltphat.cloudvault.backend.shared.utils.CursorUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -29,14 +34,40 @@ public class ActivityLogPersistenceAdapter implements IActivityLogRepository {
     }
 
     @Override
-    public Page<ActivityLog> findByUserId(UUID userId, ActivityAction action, ResourceType resourceType, Pageable pageable) {
-        return springRepository.findByFilters(userId, action, resourceType, pageable)
-                .map(mapper::toDomain);
+    public List<ActivityLog> findByUserId(UUID userId, ActivityAction action, ResourceType resourceType, CursorParams cursorParams) {
+        LocalDateTime cursorTime = null;
+        UUID cursorId = null;
+        String[] decoded = CursorUtils.decode(cursorParams.getCursor());
+        if (decoded != null) {
+            cursorTime = LocalDateTime.parse(decoded[0]);
+            cursorId = UUID.fromString(decoded[1]);
+        }
+
+        Pageable pageable = PageRequest.of(0, cursorParams.getPageSize() + 1, 
+                Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+
+        return springRepository.findByFiltersWithCursor(userId, action, resourceType, cursorTime, cursorId, pageable)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 
     @Override
-    public Page<ActivityLog> findByResourceIdAndResourceType(UUID resourceId, ResourceType resourceType, Pageable pageable) {
-        return springRepository.findByResourceIdAndResourceType(resourceId, resourceType, pageable)
-                .map(mapper::toDomain);
+    public List<ActivityLog> findByResourceIdAndResourceType(UUID resourceId, ResourceType resourceType, CursorParams cursorParams) {
+        LocalDateTime cursorTime = null;
+        UUID cursorId = null;
+        String[] decoded = CursorUtils.decode(cursorParams.getCursor());
+        if (decoded != null) {
+            cursorTime = LocalDateTime.parse(decoded[0]);
+            cursorId = UUID.fromString(decoded[1]);
+        }
+
+        Pageable pageable = PageRequest.of(0, cursorParams.getPageSize() + 1, 
+                Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+
+        return springRepository.findByResourceIdAndResourceTypeWithCursor(resourceId, resourceType, cursorTime, cursorId, pageable)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

@@ -18,6 +18,7 @@ import ltphat.cloudvault.backend.trash.domain.repository.ITrashRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
 import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,7 +111,7 @@ public class TrashServiceImpl implements ITrashService {
         // For simplicity, we restore all files/folders directly under it that are marked as deleted
         // In a real app, we might want to be more specific about "restored with folder"
         
-        List<Folder> subfolders = folderRepository.findByProjectIdAndParentFolderId(folder.getProjectId(), folder.getId());
+        List<Folder> subfolders = folderRepository.findByProjectIdAndParentFolderId(folder.getProjectId(), folder.getId(), CursorParams.builder().size(1000).build());
         for (Folder sub : subfolders) {
             if (sub.isDeleted()) restoreFolderRecursive(sub);
         }
@@ -184,7 +185,7 @@ public class TrashServiceImpl implements ITrashService {
         }
 
         // Delete subfolders
-        List<Folder> subfolders = folderRepository.findByProjectIdAndParentFolderId(folder.getProjectId(), folder.getId());
+        List<Folder> subfolders = folderRepository.findByProjectIdAndParentFolderId(folder.getProjectId(), folder.getId(), CursorParams.builder().size(1000).build());
         for (Folder sub : subfolders) {
             hardDeleteFolderRecursive(sub);
         }

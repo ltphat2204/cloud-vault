@@ -3,6 +3,7 @@ package ltphat.cloudvault.backend.shares.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ltphat.cloudvault.backend.iam.domain.model.User;
 import ltphat.cloudvault.backend.iam.domain.repository.IUserRepository;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import ltphat.cloudvault.backend.shared.security.JwtTokenProvider;
 import ltphat.cloudvault.backend.projects.domain.model.Project;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
@@ -99,8 +100,8 @@ class ShareIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.data[0].sharedBy").value("owner@example.com"));
 
         // 4. Verify Audit Log
-        var logs = auditRepository.findByUserId(owner.getId(), ActivityAction.RESOURCE_SHARED, null, Pageable.unpaged());
-        assertThat(logs.getContent()).hasSize(1);
+        var logs = auditRepository.findByUserId(owner.getId(), ActivityAction.RESOURCE_SHARED, null, CursorParams.builder().size(100).build());
+        assertThat(logs).hasSize(1);
     }
 
     @Test
@@ -135,8 +136,8 @@ class ShareIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isBadRequest()); // ShareException mapped to 400
 
         // 4. Verify Audit Log
-        var logs = auditRepository.findByUserId(owner.getId(), ActivityAction.PUBLIC_LINK_CREATED, null, Pageable.unpaged());
-        assertThat(logs.getContent()).hasSize(1);
+        var logs = auditRepository.findByUserId(owner.getId(), ActivityAction.PUBLIC_LINK_CREATED, null, CursorParams.builder().size(100).build());
+        assertThat(logs).hasSize(1);
     }
 
     @Test

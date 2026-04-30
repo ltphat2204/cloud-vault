@@ -12,11 +12,13 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.shares.domain.repository.ShareRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
+import ltphat.cloudvault.backend.shared.utils.CursorUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,19 +46,36 @@ public class ActivityLogServiceImpl implements IActivityLogService {
     }
 
     @Override
-    public Page<ActivityLogDto> getUserActivityLogs(UUID userId, ActivityAction action, ResourceType resourceType, Pageable pageable) {
-        return activityLogRepository.findByUserId(userId, action, resourceType, pageable)
-                .map(mapper::toDto);
+    public CursorPageResponse<ActivityLogDto> getUserActivityLogs(UUID userId, ActivityAction action, ResourceType resourceType, CursorParams cursorParams) {
+        List<ActivityLog> logs = activityLogRepository.findByUserId(userId, action, resourceType, cursorParams);
+        return toCursorPageResponse(logs, cursorParams);
     }
 
     @Override
-    public Page<ActivityLogDto> getResourceActivityLogs(UUID resourceId, ResourceType resourceType, UUID userId, Pageable pageable) {
+    public CursorPageResponse<ActivityLogDto> getResourceActivityLogs(UUID resourceId, ResourceType resourceType, UUID userId, CursorParams cursorParams) {
         if (!hasAccess(resourceId, resourceType, userId)) {
             throw new AccessDeniedException("You do not have permission to view history for this resource");
         }
         
-        return activityLogRepository.findByResourceIdAndResourceType(resourceId, resourceType, pageable)
-                .map(mapper::toDto);
+        List<ActivityLog> logs = activityLogRepository.findByResourceIdAndResourceType(resourceId, resourceType, cursorParams);
+        return toCursorPageResponse(logs, cursorParams);
+    }
+
+    private CursorPageResponse<ActivityLogDto> toCursorPageResponse(List<ActivityLog> logs, CursorParams params) {
+        boolean hasNext = logs.size() > params.getPageSize();
+        List<ActivityLog> items = hasNext ? logs.subList(0, params.getPageSize()) : logs;
+        
+        String nextCursor = null;
+        if (hasNext && !items.isEmpty()) {
+            ActivityLog lastItem = items.get(items.size() - 1);
+            if (lastItem.getCreatedAt() != null) {
+                String sortField = params.getSortField();
+                String fieldValue = "createdAt".equals(sortField) ? lastItem.getCreatedAt().toString() : lastItem.getCreatedAt().toString();
+                nextCursor = CursorUtils.encode(fieldValue, lastItem.getId().toString());
+            }
+        }
+        
+        return CursorPageResponse.of(items.stream().map(mapper::toDto).toList(), nextCursor, hasNext);
     }
 
     private boolean hasAccess(UUID resourceId, ResourceType type, UUID userId) {

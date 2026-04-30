@@ -3,15 +3,15 @@ package ltphat.cloudvault.backend.audit.domain.repository;
 import ltphat.cloudvault.backend.audit.domain.model.ActivityAction;
 import ltphat.cloudvault.backend.audit.domain.model.ActivityLog;
 import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface IActivityLogRepository {
     ActivityLog save(ActivityLog activityLog);
     
-    Page<ActivityLog> findByUserId(UUID userId, ActivityAction action, ResourceType resourceType, Pageable pageable);
+    List<ActivityLog> findByUserId(UUID userId, ActivityAction action, ResourceType resourceType, CursorParams cursorParams);
     
-    Page<ActivityLog> findByResourceIdAndResourceType(UUID resourceId, ResourceType resourceType, Pageable pageable);
+    List<ActivityLog> findByResourceIdAndResourceType(UUID resourceId, ResourceType resourceType, CursorParams cursorParams);
 }

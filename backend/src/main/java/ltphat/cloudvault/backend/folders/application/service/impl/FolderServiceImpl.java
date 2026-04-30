@@ -21,6 +21,9 @@ import ltphat.cloudvault.backend.audit.domain.model.ResourceType;
 import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
 import ltphat.cloudvault.backend.notifications.domain.model.RealTimeUpdateType;
 import ltphat.cloudvault.backend.shares.application.service.ShareService;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
+import ltphat.cloudvault.backend.shared.utils.CursorUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,7 +99,7 @@ public class FolderServiceImpl implements IFolderService {
     }
 
     @Override
-    public List<FolderDto> listFolders(UUID projectId, UUID parentFolderId, UUID ownerId) {
+    public CursorPageResponse<FolderDto> listFolders(UUID projectId, UUID parentFolderId, UUID ownerId, CursorParams cursorParams) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
@@ -104,10 +107,30 @@ public class FolderServiceImpl implements IFolderService {
             throw new AccessDeniedException("You do not have access to this project");
         }
 
-        return folderRepository.findByProjectIdAndParentFolderId(projectId, parentFolderId).stream()
+        List<Folder> folders = folderRepository.findByProjectIdAndParentFolderId(projectId, parentFolderId, cursorParams);
+        
+        List<Folder> filteredFolders = folders.stream()
                 .filter(f -> !f.isDeleted())
-                .map(folderApplicationMapper::toDto)
                 .collect(Collectors.toList());
+
+        return toCursorPageResponse(filteredFolders, cursorParams);
+    }
+
+    private CursorPageResponse<FolderDto> toCursorPageResponse(List<Folder> folders, CursorParams params) {
+        boolean hasNext = folders.size() > params.getPageSize();
+        List<Folder> items = hasNext ? folders.subList(0, params.getPageSize()) : folders;
+        
+        String nextCursor = null;
+        if (hasNext && !items.isEmpty()) {
+            Folder lastItem = items.get(items.size() - 1);
+            if (lastItem.getCreatedAt() != null) {
+                String sortField = params.getSortField();
+                String fieldValue = "name".equals(sortField) ? lastItem.getName() : lastItem.getCreatedAt().toString();
+                nextCursor = CursorUtils.encode(fieldValue, lastItem.getId().toString());
+            }
+        }
+        
+        return CursorPageResponse.of(items.stream().map(folderApplicationMapper::toDto).toList(), nextCursor, hasNext);
     }
 
     @Override

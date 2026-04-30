@@ -11,15 +11,13 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.folders.domain.repository.IFolderRepository;
 import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.shares.domain.repository.ShareRepository;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
@@ -69,43 +67,43 @@ class ActivityLogServiceTest {
     @Test
     void getUserActivityLogs_ShouldReturnPage() {
         UUID userId = UUID.randomUUID();
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<ActivityLog> logPage = new PageImpl<>(List.of(ActivityLog.builder().build()));
+        CursorParams params = CursorParams.builder().size(10).build();
+        List<ActivityLog> logs = List.of(ActivityLog.builder().build());
 
-        when(activityLogRepository.findByUserId(eq(userId), any(), any(), eq(pageable))).thenReturn(logPage);
+        when(activityLogRepository.findByUserId(eq(userId), any(), any(), eq(params))).thenReturn(logs);
         when(mapper.toDto(any())).thenReturn(new ActivityLogDto());
 
-        Page<ActivityLogDto> result = activityLogService.getUserActivityLogs(userId, null, null, pageable);
+        CursorPageResponse<ActivityLogDto> result = activityLogService.getUserActivityLogs(userId, null, null, params);
 
         assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getItems().size());
     }
 
     @Test
     void getResourceActivityLogs_WhenOwner_ShouldReturnHistory() {
         UUID userId = UUID.randomUUID();
         UUID fileId = UUID.randomUUID();
-        Pageable pageable = PageRequest.of(0, 10);
+        CursorParams params = CursorParams.builder().size(10).build();
         
         File file = File.builder().id(fileId).ownerId(userId).build();
         when(fileRepository.findById(fileId)).thenReturn(Optional.of(file));
         
-        Page<ActivityLog> logPage = new PageImpl<>(List.of(ActivityLog.builder().build()));
-        when(activityLogRepository.findByResourceIdAndResourceType(eq(fileId), eq(ResourceType.FILE), eq(pageable)))
-                .thenReturn(logPage);
+        List<ActivityLog> logs = List.of(ActivityLog.builder().build());
+        when(activityLogRepository.findByResourceIdAndResourceType(eq(fileId), eq(ResourceType.FILE), eq(params)))
+                .thenReturn(logs);
         when(mapper.toDto(any())).thenReturn(new ActivityLogDto());
 
-        Page<ActivityLogDto> result = activityLogService.getResourceActivityLogs(fileId, ResourceType.FILE, userId, pageable);
+        CursorPageResponse<ActivityLogDto> result = activityLogService.getResourceActivityLogs(fileId, ResourceType.FILE, userId, params);
 
         assertNotNull(result);
-        verify(activityLogRepository).findByResourceIdAndResourceType(fileId, ResourceType.FILE, pageable);
+        verify(activityLogRepository).findByResourceIdAndResourceType(fileId, ResourceType.FILE, params);
     }
 
     @Test
     void getResourceActivityLogs_WhenSharedUser_ShouldReturnHistory() {
         UUID userId = UUID.randomUUID();
         UUID fileId = UUID.randomUUID();
-        Pageable pageable = PageRequest.of(0, 10);
+        CursorParams params = CursorParams.builder().size(10).build();
         
         // Not owner
         File file = File.builder().id(fileId).ownerId(UUID.randomUUID()).build();
@@ -114,12 +112,12 @@ class ActivityLogServiceTest {
         // Has share
         when(shareRepository.existsByResourceAndUser(any(), eq(fileId), eq(userId))).thenReturn(true);
         
-        Page<ActivityLog> logPage = new PageImpl<>(List.of(ActivityLog.builder().build()));
-        when(activityLogRepository.findByResourceIdAndResourceType(eq(fileId), eq(ResourceType.FILE), eq(pageable)))
-                .thenReturn(logPage);
+        List<ActivityLog> logs = List.of(ActivityLog.builder().build());
+        when(activityLogRepository.findByResourceIdAndResourceType(eq(fileId), eq(ResourceType.FILE), eq(params)))
+                .thenReturn(logs);
         when(mapper.toDto(any())).thenReturn(new ActivityLogDto());
 
-        Page<ActivityLogDto> result = activityLogService.getResourceActivityLogs(fileId, ResourceType.FILE, userId, pageable);
+        CursorPageResponse<ActivityLogDto> result = activityLogService.getResourceActivityLogs(fileId, ResourceType.FILE, userId, params);
 
         assertNotNull(result);
     }
@@ -128,7 +126,7 @@ class ActivityLogServiceTest {
     void getResourceActivityLogs_WhenNoAccess_ShouldThrowException() {
         UUID userId = UUID.randomUUID();
         UUID fileId = UUID.randomUUID();
-        Pageable pageable = PageRequest.of(0, 10);
+        CursorParams params = CursorParams.builder().size(10).build();
         
         // Not owner
         File file = File.builder().id(fileId).ownerId(UUID.randomUUID()).build();
@@ -138,6 +136,6 @@ class ActivityLogServiceTest {
         when(shareRepository.existsByResourceAndUser(any(), eq(fileId), eq(userId))).thenReturn(false);
 
         assertThrows(AccessDeniedException.class, () -> 
-                activityLogService.getResourceActivityLogs(fileId, ResourceType.FILE, userId, pageable));
+                activityLogService.getResourceActivityLogs(fileId, ResourceType.FILE, userId, params));
     }
 }

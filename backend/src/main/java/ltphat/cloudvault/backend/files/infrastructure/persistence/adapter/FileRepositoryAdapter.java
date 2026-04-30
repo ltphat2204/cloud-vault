@@ -6,8 +6,14 @@ import ltphat.cloudvault.backend.files.domain.repository.IFileRepository;
 import ltphat.cloudvault.backend.files.infrastructure.persistence.jpa.JpaFile;
 import ltphat.cloudvault.backend.files.infrastructure.persistence.jpa.SpringDataFileRepository;
 import ltphat.cloudvault.backend.files.infrastructure.persistence.mapper.FilePersistenceMapper;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
+import ltphat.cloudvault.backend.shared.utils.CursorUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,10 +40,27 @@ public class FileRepositoryAdapter implements IFileRepository {
     }
 
     @Override
-    public List<File> findByProjectIdAndFolderId(UUID projectId, UUID folderId) {
-        return springDataFileRepository.findByProjectIdAndFolderId(projectId, folderId).stream()
+    public List<File> findByProjectIdAndFolderId(UUID projectId, UUID folderId, CursorParams cursorParams) {
+        LocalDateTime cursorTime = null;
+        UUID cursorId = null;
+        String[] decoded = CursorUtils.decode(cursorParams.getCursor());
+        if (decoded != null) {
+            cursorTime = LocalDateTime.parse(decoded[0]);
+            cursorId = UUID.fromString(decoded[1]);
+        }
+
+        Pageable pageable = PageRequest.of(0, cursorParams.getPageSize() + 1, 
+                Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+
+        return springDataFileRepository.findByProjectIdAndFolderIdWithCursor(projectId, folderId, cursorTime, cursorId, pageable).stream()
                 .map(filePersistenceMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<File> findByNameAndFolderIdAndProjectId(String name, UUID folderId, UUID projectId) {
+        return springDataFileRepository.findByNameAndFolderIdAndProjectId(name, folderId, projectId)
+                .map(filePersistenceMapper::toDomain);
     }
 
     @Override

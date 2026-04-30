@@ -11,6 +11,7 @@ import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.trash.application.mapper.TrashApplicationMapper;
 import ltphat.cloudvault.backend.trash.domain.repository.ITrashRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,7 +87,7 @@ class TrashServiceImplTest {
                 .build();
 
         when(folderRepository.findById(folderId)).thenReturn(Optional.of(folder));
-        when(folderRepository.findByProjectIdAndParentFolderId(projectId, folderId)).thenReturn(List.of());
+        when(folderRepository.findByProjectIdAndParentFolderId(eq(projectId), eq(folderId), any(CursorParams.class))).thenReturn(List.of());
         when(fileRepository.findByFolderId(folderId)).thenReturn(List.of());
 
         trashService.restoreItems(List.of(folderId), ownerId);

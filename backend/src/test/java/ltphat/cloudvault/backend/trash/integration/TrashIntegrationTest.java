@@ -14,7 +14,7 @@ import ltphat.cloudvault.backend.trash.application.dto.TrashItemDto;
 import ltphat.cloudvault.backend.trash.application.service.ITrashService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
@@ -73,7 +73,7 @@ class TrashIntegrationTest extends AbstractIntegrationTest {
         assertThat(trashItems).isEmpty();
 
         // 7. Verify Audit Logs
-        var logs = auditRepository.findByUserId(ownerId, null, null, Pageable.unpaged()).getContent();
+        var logs = auditRepository.findByUserId(ownerId, null, null, CursorParams.builder().size(100).build());
         assertThat(logs).anyMatch(l -> l.getAction().equals(ActivityAction.PROJECT_CREATED));
         assertThat(logs).anyMatch(l -> l.getAction().equals(ActivityAction.FOLDER_CREATED));
         assertThat(logs).anyMatch(l -> l.getAction().equals(ActivityAction.FILE_UPLOADED));
@@ -103,7 +103,7 @@ class TrashIntegrationTest extends AbstractIntegrationTest {
         assertThat(restored).isNotNull();
         
         // 5. Verify Audit Logs
-        var logs = auditRepository.findByUserId(ownerId, ActivityAction.PROJECT_RESTORED, ResourceType.PROJECT, Pageable.unpaged()).getContent();
+        var logs = auditRepository.findByUserId(ownerId, ActivityAction.PROJECT_RESTORED, ResourceType.PROJECT, CursorParams.builder().size(100).build());
         assertThat(logs).isNotEmpty();
         
         trashItems = trashService.listTrash(ownerId);

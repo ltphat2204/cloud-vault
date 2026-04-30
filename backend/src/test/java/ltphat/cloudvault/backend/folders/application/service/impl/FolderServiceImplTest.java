@@ -13,6 +13,8 @@ import ltphat.cloudvault.backend.projects.domain.repository.IProjectRepository;
 import ltphat.cloudvault.backend.audit.application.service.IActivityLogService;
 import ltphat.cloudvault.backend.notifications.application.service.RealTimeUpdateService;
 import ltphat.cloudvault.backend.shares.application.service.ShareService;
+import ltphat.cloudvault.backend.shared.dto.CursorPageResponse;
+import ltphat.cloudvault.backend.shared.dto.CursorParams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -200,17 +202,18 @@ class FolderServiceImplTest {
         // Arrange
         UUID otherUserId = UUID.randomUUID();
         Folder f1 = Folder.builder().id(UUID.randomUUID()).name("Shared F1").ownerId(ownerId).projectId(projectId).build();
+        CursorParams params = CursorParams.builder().build();
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(shareService.hasProjectAccess(projectId, otherUserId)).thenReturn(true);
-        when(folderRepository.findByProjectIdAndParentFolderId(projectId, null)).thenReturn(java.util.List.of(f1));
+        when(folderRepository.findByProjectIdAndParentFolderId(eq(projectId), eq(null), any(CursorParams.class))).thenReturn(java.util.List.of(f1));
 
         // Act
-        java.util.List<FolderDto> result = folderService.listFolders(projectId, null, otherUserId);
+        CursorPageResponse<FolderDto> result = folderService.listFolders(projectId, null, otherUserId, params);
 
         // Assert
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Shared F1");
+        assertThat(result.getItems()).hasSize(1);
+        assertThat(result.getItems().get(0).getName()).isEqualTo("Shared F1");
         verify(shareService).hasProjectAccess(projectId, otherUserId);
     }
 
@@ -218,12 +221,13 @@ class FolderServiceImplTest {
     void listFolders_AccessDenied() {
         // Arrange
         UUID otherUserId = UUID.randomUUID();
+        CursorParams params = CursorParams.builder().build();
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(shareService.hasProjectAccess(projectId, otherUserId)).thenReturn(false);
 
         // Act & Assert
-        assertThatThrownBy(() -> folderService.listFolders(projectId, null, otherUserId))
+        assertThatThrownBy(() -> folderService.listFolders(projectId, null, otherUserId, params))
                 .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
     }
 }
