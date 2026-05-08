@@ -23,7 +23,7 @@ function NotificationsPage() {
             Stay updated with your workspace activities
           </p>
         </div>
-        {notifications.some(n => !n.isRead) && (
+        {notifications.some(n => !n.read) && (
           <Button
             onClick={() => markAllAsRead()}
             className="rounded-xl font-bold gap-2 shadow-md bg-[var(--lagoon-deep)]"
@@ -63,11 +63,11 @@ function NotificationsPage() {
               <div
                 key={notification.id}
                 className={`group flex items-start gap-5 p-8 transition-all hover:bg-white/60 ${
-                  !notification.isRead ? 'bg-[var(--lagoon)]/5' : ''
+                  !notification.read ? 'bg-[var(--lagoon)]/5' : ''
                 }`}
               >
                 <div className={`flex h-14 w-14 items-center justify-center rounded-2xl flex-shrink-0 transition-transform group-hover:scale-105 shadow-sm ${
-                  !notification.isRead 
+                  !notification.read 
                     ? 'bg-[var(--lagoon-deep)] text-white' 
                     : 'bg-white text-[var(--sea-ink-soft)] border border-[var(--line)]'
                 }`}>
@@ -77,11 +77,11 @@ function NotificationsPage() {
                 <div className="flex-1 space-y-2 pt-1">
                   <div className="flex items-center justify-between">
                     <p className={`text-lg leading-snug ${
-                      !notification.isRead ? 'font-extrabold text-[var(--sea-ink)]' : 'font-medium text-[var(--sea-ink-soft)]'
+                      !notification.read ? 'font-extrabold text-[var(--sea-ink)]' : 'font-medium text-[var(--sea-ink-soft)]'
                     }`}>
                       {notification.message}
                     </p>
-                    {!notification.isRead && (
+                    {!notification.read && (
                       <Button
                         size="sm"
                         variant="ghost"
@@ -99,7 +99,7 @@ function NotificationsPage() {
                       <Clock size={14} className="opacity-60" />
                       {format(new Date(notification.createdAt), 'MMM dd, yyyy · hh:mm a')}
                     </div>
-                    {notification.isRead && (
+                    {notification.read && (
                       <span className="flex items-center gap-1 text-[var(--lagoon-deep)]/60">
                         <Check size={12} />
                         Read
