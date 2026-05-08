@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('access_token')
       setUser(null)
       // Only redirect if we are not already on a public page to avoid loops
-      const publicPaths = ['/', '/login', '/register', '/verify']
+      const publicPaths = ['/', '/login', '/register', '/verify', '/verify-email', '/forgot-password', '/reset-password']
       if (!publicPaths.includes(window.location.pathname)) {
         window.location.href = '/'
       }
